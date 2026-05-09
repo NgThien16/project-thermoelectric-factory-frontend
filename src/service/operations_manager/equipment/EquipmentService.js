@@ -1,3 +1,5 @@
+import axiosInstance from "../../../api/axiosInstance.js";
+
 export async function searchListEquipment(searchName,searchCode,status,page) {
     let url = `/equipments?page=${page-1}`;
     if (searchName){

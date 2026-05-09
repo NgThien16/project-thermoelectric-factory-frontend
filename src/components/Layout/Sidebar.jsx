@@ -1,10 +1,8 @@
-import React from 'react';
 import { Nav } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   FaUsers, 
-  FaCogs, 
-  FaTools, 
+  FaCogs,
   FaWarehouse, 
   FaChartLine,
   FaClipboardList
@@ -35,8 +33,11 @@ const Sidebar = () => {
         <Nav.Link as={Link} to="/equipment-types" active={location.pathname.startsWith('/equipment-types')}>
           <FaCogs /> Loại thiết bị
         </Nav.Link>
-        <Nav.Link as={Link} to="/kho" active={location.pathname === '/kho'}>
-          <FaWarehouse /> Quản lý kho
+        <Nav.Link as={Link} to="/consumable-material" active={location.pathname === '/consumable-material'}>
+          <FaWarehouse /> Quản lý vật tư tiêu hao
+        </Nav.Link>
+        <Nav.Link as={Link} to="/replacement-material" active={location.pathname === '/replacement-material'}>
+          <FaWarehouse /> Quản lý vật tư thay thế
         </Nav.Link>
         <Nav.Link as={Link} to="/ccdc" active={location.pathname === '/ccdc'}>
           <FaClipboardList /> Công cụ dụng cụ

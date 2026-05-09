@@ -1,23 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.js'
 import {Route, Routes} from "react-router-dom";
-import Home from "./component/Home.jsx";
-import SystemEquipment from "./component/operations_manager/system/SystemEquipment.jsx";
-import Equipment from "./component/operations_manager/equipment/Equipment.jsx";
-import AddEquipment from "./component/operations_manager/equipment/AddEquipment.jsx";
-import EditEquipment from "./component/operations_manager/equipment/EditEquipment.jsx";
-import {ToastContainer} from "react-toastify";
-import AddSystem from "./component/operations_manager/system/AddSystem.jsx";
-import DetailSystem from "./component/operations_manager/system/DetailSystem.jsx";
-import AddEquipmentToSystem from "./component/operations_manager/system/AddEquipmentIntoSystem.jsx";
-import EquipmentTypeList from "./component/operations_manager/equipment_type/EquipmentTypeList.jsx";
-import AddEquipmentType from "./component/operations_manager/equipment_type/AddEquipmentType.jsx";
-import EquipmentByType from "./component/operations_manager/equipment_type/EquipmentByType.jsx";
-import Detail from "./component/operations_manager/equipment_type/Detail.jsx";
-import EquipmentDetail from "./component/operations_manager/equipment/EquipmentDetail.jsx";
-import 'bootstrap/dist/css/bootstrap.min.css'
-import 'bootstrap/dist/js/bootstrap.js'
-import {Route, Routes} from "react-router-dom";
 import MainLayout from "./components/Layout/MainLayout.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import SystemEquipment from "./pages/Operations/System/SystemEquipment.jsx";
@@ -35,6 +18,8 @@ import EquipmentByType from "./pages/Operations/EquipmentType/EquipmentByType.js
 import Detail from "./pages/Operations/EquipmentType/Detail.jsx";
 import EquipmentDetail from "./pages/Operations/Equipment/EquipmentDetail.jsx";
 import ToolManagement from "./pages/Tool/ToolManagement.jsx";
+import ListReplacement from "./pages/Materials/Replacement/ListReplacement.jsx";
+import ListConsumable from "./pages/Materials/Consumable/ListConsumable.jsx";
 
 function App() {
     return (
@@ -60,6 +45,10 @@ function App() {
                     <Route path={"/equipment-types/create"} element={<AddEquipmentType/>}/>
                     <Route path={"/equipment-types/:typeId/equipments"} element={<EquipmentByType/>}/>
                     <Route path={"/equipment-types/:typeId/equipments/:equipmentId/detail"} element={<Detail/>}/>
+                    {/* Vật tư tiêu hao */}
+                    <Route path={'/consumable-material'} element={<ListConsumable/>}/>
+                    {/* Vật tư thay thế */}
+                    <Route path={'/replacement-material'} element={<ListReplacement/>}/>
 
                     {/*CCDC */}
                     <Route path={'/ccdc'} element={<ToolManagement/>}/>
