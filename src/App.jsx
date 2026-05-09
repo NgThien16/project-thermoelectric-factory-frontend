@@ -18,6 +18,8 @@ import EquipmentByType from "./pages/Operations/EquipmentType/EquipmentByType.js
 import Detail from "./pages/Operations/EquipmentType/Detail.jsx";
 import EquipmentDetail from "./pages/Operations/Equipment/EquipmentDetail.jsx";
 import ToolManagement from "./pages/Tool/ToolManagement.jsx";
+import ListReplacement from "./pages/Materials/Replacement/ListReplacement.jsx";
+import ListConsumable from "./pages/Materials/Consumable/ListConsumable.jsx";
 
 function App() {
     return (
@@ -25,13 +27,13 @@ function App() {
             <MainLayout>
                 <Routes>
                     <Route path={'/'} element={<Dashboard/>}/>
-                    
+
                     {/* Hệ thống */}
                     <Route path={'/system-equipments'} element={<SystemEquipment/>}/>
                     <Route path={"/system-equipments/add"} element={<AddSystem/>}/>
                     <Route path={"/system-equipments/:id/equipments"} element={<DetailSystem/>}/>
                     <Route path={"/system-equipments/:id/add-equipment"} element={<AddEquipmentToSystem/>}/>
-                    
+
                     {/* Thiết bị */}
                     <Route path={'/equipments'} element={<Equipment/>}/>
                     <Route path={'/equipments/:id'} element={<EquipmentDetail/>}/>
@@ -43,6 +45,10 @@ function App() {
                     <Route path={"/equipment-types/create"} element={<AddEquipmentType/>}/>
                     <Route path={"/equipment-types/:typeId/equipments"} element={<EquipmentByType/>}/>
                     <Route path={"/equipment-types/:typeId/equipments/:equipmentId/detail"} element={<Detail/>}/>
+                    {/* Vật tư tiêu hao */}
+                    <Route path={'/consumable-material'} element={<ListConsumable/>}/>
+                    {/* Vật tư thay thế */}
+                    <Route path={'/replacement-material'} element={<ListReplacement/>}/>
 
                     {/*CCDC */}
                     <Route path={'/ccdc'} element={<ToolManagement/>}/>
