@@ -1,7 +1,16 @@
 import {useEffect, useState} from "react";
 import {Formik, Form, Field} from "formik";
-import {Button, Card, Col, Row, Table} from "react-bootstrap";
+import {
+    Button,
+    Card,
+    Col,
+    Row,
+    Table,
+    Modal
+} from "react-bootstrap";
+
 import {Link} from "react-router-dom";
+
 import {
     FaEdit,
     FaPlus,
@@ -14,20 +23,24 @@ import {
     remove
 } from "../../../service/materials_manager/replacement/ReplacementService.js";
 
+import {toast} from "react-toastify";
+
 const ListReplacement = () => {
 
     const [materialList, setMaterialList] = useState([]);
     const [keyword, setKeyword] = useState("");
 
+    // modal delete
+    const [showModal, setShowModal] = useState(false);
+    const [selectedMaterial, setSelectedMaterial] = useState(null);
+
+    const fetchData = async () => {
+        const data = await getAllOrSearch(keyword);
+        setMaterialList(data || []);
+    }
+
     useEffect(() => {
-
-        const fetchData = async () => {
-            const data = await getAllOrSearch(keyword);
-            setMaterialList(data || []);
-        }
-
         fetchData();
-
     }, [keyword]);
 
     const handleSearch = (values) => {
@@ -38,23 +51,36 @@ const ListReplacement = () => {
         setKeyword("");
     }
 
-    const handleDelete = async (id) => {
+    // mở modal
+    const handleShowDelete = (material) => {
+        setSelectedMaterial(material);
+        setShowModal(true);
+    }
 
-        const confirmDelete = window.confirm(
-            "Bạn có muốn xóa vật tư thay thế này không?"
-        );
+    // đóng modal
+    const handleCloseDelete = () => {
+        setShowModal(false);
+        setSelectedMaterial(null);
+    }
 
-        if (confirmDelete) {
+    // xóa
+    const handleDelete = async () => {
 
-            const result = await remove(id);
+        if (!selectedMaterial) return;
 
-            if (result) {
-                alert("Xóa thành công!");
-                const data = await getAllOrSearch(keyword);
-                setMaterialList(data || []);
-            } else {
-                alert("Xóa thất bại!");
-            }
+        const result = await remove(selectedMaterial.id);
+
+        if (result) {
+
+            toast.success("Xóa thành công!");
+
+            handleCloseDelete();
+
+            fetchData();
+
+        } else {
+
+            toast.error("Xóa thất bại!");
         }
     }
 
@@ -68,7 +94,7 @@ const ListReplacement = () => {
                 </h3>
 
                 <Link
-                    to={"/replacement-materials/add"}
+                    to={"/replacement-material/add"}
                     className="btn btn-success d-flex align-items-center gap-2"
                 >
                     <FaPlus/>
@@ -189,7 +215,7 @@ const ListReplacement = () => {
                                     <Button
                                         variant="outline-danger"
                                         size="sm"
-                                        onClick={() => handleDelete(m.id)}
+                                        onClick={() => handleShowDelete(m)}
                                     >
                                         <FaTrash/>
                                     </Button>
@@ -222,6 +248,53 @@ const ListReplacement = () => {
                 </Card.Body>
 
             </Card>
+
+            {/* Modal Delete */}
+
+            <Modal
+                show={showModal}
+                onHide={handleCloseDelete}
+                centered
+            >
+
+                <Modal.Header closeButton>
+
+                    <Modal.Title>
+                        Xác nhận xóa
+                    </Modal.Title>
+
+                </Modal.Header>
+
+                <Modal.Body>
+
+                    Bạn có muốn xóa vật tư thay thế:
+
+                    <span className="fw-bold text-danger">
+                        {" "}{selectedMaterial?.name}
+                    </span>
+                    ?
+
+                </Modal.Body>
+
+                <Modal.Footer>
+
+                    <Button
+                        variant="secondary"
+                        onClick={handleCloseDelete}
+                    >
+                        Hủy
+                    </Button>
+
+                    <Button
+                        variant="danger"
+                        onClick={handleDelete}
+                    >
+                        Xóa
+                    </Button>
+
+                </Modal.Footer>
+
+            </Modal>
 
         </div>
     )
