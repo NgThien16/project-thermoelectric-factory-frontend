@@ -1,10 +1,8 @@
-import axios from "axios";
-
-const BE_URL = "http://localhost:8080/equipment-types";
+import axiosInstance from "../../../api/axiosInstance";
 
 export async function searchEquipmentType(name, domain, page) {
 
-    let url = `${BE_URL}?page=${page}`;
+    let url = `/equipment-types?page=${page}`;
 
     if (name) {
         url += `&name=${name}`;
@@ -16,7 +14,7 @@ export async function searchEquipmentType(name, domain, page) {
 
     try {
 
-        const res = await axios.get(url);
+        const res = await axiosInstance.get(url);
 
         return {
             data: res.data.content,
@@ -38,7 +36,7 @@ export async function getListType() {
 
     try {
 
-        const res = await axios.get(`${BE_URL}/list`);
+        const res = await axiosInstance.get('/equipment-types/list');
 
         return res.data;
 
@@ -54,7 +52,7 @@ export async function saveEquipmentType(type) {
 
     try {
 
-        const res = await axios.post(`${BE_URL}`, type);
+        const res = await axiosInstance.post('/equipment-types', type);
 
         return res.status === 201;
 
@@ -70,8 +68,8 @@ export async function getEquipmentsByType(typeId) {
 
     try {
 
-        const res = await axios.get(
-            `${BE_URL}/${typeId}/equipments`
+        const res = await axiosInstance.get(
+            `/equipment-types/${typeId}/equipments`
         );
 
         return res.data;
@@ -88,8 +86,8 @@ export async function getEquipmentDetail(typeId, equipmentId) {
 
     try {
 
-        const res = await axios.get(
-            `${BE_URL}/${typeId}/equipments/${equipmentId}/detail`
+        const res = await axiosInstance.get(
+            `/equipment-types/${typeId}/equipments/${equipmentId}/detail`
         );
 
         return res.data;

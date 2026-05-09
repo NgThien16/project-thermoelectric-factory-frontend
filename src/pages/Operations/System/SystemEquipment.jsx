@@ -17,41 +17,29 @@ const SystemEquipment = () => {
     }, []);
 
     return (
-        <div className="container mt-4">
-
-            <div className="d-flex justify-content-between align-items-center mb-3">
-                <h2 className="fw-bold">Hệ thống thiết bị</h2>
-
-                <Link to={'/'} className="btn btn-outline-secondary">
-                    Trang chủ
+        <div className="p-4">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <h3 className="fw-bold">Hệ thống thiết bị</h3>
+                <Link
+                    to={"/system-equipments/add"}
+                    className="btn btn-success d-flex align-items-center gap-2"
+                >
+                    + Thêm mới hệ thống
                 </Link>
             </div>
 
-            <Link
-                to={"/system-equipments/add"}
-                className="btn btn-dark mb-3"
-            >
-                + Thêm mới hệ thống
-            </Link>
-
-            <div className="card shadow-sm">
+            <div className="card border-0 shadow-sm">
                 <div className="card-body p-0">
-
-                    <table className="table table-hover table-striped mb-0">
-
-                        <thead className="table-dark">
+                    <table className="table table-hover mb-0">
+                        <thead className="table-light">
                         <tr>
                             <th>Tên hệ thống</th>
                             <th>Ghi chú</th>
                         </tr>
                         </thead>
-
                         <tbody>
-
                         {systemList.map((s) => (
-
-                            <tr key={s.id} style={{cursor: "pointer"}}>
-
+                            <tr key={s.id}>
                                 <td>
                                     <Link
                                         to={`/system-equipments/${s.id}/equipments`}
@@ -60,22 +48,22 @@ const SystemEquipment = () => {
                                         {s.name}
                                     </Link>
                                 </td>
-
                                 <td className="text-muted">
                                     {s.description}
                                 </td>
-
                             </tr>
-
                         ))}
-
+                        {systemList.length === 0 && (
+                            <tr>
+                                <td colSpan="2" className="text-center py-4 text-muted">
+                                    Chưa có dữ liệu hệ thống
+                                </td>
+                            </tr>
+                        )}
                         </tbody>
-
                     </table>
-
                 </div>
             </div>
-
         </div>
     );
 };

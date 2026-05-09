@@ -26,11 +26,14 @@ const Sidebar = () => {
         <Nav.Link as={Link} to="/nhan-su" active={location.pathname === '/nhan-su'}>
           <FaUsers /> Nhân sự
         </Nav.Link>
-        <Nav.Link as={Link} to="/van-hanh" active={location.pathname === '/van-hanh'}>
-          <FaCogs /> Vận hành
+        <Nav.Link as={Link} to="/system-equipments" active={location.pathname.startsWith('/system-equipments')}>
+          <FaCogs /> Hệ thống
         </Nav.Link>
-        <Nav.Link as={Link} to="/sua-chua" active={location.pathname === '/sua-chua'}>
-          <FaTools /> Sửa chữa
+        <Nav.Link as={Link} to="/equipments" active={location.pathname.startsWith('/equipments')}>
+          <FaCogs /> Thiết bị
+        </Nav.Link>
+        <Nav.Link as={Link} to="/equipment-types" active={location.pathname.startsWith('/equipment-types')}>
+          <FaCogs /> Loại thiết bị
         </Nav.Link>
         <Nav.Link as={Link} to="/kho" active={location.pathname === '/kho'}>
           <FaWarehouse /> Quản lý kho
