@@ -1,10 +1,8 @@
-import axios from "axios";
-
-const BE_URL = "http://localhost:8080/system-equipments";
+import axiosInstance from "../../../api/axiosInstance";
 
 export async function getListSystem() {
     try {
-        const res = await axios.get(`${BE_URL}`);
+        const res = await axiosInstance.get('/system-equipments');
         return res.data;
     } catch (e) {
         console.log(e);
@@ -14,7 +12,7 @@ export async function getListSystem() {
 
 export async function saveSystem(system) {
     try {
-        const res = await axios.post(`${BE_URL}`, system);
+        const res = await axiosInstance.post('/system-equipments', system);
 
         if (res.status === 201) {
             return true;
@@ -28,7 +26,7 @@ export async function saveSystem(system) {
 
 export async function detailSystem(id) {
     try {
-        const res = await axios.get(`${BE_URL}/${id}/equipments`);
+        const res = await axiosInstance.get(`/system-equipments/${id}/equipments`);
         return res.data;
     } catch (e) {
         console.log(e);
@@ -38,8 +36,8 @@ export async function detailSystem(id) {
 
 export async function addEquipmentBySystem(id, equipment) {
     try {
-        const res = await axios.post(
-            `${BE_URL}/${id}/equipments`,
+        const res = await axiosInstance.post(
+            `/system-equipments/${id}/equipments`,
             equipment
         );
 
