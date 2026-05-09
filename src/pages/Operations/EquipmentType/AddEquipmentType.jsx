@@ -3,9 +3,9 @@ import * as Yup from "yup";
 import {Button} from "react-bootstrap";
 import {toast} from "react-toastify";
 import {useEffect, useState} from "react";
-import axios from "axios";
 import {Link, useNavigate} from "react-router-dom";
 import {saveEquipmentType} from "../../../service/operations_manager/equipment/EquipmentTypeService.js";
+import {getListDomain} from "../../../service/operations_manager/domain/DomainService.js";
 
 const AddEquipmentType = () => {
 
@@ -15,9 +15,7 @@ const AddEquipmentType = () => {
     useEffect(() => {
 
         const fetchData = async () => {
-
-            const res = await axios.get("http://localhost:8080/domains");
-            setDomains(res.data);
+            setDomains(await getListDomain());
         };
 
         fetchData();
