@@ -11,6 +11,10 @@ const ToolManagement = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Search state
+  const [searchName, setSearchName] = useState('');
+  const [searchType, setSearchType] = useState('');
+
   // Form state cho Tool
   const [toolForm, setToolForm] = useState({
     id: null,
@@ -38,7 +42,7 @@ const ToolManagement = () => {
   const fetchTools = async () => {
     try {
       setLoading(true);
-      const response = await toolService.getAllTools();
+      const response = await toolService.getAllTools(searchName, searchType === 'Tất cả chủng loại' ? '' : searchType);
       setTools(response.data);
     } catch (error) {
       toast.error('Không thể tải danh sách CCDC');
@@ -172,10 +176,19 @@ const ToolManagement = () => {
         <Card.Body>
           <Row className="g-3">
             <Col md={5}>
-              <Form.Control type="text" placeholder="Tìm kiếm theo tên hoặc mã..." />
+              <Form.Control 
+                type="text" 
+                placeholder="Tìm kiếm theo tên..."
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && fetchTools()}
+              />
             </Col>
             <Col md={3}>
-              <Form.Select>
+              <Form.Select 
+                value={searchType}
+                onChange={(e) => setSearchType(e.target.value)}
+              >
                 <option>Tất cả chủng loại</option>
                 <option>Điện</option>
                 <option>Cơ khí</option>
@@ -183,7 +196,7 @@ const ToolManagement = () => {
               </Form.Select>
             </Col>
             <Col md={2}>
-              <Button variant="primary" className="w-100"><FaSearch /> Tìm</Button>
+              <Button variant="primary" className="w-100" onClick={fetchTools}><FaSearch /> Tìm</Button>
             </Col>
           </Row>
         </Card.Body>
