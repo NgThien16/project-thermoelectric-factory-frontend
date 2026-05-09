@@ -2,8 +2,17 @@ import axiosInstance from './axiosInstance';
 
 const toolService = {
   // --- Quản lý Công cụ (Tools) ---
-  getAllTools: () => {
-    return axiosInstance.get('/tools');
+  getAllTools: (name = '', type = '') => {
+    let url = '/tools';
+    const params = new URLSearchParams();
+    if (name) params.append('name', name);
+    if (type) params.append('type', type);
+    
+    const queryString = params.toString();
+    if (queryString) {
+      url += `?${queryString}`;
+    }
+    return axiosInstance.get(url);
   },
 
   getToolById: (id) => {
