@@ -1,15 +1,36 @@
 import {useEffect, useState} from "react";
 import {Formik, Form, Field} from "formik";
-import {Button, Card, Col, Row, Table} from "react-bootstrap";
+import {
+    Button,
+    Card,
+    Col,
+    Row,
+    Table,
+    Modal
+} from "react-bootstrap";
 import {Link} from "react-router-dom";
-import {FaEdit, FaPlus, FaSearch, FaTrash} from "react-icons/fa";
+import {
+    FaEdit,
+    FaPlus,
+    FaSearch,
+    FaTrash
+} from "react-icons/fa";
 
-import {getAllOrSearch, remove} from "../../../service/materials_manager/consumable/ConsumableService.js";
+import {
+    getAllOrSearch,
+    remove
+} from "../../../service/materials_manager/consumable/ConsumableService.js";
+
+import {toast} from "react-toastify";
 
 const ListConsumable = () => {
 
     const [materialList, setMaterialList] = useState([]);
     const [keyword, setKeyword] = useState("");
+
+    // modal delete
+    const [showModal, setShowModal] = useState(false);
+    const [selectedMaterial, setSelectedMaterial] = useState(null);
 
     const fetchData = async () => {
         const data = await getAllOrSearch(keyword);
@@ -17,14 +38,7 @@ const ListConsumable = () => {
     }
 
     useEffect(() => {
-
-        const fetchData = async () => {
-            const data = await getAllOrSearch(keyword);
-            setMaterialList(data || []);
-        }
-
         fetchData();
-
     }, [keyword]);
 
     const handleSearch = (values) => {
@@ -35,18 +49,36 @@ const ListConsumable = () => {
         setKeyword("");
     }
 
-    const handleDelete = async (id) => {
-        const confirmDelete = window.confirm("Bạn có muốn xóa vật tư này không?");
+    // mở modal
+    const handleShowDelete = (material) => {
+        setSelectedMaterial(material);
+        setShowModal(true);
+    }
 
-        if (confirmDelete) {
-            const result = await remove(id);
+    // đóng modal
+    const handleCloseDelete = () => {
+        setShowModal(false);
+        setSelectedMaterial(null);
+    }
 
-            if (result) {
-                alert("Xóa thành công!");
-                fetchData();
-            } else {
-                alert("Xóa thất bại!");
-            }
+    // xóa
+    const handleDelete = async () => {
+
+        if (!selectedMaterial) return;
+
+        const result = await remove(selectedMaterial.id);
+
+        if (result) {
+
+            toast.success("Xóa thành công!");
+
+            handleCloseDelete();
+
+            fetchData();
+
+        } else {
+
+            toast.error("Xóa thất bại!");
         }
     }
 
@@ -54,20 +86,23 @@ const ListConsumable = () => {
         <div className="p-4">
 
             <div className="d-flex justify-content-between align-items-center mb-4">
+
                 <h3 className="fw-bold">
                     Danh sách vật tư tiêu hao
                 </h3>
 
                 <Link
-                    to={"/consumable-materials/add"}
+                    to={"/consumable-material/add"}
                     className="btn btn-success d-flex align-items-center gap-2"
                 >
                     <FaPlus/>
                     Thêm mới
                 </Link>
+
             </div>
 
             <Card className="border-0 shadow-sm mb-4">
+
                 <Card.Body>
 
                     <Formik
@@ -76,15 +111,19 @@ const ListConsumable = () => {
                         }}
                         onSubmit={handleSearch}
                     >
+
                         <Form>
+
                             <Row className="g-3">
 
                                 <Col md={4}>
+
                                     <Field
                                         name={"keyword"}
                                         className="form-control"
                                         placeholder={"Tìm theo tên hoặc mã vật tư..."}
                                     />
+
                                 </Col>
 
                                 <Col md={4} className="d-flex gap-2">
@@ -109,18 +148,23 @@ const ListConsumable = () => {
                                 </Col>
 
                             </Row>
+
                         </Form>
+
                     </Formik>
 
                 </Card.Body>
+
             </Card>
 
             <Card className="border-0 shadow-sm">
+
                 <Card.Body className="p-0">
 
                     <Table hover responsive className="mb-0">
 
                         <thead className="table-light">
+
                         <tr>
                             <th>Mã vật tư</th>
                             <th>Tên vật tư</th>
@@ -129,22 +173,26 @@ const ListConsumable = () => {
                             <th>Mô tả</th>
                             <th>Hành động</th>
                         </tr>
+
                         </thead>
 
                         <tbody>
 
                         {materialList.map((m) => (
+
                             <tr key={m.id}>
 
                                 <td>{m.code}</td>
 
                                 <td>
+
                                     <Link
                                         to={`/consumable-materials/${m.id}`}
                                         className="text-decoration-none fw-semibold"
                                     >
                                         {m.name}
                                     </Link>
+
                                 </td>
 
                                 <td>{m.unit}</td>
@@ -165,7 +213,7 @@ const ListConsumable = () => {
                                     <Button
                                         variant="outline-danger"
                                         size="sm"
-                                        onClick={() => handleDelete(m.id)}
+                                        onClick={() => handleShowDelete(m)}
                                     >
                                         <FaTrash/>
                                     </Button>
@@ -176,13 +224,16 @@ const ListConsumable = () => {
                         ))}
 
                         {materialList.length === 0 && (
+
                             <tr>
+
                                 <td
                                     colSpan={6}
                                     className="text-center py-4 text-muted"
                                 >
                                     Không có dữ liệu !!!
                                 </td>
+
                             </tr>
                         )}
 
@@ -191,7 +242,55 @@ const ListConsumable = () => {
                     </Table>
 
                 </Card.Body>
+
             </Card>
+
+            {/* Modal Delete */}
+
+            <Modal
+                show={showModal}
+                onHide={handleCloseDelete}
+                centered
+            >
+
+                <Modal.Header closeButton>
+
+                    <Modal.Title>
+                        Xác nhận xóa
+                    </Modal.Title>
+
+                </Modal.Header>
+
+                <Modal.Body>
+
+                    Bạn có muốn xóa vật tư:
+
+                    <span className="fw-bold text-danger">
+                        {" "}{selectedMaterial?.name}
+                    </span>
+                    ?
+
+                </Modal.Body>
+
+                <Modal.Footer>
+
+                    <Button
+                        variant="secondary"
+                        onClick={handleCloseDelete}
+                    >
+                        Hủy
+                    </Button>
+
+                    <Button
+                        variant="danger"
+                        onClick={handleDelete}
+                    >
+                        Xóa
+                    </Button>
+
+                </Modal.Footer>
+
+            </Modal>
 
         </div>
     )

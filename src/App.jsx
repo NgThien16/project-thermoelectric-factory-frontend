@@ -20,6 +20,8 @@ import EquipmentDetail from "./pages/Operations/Equipment/EquipmentDetail.jsx";
 import ToolManagement from "./pages/Tool/ToolManagement.jsx";
 import ListReplacement from "./pages/Materials/Replacement/ListReplacement.jsx";
 import ListConsumable from "./pages/Materials/Consumable/ListConsumable.jsx";
+import AddConsumable from "./pages/Materials/Consumable/AddConsumable.jsx";
+import AddReplacement from "./pages/Materials/Replacement/AddReplacement.jsx";
 
 function App() {
     return (
@@ -47,8 +49,10 @@ function App() {
                     <Route path={"/equipment-types/:typeId/equipments/:equipmentId/detail"} element={<Detail/>}/>
                     {/* Vật tư tiêu hao */}
                     <Route path={'/consumable-material'} element={<ListConsumable/>}/>
+                    <Route path={"/consumable-material/add"} element={<AddConsumable/>}/>
                     {/* Vật tư thay thế */}
                     <Route path={'/replacement-material'} element={<ListReplacement/>}/>
+                    <Route path={'/replacement-material/add'} element={<AddReplacement/>}/>
 
                     {/*CCDC */}
                     <Route path={'/ccdc'} element={<ToolManagement/>}/>
