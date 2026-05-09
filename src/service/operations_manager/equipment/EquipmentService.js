@@ -1,9 +1,7 @@
-import axios from "axios";
-
-const BE_URL = "http://localhost:8080/equipments";
+import axiosInstance from "../../../api/axiosInstance";
 
 export async function searchListEquipment(searchName,searchCode,status,page) {
-    let url = `${BE_URL}?page=${page-1}`;
+    let url = `/equipments?page=${page-1}`;
     if (searchName){
         url += `&name=${searchName}`;
     }
@@ -15,7 +13,7 @@ export async function searchListEquipment(searchName,searchCode,status,page) {
     }
 
     try {
-        const res = await axios.get(url);
+        const res = await axiosInstance.get(url);
         return {
             data: res.data,
             totalPage: res.data.totalPages
@@ -30,7 +28,7 @@ export async function searchListEquipment(searchName,searchCode,status,page) {
 }
 export async function findById(id){
     try {
-        const res = await axios.get(`${BE_URL}/${id}`);
+        const res = await axiosInstance.get(`/equipments/${id}`);
         return res.data;
     }catch (e) {
         console.log(e);
@@ -40,7 +38,7 @@ export async function findById(id){
 
 export async function save(equipment){
     try {
-        const res = await axios.post(`${BE_URL}`,equipment);
+        const res = await axiosInstance.post('/equipments',equipment);
         if (res.status===201) return res.data;
     }catch (e) {
         console.log(e);
@@ -50,7 +48,7 @@ export async function save(equipment){
 
 export async function edit(equipment) {
     try {
-        const res = await axios.put(`${BE_URL}/${equipment.id}`,equipment);
+        const res = await axiosInstance.put(`/equipments/${equipment.id}`,equipment);
         if (res.status===200) return true;
     }catch (e) {
         console.log(e);
