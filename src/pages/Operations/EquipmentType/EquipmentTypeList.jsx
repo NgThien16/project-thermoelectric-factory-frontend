@@ -28,7 +28,9 @@ const EquipmentTypeList = () => {
                 search.domain,
                 page
             );
-            setDomains(await getListDomain());
+            const data = setDomains(await getListDomain());
+            console.log(data);
+
             setTypes(res.data);
             setTotalPages(res.totalPages);
         };
@@ -68,6 +70,7 @@ const EquipmentTypeList = () => {
                 <Card.Body>
                     <Formik
                         initialValues={search}
+                        enableReinitialize={true}
                         onSubmit={handleSearch}
                     >
                         <Form>
@@ -91,11 +94,7 @@ const EquipmentTypeList = () => {
                                     <Button type={"submit"} className={"btn btn-primary d-flex align-items-center gap-2"}>
                                         <FaSearch /> Tìm
                                     </Button>
-                                    <Button
-                                        type={"button"}
-                                        onClick={handleReset}
-                                        className={"btn btn-outline-secondary"}
-                                    >
+                                    <Button variant="outline-secondary" onClick={handleReset} type={'reset'}>
                                         Hủy
                                     </Button>
                                 </Col>
