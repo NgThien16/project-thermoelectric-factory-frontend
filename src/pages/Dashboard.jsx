@@ -1,14 +1,53 @@
-import React from 'react';
-import { Card, Row, Col, Container } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Card, Row, Col } from 'react-bootstrap';
 import { FaCogs, FaTools, FaWarehouse, FaClipboardList, FaUsers } from 'react-icons/fa';
+import { getListSystem } from '../service/operations_manager/system/SystemService';
+import { searchListEquipment } from '../service/operations_manager/equipment/EquipmentService';
+import { getAllOrSearch as getConsumables } from '../service/materials_manager/consumable/ConsumableService';
+import { getAllOrSearch as getReplacements } from '../service/materials_manager/replacement/ReplacementService';
+import toolService from '../api/toolService';
 
 const Dashboard = () => {
+  const [counts, setCounts] = useState({
+    systems: 0,
+    equipments: 0,
+    materials: 0,
+    borrowedTools: 0,
+    personnel: 85, // Giữ tạm thời vì chưa có service nhân sự
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [systems, equipments, consumables, replacements, borrowings] = await Promise.all([
+          getListSystem(),
+          searchListEquipment('', '', '', 1),
+          getConsumables(),
+          getReplacements(),
+          toolService.getAllBorrowings(),
+        ]);
+
+        setCounts({
+          systems: Array.isArray(systems) ? systems.length : 0,
+          equipments: equipments?.data?.totalElements || 0,
+          materials: (Array.isArray(consumables) ? consumables.length : 0) + (Array.isArray(replacements) ? replacements.length : 0),
+          borrowedTools: Array.isArray(borrowings.data) ? borrowings.data.length : 0,
+          personnel: 85,
+        });
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const stats = [
-    { title: 'Hệ thống', count: 12, icon: <FaCogs />, color: 'primary' },
-    { title: 'Thiết bị', count: 450, icon: <FaTools />, color: 'success' },
-    { title: 'Kho vật tư', count: 1240, icon: <FaWarehouse />, color: 'warning' },
-    { title: 'CCDC mượn', count: 15, icon: <FaClipboardList />, color: 'info' },
-    { title: 'Nhân sự', count: 85, icon: <FaUsers />, color: 'secondary' },
+    { title: 'Hệ thống', count: counts.systems, icon: <FaCogs />, color: 'primary' },
+    { title: 'Thiết bị', count: counts.equipments, icon: <FaTools />, color: 'success' },
+    { title: 'Kho vật tư', count: counts.materials, icon: <FaWarehouse />, color: 'warning' },
+    { title: 'CCDC mượn', count: counts.borrowedTools, icon: <FaClipboardList />, color: 'info' },
+    { title: 'Nhân sự', count: counts.personnel, icon: <FaUsers />, color: 'secondary' },
   ];
 
   return (
