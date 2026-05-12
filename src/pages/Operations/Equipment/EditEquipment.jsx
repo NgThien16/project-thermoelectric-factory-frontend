@@ -1,7 +1,7 @@
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import {Button} from "react-bootstrap";
 import {useEffect, useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {edit, findById} from "../../../service/operations_manager/equipment/EquipmentService.js";
 import {toast} from "react-toastify";
 import * as Yup from "yup";
@@ -84,78 +84,82 @@ const EditEquipment = () => {
     );
 
     return (
-        <>
-            <h1>Chỉnh sửa thiết bị</h1>
+        <div className="container mt-4">
 
-            <Formik
-                initialValues={equipment}
-                onSubmit={handleSubmit}
-                enableReinitialize={true}
-                validationSchema={validation}
-            >
-                <Form>
-                    <Field name={'id'} type={'hidden'}/>
-                    <div>
-                        <label>Tên thiết bị</label>
-                        <Field
-                            name="name"
-                            className="form-control"
-                        />
-                        <ErrorMessage name={'name'} className={'text-danger'} component={'small'}/>
-                    </div>
+            <h2 className="fw-bold mb-3">Chỉnh sửa thiết bị</h2>
 
-                    <div>
-                        <label>Mã KKS</label>
-                        <Field
-                            name="code"
-                            className="form-control"
-                        />
-                        <ErrorMessage name={'code'} className={'text-danger'} component={'small'}/>
-                    </div>
+            <div className="card shadow-sm">
+                <div className="card-body">
 
-                    <div>
-                        <Field as="select" name="systemId" className="form-control">
-                            <option value="">---Hệ thống---</option>
-                            {systems.map((s) => (
-                                <option key={s.id} value={Number(s.id)}>
-                                    {s.name}
-                                </option>
-                            ))}
-                        </Field>
-                        <ErrorMessage name={'systemId'} className={'text-danger'} component={'small'}/>
-                    </div>
-
-                    <div>
-                        <Field as="select" name="typeId" className="form-control">
-                            <option value="">---Loại---</option>
-                            {types.map((t) => (
-                                <option key={t.id} value={Number(t.id)}>
-                                    {t.name}
-                                </option>
-                            ))}
-                        </Field>
-                        <ErrorMessage name={'typeId'} className={'text-danger'} component={'small'}/>
-                    </div>
-
-                    <div>
-                        <label>Trạng thái</label>
-                        <Field
-                            name="status"
-                            className="form-control"
-                        />
-                        <ErrorMessage name={'status'} className={'text-danger'} component={'small'}/>
-                    </div>
-
-                    <Button
-                        type="submit"
-                        className="btn btn-dark mt-3"
+                    <Formik
+                        initialValues={equipment}
+                        onSubmit={handleSubmit}
+                        enableReinitialize={true}
+                        validationSchema={validation}
                     >
-                        Chỉnh sửa
-                    </Button>
+                        <Form>
+                            <Field name={'id'} type={'hidden'}/>
+                            <div className="mb-3">
+                                <label className="form-label">Tên thiết bị</label>
+                                <Field name="name" className="form-control"/>
+                                <ErrorMessage name="name" component="small" className="text-danger"/>
+                            </div>
 
-                </Form>
-            </Formik>
-        </>
+                            <div className="mb-3">
+                                <label className="form-label">Mã KKS</label>
+                                <Field name="code" className="form-control"/>
+                                <ErrorMessage name="code" component="small" className="text-danger"/>
+                            </div>
+
+                            <div>
+                                <label className="form-label">Hệ thống</label>
+                                <Field as="select" name="systemId" className="form-control">
+                                    <option value="">---Chọn---</option>
+                                    {systems.map((s) => (
+                                        <option key={s.id} value={s.id}>
+                                            {s.name}
+                                        </option>
+                                    ))}
+                                </Field>
+                                <ErrorMessage name={'systemId'} className={'text-danger'} component={'small'}/>
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label">Loại</label>
+                                <Field as="select" name="typeId" className="form-control">
+                                    <option value="">---Chọn---</option>
+                                    {types.map(t => (
+                                        <option key={t.id} value={t.id}>{t.name}</option>
+                                    ))}
+                                </Field>
+                                <ErrorMessage name="typeId" component="small" className="text-danger"/>
+                            </div>
+
+                            <div className="mb-3">
+                                <label className="form-label">Trạng thái</label>
+                                <Field name="status" className="form-control"/>
+                                <ErrorMessage name="status" component="small" className="text-danger"/>
+                            </div>
+
+                            <div className="d-flex gap-2 mt-3">
+
+                                <Button type="submit" className="btn btn-dark">
+                                    Lưu
+                                </Button>
+
+                                <Link to={`/equipments`}
+                                      className="btn btn-outline-secondary">
+                                    Quay lại
+                                </Link>
+
+                            </div>
+
+                        </Form>
+                    </Formik>
+
+                </div>
+            </div>
+
+        </div>
     );
 };
 
