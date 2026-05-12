@@ -1,6 +1,6 @@
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import {Button} from "react-bootstrap";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {save} from "../../../service/operations_manager/equipment/EquipmentService.js";
 import {toast} from "react-toastify";
 import {useEffect, useState} from "react";
@@ -21,10 +21,10 @@ const AddEquipment = () => {
         status: ""
     };
 
-    const [types,setTypes] = useState([]);
-    const [systems,setSystems] = useState([]);
+    const [types, setTypes] = useState([]);
+    const [systems, setSystems] = useState([]);
     useEffect(() => {
-        const fetData = async ()=>{
+        const fetData = async () => {
             setTypes(await getListType());
             setSystems(await getListSystem());
         }
@@ -44,88 +44,92 @@ const AddEquipment = () => {
 
     const validation = Yup.object(
         {
-            name:Yup.string().required("Không được bỏ trống")
-                .matches(/^[\p{Lu}][\p{L}]+(\s[\p{L}]+)*$/u,"Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt"),
-            code:Yup.string().required("Mã không được bỏ trống")
-                .matches(/^KKS-[0-9]{4}$/,"Định dạng mã: KKS-XXXX với X là các số từ 0 đến 9"),
-            systemId:Yup.number().required("Không được bỏ trống"),
-            typeId:Yup.number().required("Không được bỏ trống"),
-            status:Yup.string().required("Không được bỏ trống")
-                .matches(/^[\p{Lu}][\p{L}]+(\s[\p{L}]+)*$/u,"Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt")
+            name: Yup.string().required("Không được bỏ trống")
+                .matches(/^[\p{Lu}][\p{L}]+(\s[\p{L}]+)*$/u, "Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt"),
+            code: Yup.string().required("Mã không được bỏ trống")
+                .matches(/^KKS-[0-9]{4}$/, "Định dạng mã: KKS-XXXX với X là các số từ 0 đến 9"),
+            systemId: Yup.number().required("Không được bỏ trống"),
+            typeId: Yup.number().required("Không được bỏ trống"),
+            status: Yup.string().required("Không được bỏ trống")
+                .matches(/^[\p{Lu}][\p{L}]+(\s[\p{L}]+)*$/u, "Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt")
         }
     );
     return (
-        <>
-            <h1>Thêm mới thiết bị</h1>
+        <div className="container mt-4">
 
-            <Formik
-                initialValues={initialValues}
-                onSubmit={handleSubmit}
-                validationSchema={validation}
-            >
-                <Form>
+            <h2 className="fw-bold mb-3">Thêm mới thiết bị</h2>
 
-                    <div>
-                        <label>Tên thiết bị</label>
-                        <Field
-                            name="name"
-                            className="form-control"
-                        />
-                        <ErrorMessage name={'name'} className={'text-danger'} component={'small'}/>
-                    </div>
+            <div className="card shadow-sm">
+                <div className="card-body">
 
-                    <div>
-                        <label>Mã KKS</label>
-                        <Field
-                            name="code"
-                            className="form-control"
-                        />
-                        <ErrorMessage name={'code'} className={'text-danger'} component={'small'}/>
-                    </div>
-
-                    <div>
-                        <Field as="select" name="systemId" className="form-control">
-                            <option value="">---Hệ thống---</option>
-                            {systems.map((s) => (
-                                <option key={s.id} value={s.id}>
-                                    {s.name}
-                                </option>
-                            ))}
-                        </Field>
-                        <ErrorMessage name={'systemId'} className={'text-danger'} component={'small'}/>
-                    </div>
-
-                    <div>
-                        <Field as="select" name="typeId" className="form-control">
-                            <option value="">---Loại---</option>
-                            {types.map((t) => (
-                                <option key={t.id} value={t.id}>
-                                    {t.name}
-                                </option>
-                            ))}
-                        </Field>
-                        <ErrorMessage name={'typeId'} className={'text-danger'} component={'small'}/>
-                    </div>
-
-                    <div>
-                        <label>Trạng thái</label>
-                        <Field
-                            name="status"
-                            className="form-control"
-                        />
-                        <ErrorMessage name={'status'} className={'text-danger'} component={'small'}/>
-                    </div>
-
-                    <Button
-                        type="submit"
-                        className="btn btn-primary mt-3"
+                    <Formik
+                        initialValues={initialValues}
+                        onSubmit={handleSubmit}
+                        validationSchema={validation}
                     >
-                        Thêm mới
-                    </Button>
+                        <Form>
 
-                </Form>
-            </Formik>
-        </>
+                            <div className="mb-3">
+                                <label className="form-label">Tên thiết bị</label>
+                                <Field name="name" className="form-control"/>
+                                <ErrorMessage name="name" component="small" className="text-danger"/>
+                            </div>
+
+                            <div className="mb-3">
+                                <label className="form-label">Mã KKS</label>
+                                <Field name="code" className="form-control"/>
+                                <ErrorMessage name="code" component="small" className="text-danger"/>
+                            </div>
+
+                            <div>
+                                <label className="form-label">Hệ thống</label>
+                                <Field as="select" name="systemId" className="form-control">
+                                    <option value="">---Chọn---</option>
+                                    {systems.map((s) => (
+                                        <option key={s.id} value={s.id}>
+                                            {s.name}
+                                        </option>
+                                    ))}
+                                </Field>
+                                <ErrorMessage name={'systemId'} className={'text-danger'} component={'small'}/>
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label">Loại</label>
+                                <Field as="select" name="typeId" className="form-control">
+                                    <option value="">---Chọn---</option>
+                                    {types.map(t => (
+                                        <option key={t.id} value={t.id}>{t.name}</option>
+                                    ))}
+                                </Field>
+                                <ErrorMessage name="typeId" component="small" className="text-danger"/>
+                            </div>
+
+                            <div className="mb-3">
+                                <label className="form-label">Trạng thái</label>
+                                <Field name="status" className="form-control"/>
+                                <ErrorMessage name="status" component="small" className="text-danger"/>
+                            </div>
+
+                            <div className="d-flex gap-2 mt-3">
+
+                                <Button type="submit" className="btn btn-dark">
+                                    Lưu
+                                </Button>
+
+                                <Link to={`/equipments`}
+                                      className="btn btn-outline-secondary">
+                                    Quay lại
+                                </Link>
+
+                            </div>
+
+                        </Form>
+                    </Formik>
+
+                </div>
+            </div>
+
+        </div>
     );
 };
 
