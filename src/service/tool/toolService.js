@@ -46,6 +46,10 @@ const toolService = {
 
   returnTool: (id) => {
     return axiosInstance.post(`/tool-borrowings/return/${id}`);
+  },
+
+  updateBorrowing: (id, borrowingData) => {
+    return axiosInstance.put(`/tool-borrowings/${id}`, borrowingData);
   }
 };
 
