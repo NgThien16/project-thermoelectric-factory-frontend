@@ -1,4 +1,4 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance from '../../api/axiosInstance.js';
 
 const toolService = {
   // --- Quản lý Công cụ (Tools) ---
@@ -46,6 +46,10 @@ const toolService = {
 
   returnTool: (id) => {
     return axiosInstance.post(`/tool-borrowings/return/${id}`);
+  },
+
+  updateBorrowing: (id, borrowingData) => {
+    return axiosInstance.put(`/tool-borrowings/${id}`, borrowingData);
   }
 };
 
