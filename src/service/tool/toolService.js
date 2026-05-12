@@ -1,4 +1,4 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance from '../../api/axiosInstance.js';
 
 const toolService = {
   // --- Quản lý Công cụ (Tools) ---

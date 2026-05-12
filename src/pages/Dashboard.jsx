@@ -5,7 +5,7 @@ import { getListSystem } from '../service/operations_manager/system/SystemServic
 import { searchListEquipment } from '../service/operations_manager/equipment/EquipmentService';
 import { getAllOrSearch as getConsumables } from '../service/materials_manager/consumable/ConsumableService';
 import { getAllOrSearch as getReplacements } from '../service/materials_manager/replacement/ReplacementService';
-import toolService from '../api/toolService';
+import toolService from '../service/tool/toolService.js';
 
 const Dashboard = () => {
   const [counts, setCounts] = useState({
