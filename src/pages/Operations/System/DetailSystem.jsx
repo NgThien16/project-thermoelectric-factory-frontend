@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {Link, useParams} from "react-router-dom";
 import {detailSystem} from "../../../service/operations_manager/system/SystemService.js";
-import { Button, Card, Table, Badge } from 'react-bootstrap';
+import { Card, Table, Badge } from 'react-bootstrap';
 import { FaArrowLeft, FaPlus } from 'react-icons/fa';
 
 const DetailSystem = () => {
