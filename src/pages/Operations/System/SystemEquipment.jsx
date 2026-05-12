@@ -9,7 +9,7 @@ const SystemEquipment = () => {
     useEffect(() => {
 
         const fetData = async () => {
-            setSystemList(await getListSystem());
+            setSystemList(await getListSystem()||[]);
         };
 
         fetData();
