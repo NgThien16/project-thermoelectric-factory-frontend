@@ -1,28 +1,60 @@
 import {useEffect, useState} from "react";
 import {Link, useParams} from "react-router-dom";
+import {Card, Table, Badge, Button, Row, Col} from 'react-bootstrap';
+import {FaArrowLeft, FaPlus, FaSearch} from 'react-icons/fa';
+import {Field, Form, Formik} from "formik";
+import {getListDomain} from "../../../service/operations_manager/domain/DomainService.js";
 import {detailSystem} from "../../../service/operations_manager/system/SystemService.js";
-import { Card, Table, Badge } from 'react-bootstrap';
-import { FaArrowLeft, FaPlus } from 'react-icons/fa';
 
 const DetailSystem = () => {
 
     const {id} = useParams();
     const [equipments, setEquipments] = useState([]);
 
+    const [domain,setDomain] = useState([]);
+    const [page,setPage] = useState(1);
+    const [total,setTotal] = useState(0);
+
+    const [search,setSearch] = useState({
+        name:"",
+        code:"",
+        domain:""
+    })
+
     useEffect(() => {
-
         const fetchData = async () => {
-            setEquipments(await detailSystem(id));
-        };
+            const {data,totalPage} = await detailSystem(
+                id,
+                search.name,
+                search.code,
+                search.domain,
+                page);
+            setDomain(await getListDomain());
+            setEquipments(data.content||[]);
+            setTotal(totalPage||0);
 
+        }
         fetchData();
+    }, [id,search,page]);
 
-    }, [id]);
+    const handleSearch = async (value) => {
+        setSearch(value);
+        setPage(1);
+    }
+
+    const handleReset = async () => {
+        setSearch({
+            name:"",
+            code:"",
+            domain:""
+        });
+        setPage(1);
+    }
 
     return (
         <div className="p-4">
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <h3 className="fw-bold">Thiết bị trong hệ thống</h3>
+                <h3 className="fw-bold">Thiết bị trong hệ thống <span className={'text-danger'}>--{equipments[0]?.systemName}--</span></h3>
                 <div className="d-flex gap-2">
                     <Link to={'/system-equipments'} className="btn btn-outline-secondary d-flex align-items-center gap-2">
                         <FaArrowLeft /> Quay lại
@@ -36,6 +68,39 @@ const DetailSystem = () => {
                     </Link>
                 </div>
             </div>
+
+            <Card className="border-0 shadow-sm mb-4">
+                <Card.Body>
+                    <Formik initialValues={search} onSubmit={handleSearch}>
+                        <Form>
+                            <Row className="g-3">
+                                <Col md={3}>
+                                    <Field name={'name'} className="form-control" placeholder={'Tên thiết bị...'}/>
+                                </Col>
+                                <Col md={3}>
+                                    <Field name={'code'} className="form-control" placeholder={'Mã KKS...'}/>
+                                </Col>
+                                <Col md={2}>
+                                    <Field name={'domain'} className="form-control text-sm-center" as={'select'}>
+                                        <option value={''}>--Lĩnh vực--</option>
+                                        {domain.map((d)=>(
+                                            <option key={d.id} value={d.name}>{d.name}</option>
+                                        ))}
+                                    </Field>
+                                </Col>
+                                <Col md={4} className="d-flex gap-2">
+                                    <Button variant="primary" type={'submit'} className="d-flex align-items-center gap-2">
+                                        <FaSearch /> Tìm kiếm
+                                    </Button>
+                                    <Button variant="outline-secondary" onClick={handleReset} type={'reset'}>
+                                        Quay lại
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </Form>
+                    </Formik>
+                </Card.Body>
+            </Card>
 
             <Card className="border-0 shadow-sm">
                 <Card.Body className="p-0">
@@ -52,7 +117,7 @@ const DetailSystem = () => {
                             <tr key={e.id}>
                                 <td>
                                     <Link
-                                        to={`/equipments/${e.id}`}
+                                        to={`/equipment-types/${e.typeId}/equipments/${e.id}/detail`}
                                         className="text-primary fw-semibold text-decoration-none"
                                     >
                                         {e.name}
@@ -76,6 +141,29 @@ const DetailSystem = () => {
                         </tbody>
                     </Table>
                 </Card.Body>
+                {total > 1 && (
+                    <Card.Footer className="bg-white border-0 d-flex justify-content-center py-3">
+                        <div className="pagination-box d-flex align-items-center gap-3">
+                            <Button
+                                variant="outline-primary"
+                                size="sm"
+                                disabled={page === 1}
+                                onClick={() => setPage(page - 1)}
+                            >
+                                {"<"}
+                            </Button>
+                            <span className="fw-semibold">Trang {page} / {total}</span>
+                            <Button
+                                variant="outline-primary"
+                                size="sm"
+                                disabled={page === total}
+                                onClick={() => setPage(page + 1)}
+                            >
+                                {">"}
+                            </Button>
+                        </div>
+                    </Card.Footer>
+                )}
             </Card>
         </div>
     );
