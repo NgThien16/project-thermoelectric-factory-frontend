@@ -96,6 +96,9 @@ const Sidebar = () => {
         <Nav.Link as={Link} to="/ccdc" active={location.pathname === '/ccdc'}>
           <FaClipboardList /> Công cụ dụng cụ
         </Nav.Link>
+        <Nav.Link as={Link} to="/ccdc/borrowings" active={location.pathname === '/ccdc/borrowings'}>
+          <FaClipboardList /> Quản lý mượn/trả
+        </Nav.Link>
       </Nav>
     </div>
   );

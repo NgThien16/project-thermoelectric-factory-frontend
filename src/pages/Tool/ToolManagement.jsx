@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Card, Row, Col, Form, Modal, Badge } from 'react-bootstrap';
 import { FaPlus, FaEdit, FaTrash, FaSearch, FaArrowRight,} from 'react-icons/fa';
-import toolService from '../../api/toolService';
+import toolService from '../../service/tool/toolService.js';
 import { toast } from 'react-toastify';
 
 const ToolManagement = () => {

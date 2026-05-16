@@ -4,44 +4,58 @@ import {Field, Form, Formik} from "formik";
 import {Button, Table, Card, Row, Col} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { FaSearch, FaPlus, FaEdit } from 'react-icons/fa';
+import {getListSystem} from "../../../service/operations_manager/system/SystemService.js";
+import {getListType} from "../../../service/operations_manager/equipment/EquipmentTypeService.js";
 
 const Equipment = () => {
     const [equipmentList,setEquipmentList] = useState([]);
+    const [systemList,setSystemList] = useState([]);
+    const [typeList,setTypeList] = useState([]);
+
+    const [page,setPage] = useState(0);
+    const [total,setTotal] = useState(0);
+
     const [search,setSearch] = useState({
         name:"",
         code:"",
+        systemName:"",
+        type:"",
         status:""
     })
-    const [page,setPage] = useState(1);
-    const [total,setTotal] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
 
-            const {data,totalPage} = await searchListEquipment(
+            const res = await searchListEquipment(
                 search.name,
                 search.code,
+                search.systemName,
+                search.type,
                 search.status,
                 page);
-            setEquipmentList(data.content||[]);
-            setTotal(totalPage||0);
+            setSystemList(await getListSystem());
+            setTypeList(await getListType());
+            setEquipmentList(res.data||[]);
+            setTotal(res.totalPage||0);
 
         }
         fetchData();
-    }, [search,page]);
+    }, [page,search]);
 
     const handleSearch = async (value) => {
         setSearch(value);
-        setPage(1);
+        setPage(0);
     }
 
     const handleReset = async () => {
         setSearch({
             name:"",
             code:"",
+            systemName:"",
+            type:"",
             status:""
         });
-        setPage(1);
+        setPage(0);
     }
     return (
         <div className="p-4">
@@ -57,18 +71,34 @@ const Equipment = () => {
                     <Formik initialValues={search} onSubmit={handleSearch}>
                         <Form>
                             <Row className="g-3">
-                                <Col md={3}>
+                                <Col md={2}>
                                     <Field name={'name'} className="form-control" placeholder={'Tên thiết bị...'}/>
                                 </Col>
-                                <Col md={3}>
+                                <Col md={2}>
                                     <Field name={'code'} className="form-control" placeholder={'Mã KKS...'}/>
+                                </Col>
+                                <Col md={2}>
+                                    <Field name={'systemName'} className="form-control text-sm-center" as={'select'}>
+                                        <option value={''}>--Hệ thống--</option>
+                                        {systemList.map((s)=>(
+                                            <option key={s.id} value={s.name}>{s.name}</option>
+                                        ))}
+                                    </Field>
+                                </Col>
+                                <Col md={2}>
+                                    <Field name={'type'} className="form-control text-sm-center" as={'select'}>
+                                        <option value={''}>--Loại--</option>
+                                        {typeList.map((t)=>(
+                                            <option key={t.id} value={t.name}>{t.name}</option>
+                                        ))}
+                                    </Field>
                                 </Col>
                                 <Col md={2}>
                                     <Field name={'status'} className="form-control" placeholder={'Trạng thái...'}/>
                                 </Col>
-                                <Col md={4} className="d-flex gap-2">
+                                <Col md={2} className="d-flex gap-2">
                                     <Button variant="primary" type={'submit'} className="d-flex align-items-center gap-2">
-                                        <FaSearch /> Tìm kiếm
+                                        <FaSearch />
                                     </Button>
                                     <Button variant="outline-secondary" onClick={handleReset} type={'reset'}>
                                         Quay lại
@@ -87,8 +117,6 @@ const Equipment = () => {
                         <tr>
                             <th>Tên thiết bị</th>
                             <th>Mã KKS</th>
-                            <th>Hệ thống</th>
-                            <th>Loại</th>
                             <th>Trạng thái</th>
                             <th>Hành động</th>
                         </tr>
@@ -102,8 +130,6 @@ const Equipment = () => {
                                     </Link>
                                 </td>
                                 <td>{e.code}</td>
-                                <td>{e.systemName}</td>
-                                <td>{e.type}</td>
                                 <td>{e.status}</td>
                                 <td>
                                     <Link to={`/equipments/edit/${e.id}`} className="btn btn-outline-primary btn-sm me-2">
@@ -124,21 +150,23 @@ const Equipment = () => {
                     <Card.Footer className="bg-white border-0 d-flex justify-content-center py-3">
                         <div className="pagination-box d-flex align-items-center gap-3">
                             <Button
-                                variant="outline-primary"
-                                size="sm"
-                                disabled={page === 1}
+                                disabled={page === 0}
                                 onClick={() => setPage(page - 1)}
-                            >
-                                {"<"}
-                            </Button>
-                            <span className="fw-semibold">Trang {page} / {total}</span>
-                            <Button
                                 variant="outline-primary"
                                 size="sm"
-                                disabled={page === total}
-                                onClick={() => setPage(page + 1)}
                             >
-                                {">"}
+                                ← Trước
+                            </Button>
+                            <span className="fw-semibold">
+                                Trang {page + 1} / {total}
+                            </span>
+                            <Button
+                                disabled={page + 1 >= total}
+                                onClick={() => setPage(page + 1)}
+                                variant="outline-primary"
+                                size="sm"
+                            >
+                                Sau →
                             </Button>
                         </div>
                     </Card.Footer>
