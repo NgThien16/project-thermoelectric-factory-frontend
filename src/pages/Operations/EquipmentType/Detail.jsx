@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {getEquipmentDetail} from "../../../service/operations_manager/equipment/EquipmentTypeService.js";
 import {Link, useParams} from "react-router-dom";
 
-const EquipmentDetail = () => {
+const TypeDetail = () => {
 
     const {typeId, equipmentId} = useParams();
     const [detail, setDetail] = useState(null);
@@ -26,7 +26,7 @@ const EquipmentDetail = () => {
     return (
         <div className="container mt-4">
 
-            <h2 className="fw-bold mb-3">Chi tiết thiết bị</h2>
+            <h2 className="fw-bold mb-3">Chi tiết thiết bị <span className={'text-danger'}>--{detail.name}--</span></h2>
 
             <div className="card shadow-sm mb-3">
 
@@ -82,4 +82,4 @@ const EquipmentDetail = () => {
     );
 };
 
-export default EquipmentDetail;
+export default TypeDetail;

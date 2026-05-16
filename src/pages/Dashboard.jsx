@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, Row, Col } from 'react-bootstrap';
 import { FaCogs, FaTools, FaWarehouse, FaClipboardList, FaUsers } from 'react-icons/fa';
 import { getListSystem } from '../service/operations_manager/system/SystemService';
