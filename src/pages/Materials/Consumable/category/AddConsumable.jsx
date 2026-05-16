@@ -3,12 +3,12 @@ import * as Yup from "yup";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-import { save } from "../../../service/materials_manager/replacement/ReplacementService.js";
+import { save } from "../../../../service/materials_manager/consumable/ConsumableService.js";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const AddReplacement = () => {
+const AddConsumable = () => {
 
     const navigate = useNavigate();
 
@@ -32,8 +32,8 @@ const AddReplacement = () => {
         code: Yup.string()
             .required("Không được bỏ trống")
             .matches(
-                /^MAT-[0-9]{4}$/,
-                "Định dạng mã: MAT-XXXX"
+                /^CON-[0-9]{4}$/,
+                "Định dạng mã: CON-XXXX"
             ),
 
         unit: Yup.string()
@@ -42,8 +42,6 @@ const AddReplacement = () => {
                 /^\p{Lu}\p{L}+(?:\s\p{L}+)*$/u,
                 "Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt"
             ),
-
-        location: Yup.string(),
 
         description: Yup.string()
     });
@@ -59,7 +57,7 @@ const AddReplacement = () => {
                 toast.success("Thêm mới thành công!");
 
                 setTimeout(() => {
-                    navigate("/replacement-materials");
+                    navigate("/consumable-materials");
                 }, 1500);
 
             } else {
@@ -80,14 +78,17 @@ const AddReplacement = () => {
 
         <div className="p-4">
 
-            <ToastContainer position="top-right" autoClose={2000} />
+            <ToastContainer
+                position="top-right"
+                autoClose={2000}
+            />
 
             <Card className="border-0 shadow-sm">
 
                 <Card.Body>
 
                     <h3 className="fw-bold mb-4">
-                        Thêm mới vật tư thay thế
+                        Thêm mới vật tư tiêu hao
                     </h3>
 
                     <Formik
@@ -126,7 +127,7 @@ const AddReplacement = () => {
                                     <Field
                                         name="code"
                                         className="form-control"
-                                        placeholder="MAT-0001"
+                                        placeholder="CON-0001"
                                     />
 
                                     <div className="text-danger small">
@@ -149,19 +150,6 @@ const AddReplacement = () => {
                                     <div className="text-danger small">
                                         <ErrorMessage name="unit" />
                                     </div>
-
-                                </Col>
-
-                                <Col md={6}>
-
-                                    <label className="form-label">
-                                        Vị trí
-                                    </label>
-
-                                    <Field
-                                        name="location"
-                                        className="form-control"
-                                    />
 
                                 </Col>
 
@@ -194,7 +182,7 @@ const AddReplacement = () => {
                                 <Button
                                     variant="secondary"
                                     type="button"
-                                    onClick={() => navigate("/replacement-material")}
+                                    onClick={() => navigate("/consumable-materials")}
                                 >
                                     Quay lại
                                 </Button>
@@ -213,4 +201,4 @@ const AddReplacement = () => {
     )
 }
 
-export default AddReplacement;
+export default AddConsumable;

@@ -1,19 +1,37 @@
 import axiosInstance from "../../../api/axiosInstance.js";
 
 // Lấy danh sách hoặc search
-export async function getAllOrSearch(keyword = "") {
-    let url = "/replacement-materials";
-
-    if (keyword && keyword.trim() !== "") {
-        url += `?keyword=${keyword}`;
-    }
+export const getAllOrSearch = async (
+    code = "",
+    name = "",
+    page = 0
+) => {
 
     try {
-        const res = await axiosInstance.get(url);
-        return res.data;
+
+        const response = await axiosInstance.get(
+            "/replacement-materials",
+            {
+                params: {
+                    code,
+                    name,
+                    page,
+                    size: 5
+                }
+            }
+        );
+
+        return response.data;
+
     } catch (e) {
+
         console.log(e);
-        return [];
+
+        return {
+            content: [],
+            totalPages: 0,
+            number: 0
+        };
     }
 }
 
@@ -46,7 +64,7 @@ export async function save(replacementMaterial) {
 }
 
 // Cập nhật
-export async function edit(replacementMaterial) {
+export async function update(replacementMaterial) {
     try {
         const res = await axiosInstance.put(
             `/replacement-materials/${replacementMaterial.id}`,
