@@ -23,7 +23,7 @@ import {
 import {
     findById,
     update
-} from "../../../../service/materials_manager/replacement/ReplacementService.js";
+} from "../../../../service/materials_manager/replacement/ReplacementCategoryService.js";
 
 import {
     ToastContainer,

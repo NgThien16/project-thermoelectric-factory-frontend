@@ -77,7 +77,7 @@ const Sidebar = () => {
 
               <Nav.Link
                   as={Link}
-                  to="/import-material"
+                  to="/consumable-transactions"
                   active={location.pathname === '/consumable-transactions'}
               >
                 Vật tư tiêu hao
@@ -85,7 +85,7 @@ const Sidebar = () => {
 
               <Nav.Link
                   as={Link}
-                  to="/export-material"
+                  to="/replacement-transactions"
                   active={location.pathname === '/replacement-transactions'}
               >
                 Vật tư thay thế

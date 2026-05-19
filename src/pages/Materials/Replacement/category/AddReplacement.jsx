@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-import { save } from "../../../../service/materials_manager/replacement/ReplacementService.js";
+import { save } from "../../../../service/materials_manager/replacement/ReplacementCategoryService.js";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -32,8 +32,8 @@ const AddReplacement = () => {
         code: Yup.string()
             .required("Không được bỏ trống")
             .matches(
-                /^MAT-[0-9]{4}$/,
-                "Định dạng mã: MAT-XXXX"
+                /^REP-[0-9]{4}$/,
+                "Định dạng mã: REP-XXXX"
             ),
 
         unit: Yup.string()

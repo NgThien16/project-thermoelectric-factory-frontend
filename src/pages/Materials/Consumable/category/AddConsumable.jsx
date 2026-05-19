@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-import { save } from "../../../../service/materials_manager/consumable/ConsumableService.js";
+import { save } from "../../../../service/materials_manager/consumable/ConsumableCategoryService.js";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

@@ -22,7 +22,7 @@ import {
 import {
     getAllOrSearch,
     remove
-} from "../../../../service/materials_manager/replacement/ReplacementService.js";
+} from "../../../../service/materials_manager/replacement/ReplacementCategoryService.js";
 
 import {toast} from "react-toastify";
 

@@ -20,7 +20,7 @@ import {
 import {
     getAllOrSearch,
     remove
-} from "../../../../service/materials_manager/consumable/ConsumableService.js";
+} from "../../../../service/materials_manager/consumable/ConsumableCategoryService.js";
 
 import {toast} from "react-toastify";
 
@@ -45,14 +45,18 @@ const ListConsumable = () => {
 
     // fetch data
     const fetchData = async () => {
+        const data = await getAllOrSearch({
+            code: search.code,
+            name: search.name,
+            page: page,
+            size: 5
+        });
 
-        const data = await getAllOrSearch(
-            search.code,
-            search.name,
-            page
-        );
-
-        setMaterialPage(data);
+        if (data) {
+            setMaterialPage(data);
+        } else {
+            setMaterialPage({ content: [], totalPages: 0, number: 0 });
+        }
     }
 
     useEffect(() => {
@@ -148,7 +152,6 @@ const ListConsumable = () => {
                     to={"/consumable-materials/add"}
                     className="btn btn-success d-flex align-items-center gap-2 shadow-sm"
                 >
-                    <FaPlus/>
                     Thêm mới
                 </Link>
 

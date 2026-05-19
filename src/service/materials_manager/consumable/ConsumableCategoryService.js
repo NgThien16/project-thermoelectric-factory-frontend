@@ -1,21 +1,22 @@
 import axiosInstance from "../../../api/axiosInstance.js";
 
-export const getAllOrSearch = async (
-code = "",
-    name = "",
-    page = 0
-) => {
+
+export const getAllOrSearch = async ({
+                                         code = "",
+                                         name = "",
+                                         page = 0,
+                                         size = 5
+                                     } = {}) => {
 
     try {
-
         const response = await axiosInstance.get(
             "/consumable-materials",
             {
                 params: {
-                    code,
-                    name,
-                    page,
-                    size: 5
+                    code: code || "",
+                    name: name || "",
+                    page: page || 0,
+                    size: size
                 }
             }
         );
@@ -23,9 +24,7 @@ code = "",
         return response.data;
 
     } catch (e) {
-
-        console.log(e);
-
+        console.log("Lỗi API List:", e);
         return {
             content: [],
             totalPages: 0,

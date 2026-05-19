@@ -17,7 +17,7 @@ import {
 import {
     findById,
     update
-} from "../../../../service/materials_manager/consumable/ConsumableService.js";
+} from "../../../../service/materials_manager/consumable/ConsumableCategoryService.js";
 
 import {
     ToastContainer,
