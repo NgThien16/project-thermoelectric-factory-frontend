@@ -1,25 +1,40 @@
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import {useEffect, useState} from "react";
+import {Formik, Form, Field, ErrorMessage} from "formik";
 import * as Yup from "yup";
-import { Button, Card, Col, Row } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
 
-import { save } from "../../../service/materials_manager/replacement/ReplacementService.js";
+import {
+    Button,
+    Card,
+    Col,
+    Row
+} from "react-bootstrap";
 
-import { ToastContainer, toast } from "react-toastify";
+import {
+    useNavigate,
+    useParams
+} from "react-router-dom";
+
+import {
+    findById,
+    update
+} from "../../../../service/materials_manager/consumable/ConsumableCategoryService.js";
+
+import {
+    ToastContainer,
+    toast
+} from "react-toastify";
+
 import "react-toastify/dist/ReactToastify.css";
 
-const AddReplacement = () => {
+const EditConsumable = () => {
 
     const navigate = useNavigate();
 
-    const initialValues = {
-        name: "",
-        code: "",
-        unit: "",
-        location: "",
-        description: ""
-    };
+    const {id} = useParams();
 
+    const [initialValues, setInitialValues] = useState(null);
+
+    // validation
     const validationSchema = Yup.object({
 
         name: Yup.string()
@@ -32,8 +47,8 @@ const AddReplacement = () => {
         code: Yup.string()
             .required("Không được bỏ trống")
             .matches(
-                /^MAT-[0-9]{4}$/,
-                "Định dạng mã: MAT-XXXX"
+                /^CON-[0-9]{4}$/,
+                "Định dạng mã: CON-XXXX"
             ),
 
         unit: Yup.string()
@@ -43,57 +58,91 @@ const AddReplacement = () => {
                 "Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt"
             ),
 
-        location: Yup.string(),
-
         description: Yup.string()
     });
 
+    // load data
+    const fetchData = async () => {
+
+        try {
+
+            const data = await findById(id);
+
+            setInitialValues(data);
+
+        } catch (e) {
+
+            console.log(e);
+
+            toast.error("Không tìm thấy dữ liệu!");
+        }
+    }
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    // submit
     const handleSubmit = async (values) => {
 
         try {
 
-            const result = await save(values);
+            const result = await update({
+                ...values,
+                id: id
+            });
 
             if (result) {
 
-                toast.success("Thêm mới thành công!");
+                toast.success("Cập nhật thành công!");
 
                 setTimeout(() => {
+
                     navigate("/replacement-materials");
+
                 }, 1500);
 
             } else {
 
-                toast.error("Thêm mới thất bại!");
-
+                toast.error("Cập nhật thất bại!");
             }
 
         } catch (e) {
 
-            toast.error("Có lỗi xảy ra!");
-
             console.log(e);
+
+            toast.error("Có lỗi xảy ra!");
         }
+    }
+
+    // loading
+    if (!initialValues) {
+
+        return <h5 className="p-4">Loading...</h5>;
     }
 
     return (
 
         <div className="p-4">
 
-            <ToastContainer position="top-right" autoClose={2000} />
+            <ToastContainer
+                position="top-right"
+                autoClose={2000}
+            />
 
             <Card className="border-0 shadow-sm">
 
                 <Card.Body>
 
                     <h3 className="fw-bold mb-4">
-                        Thêm mới vật tư thay thế
+                        Cập nhật vật tư tiêu hao
                     </h3>
 
                     <Formik
                         initialValues={initialValues}
                         validationSchema={validationSchema}
                         onSubmit={handleSubmit}
+                        enableReinitialize={true}
                     >
 
                         <Form>
@@ -112,7 +161,7 @@ const AddReplacement = () => {
                                     />
 
                                     <div className="text-danger small">
-                                        <ErrorMessage name="name" />
+                                        <ErrorMessage name="name"/>
                                     </div>
 
                                 </Col>
@@ -126,11 +175,11 @@ const AddReplacement = () => {
                                     <Field
                                         name="code"
                                         className="form-control"
-                                        placeholder="MAT-0001"
+                                        placeholder="CON-0001"
                                     />
 
                                     <div className="text-danger small">
-                                        <ErrorMessage name="code" />
+                                        <ErrorMessage name="code"/>
                                     </div>
 
                                 </Col>
@@ -147,21 +196,8 @@ const AddReplacement = () => {
                                     />
 
                                     <div className="text-danger small">
-                                        <ErrorMessage name="unit" />
+                                        <ErrorMessage name="unit"/>
                                     </div>
-
-                                </Col>
-
-                                <Col md={6}>
-
-                                    <label className="form-label">
-                                        Vị trí
-                                    </label>
-
-                                    <Field
-                                        name="location"
-                                        className="form-control"
-                                    />
 
                                 </Col>
 
@@ -185,16 +221,16 @@ const AddReplacement = () => {
                             <div className="mt-4 d-flex gap-2">
 
                                 <Button
-                                    variant="success"
+                                    variant="warning"
                                     type="submit"
                                 >
-                                    Thêm mới
+                                    Cập nhật
                                 </Button>
 
                                 <Button
                                     variant="secondary"
                                     type="button"
-                                    onClick={() => navigate("/replacement-material")}
+                                    onClick={() => navigate("/consumable-materials")}
                                 >
                                     Quay lại
                                 </Button>
@@ -213,4 +249,4 @@ const AddReplacement = () => {
     )
 }
 
-export default AddReplacement;
+export default EditConsumable;

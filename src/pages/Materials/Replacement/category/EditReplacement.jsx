@@ -1,25 +1,46 @@
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import {useEffect, useState} from "react";
+import {
+    Formik,
+    Form,
+    Field,
+    ErrorMessage
+} from "formik";
+
 import * as Yup from "yup";
-import { Button, Card, Col, Row } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
 
-import { save } from "../../../service/materials_manager/consumable/ConsumableService.js";
+import {
+    Button,
+    Card,
+    Col,
+    Row
+} from "react-bootstrap";
 
-import { ToastContainer, toast } from "react-toastify";
+import {
+    useNavigate,
+    useParams
+} from "react-router-dom";
+
+import {
+    findById,
+    update
+} from "../../../../service/materials_manager/replacement/ReplacementCategoryService.js";
+
+import {
+    ToastContainer,
+    toast
+} from "react-toastify";
+
 import "react-toastify/dist/ReactToastify.css";
 
-const AddConsumable = () => {
+const EditReplacement = () => {
 
     const navigate = useNavigate();
 
-    const initialValues = {
-        name: "",
-        code: "",
-        unit: "",
-        location: "",
-        description: ""
-    };
+    const {id} = useParams();
 
+    const [initialValues, setInitialValues] = useState(null);
+
+    // validation
     const validationSchema = Yup.object({
 
         name: Yup.string()
@@ -32,8 +53,8 @@ const AddConsumable = () => {
         code: Yup.string()
             .required("Không được bỏ trống")
             .matches(
-                /^CON-[0-9]{4}$/,
-                "Định dạng mã: CON-XXXX"
+                /^MAT-[0-9]{4}$/,
+                "Định dạng mã: MAT-XXXX"
             ),
 
         unit: Yup.string()
@@ -49,32 +70,64 @@ const AddConsumable = () => {
         description: Yup.string()
     });
 
+    // load data
+    const fetchData = async () => {
+
+        try {
+
+            const data = await findById(id);
+
+            setInitialValues(data);
+
+        } catch (e) {
+
+            console.log(e);
+
+            toast.error("Không tìm thấy dữ liệu!");
+        }
+    }
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    // update
     const handleSubmit = async (values) => {
 
         try {
 
-            const result = await save(values);
+            const result = await update({
+                ...values,
+                id: id
+            });
 
             if (result) {
 
-                toast.success("Thêm mới thành công!");
+                toast.success("Cập nhật thành công!");
 
                 setTimeout(() => {
-                    navigate("/consumable-materials");
+
+                    navigate("/replacement-materials");
+
                 }, 1500);
 
             } else {
 
-                toast.error("Thêm mới thất bại!");
-
+                toast.error("Cập nhật thất bại!");
             }
 
         } catch (e) {
 
-            toast.error("Có lỗi xảy ra!");
-
             console.log(e);
+
+            toast.error("Có lỗi xảy ra!");
         }
+    }
+
+    // loading
+    if (!initialValues) {
+
+        return <h5 className="p-4">Loading...</h5>;
     }
 
     return (
@@ -91,13 +144,14 @@ const AddConsumable = () => {
                 <Card.Body>
 
                     <h3 className="fw-bold mb-4">
-                        Thêm mới vật tư tiêu hao
+                        Cập nhật vật tư thay thế
                     </h3>
 
                     <Formik
                         initialValues={initialValues}
                         validationSchema={validationSchema}
                         onSubmit={handleSubmit}
+                        enableReinitialize={true}
                     >
 
                         <Form>
@@ -116,7 +170,7 @@ const AddConsumable = () => {
                                     />
 
                                     <div className="text-danger small">
-                                        <ErrorMessage name="name" />
+                                        <ErrorMessage name="name"/>
                                     </div>
 
                                 </Col>
@@ -130,11 +184,11 @@ const AddConsumable = () => {
                                     <Field
                                         name="code"
                                         className="form-control"
-                                        placeholder="CON-0001"
+                                        placeholder="REP-0001"
                                     />
 
                                     <div className="text-danger small">
-                                        <ErrorMessage name="code" />
+                                        <ErrorMessage name="code"/>
                                     </div>
 
                                 </Col>
@@ -151,7 +205,7 @@ const AddConsumable = () => {
                                     />
 
                                     <div className="text-danger small">
-                                        <ErrorMessage name="unit" />
+                                        <ErrorMessage name="unit"/>
                                     </div>
 
                                 </Col>
@@ -159,16 +213,17 @@ const AddConsumable = () => {
                                 <Col md={6}>
 
                                     <label className="form-label">
-                                        Vị trí
+                                        Vị trí thay
                                     </label>
 
                                     <Field
                                         name="location"
                                         className="form-control"
+                                        placeholder="Mô tả vị trí cần thay"
                                     />
 
                                     <div className="text-danger small">
-                                        <ErrorMessage name="location" />
+                                        <ErrorMessage name="location"/>
                                     </div>
 
                                 </Col>
@@ -193,16 +248,16 @@ const AddConsumable = () => {
                             <div className="mt-4 d-flex gap-2">
 
                                 <Button
-                                    variant="success"
+                                    variant="warning"
                                     type="submit"
                                 >
-                                    Thêm mới
+                                    Cập nhật
                                 </Button>
 
                                 <Button
                                     variant="secondary"
                                     type="button"
-                                    onClick={() => navigate("/consumable-material")}
+                                    onClick={() => navigate("/replacement-materials")}
                                 >
                                     Quay lại
                                 </Button>
@@ -221,4 +276,4 @@ const AddConsumable = () => {
     )
 }
 
-export default AddConsumable;
+export default EditReplacement;
