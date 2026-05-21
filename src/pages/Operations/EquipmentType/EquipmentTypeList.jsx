@@ -28,8 +28,7 @@ const EquipmentTypeList = () => {
                 search.domain,
                 page
             );
-            const data = setDomains(await getListDomain());
-            console.log(data);
+            setDomains(await getListDomain());
 
             setTypes(res.data);
             setTotalPages(res.totalPages);

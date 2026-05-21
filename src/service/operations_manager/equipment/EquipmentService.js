@@ -1,12 +1,16 @@
 import axiosInstance from "../../../api/axiosInstance.js";
 
-export async function searchListEquipment(searchName,searchCode,status,page) {
-    let url = `/equipments?page=${page-1}`;
+export async function searchListEquipment(searchName,searchCode,searchSystem,searchType,status,page) {
+    let url = `/equipments?page=${page}`;
     if (searchName){
         url += `&name=${searchName}`;
     }
     if (searchCode){
         url += `&code=${searchCode}`;
+    }if (searchSystem){
+        url += `&system=${searchSystem}`;
+    }if (searchType){
+        url += `&type=${searchType}`;
     }
     if (status){
         url += `&status=${status}`;
@@ -15,7 +19,7 @@ export async function searchListEquipment(searchName,searchCode,status,page) {
     try {
         const res = await axiosInstance.get(url);
         return {
-            data: res.data,
+            data: res.data.content,
             totalPage: res.data.totalPages
         };
     }catch (e) {

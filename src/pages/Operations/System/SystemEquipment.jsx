@@ -9,7 +9,7 @@ const SystemEquipment = () => {
     useEffect(() => {
 
         const fetData = async () => {
-            setSystemList(await getListSystem());
+            setSystemList(await getListSystem()||[]);
         };
 
         fetData();
@@ -33,13 +33,15 @@ const SystemEquipment = () => {
                     <table className="table table-hover mb-0">
                         <thead className="table-light">
                         <tr>
+                            <th>Số thứ tự</th>
                             <th>Tên hệ thống</th>
                             <th>Ghi chú</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {systemList.map((s) => (
+                        {systemList.map((s,i) => (
                             <tr key={s.id}>
+                                <td>{i+1}</td>
                                 <td>
                                     <Link
                                         to={`/system-equipments/${s.id}/equipments`}

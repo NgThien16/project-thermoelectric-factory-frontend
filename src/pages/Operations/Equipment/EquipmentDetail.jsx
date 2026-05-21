@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {useParams, Link} from "react-router-dom";
 import {findById} from "../../../service/operations_manager/equipment/EquipmentService.js";
-import { Card, Table, Button, Badge } from 'react-bootstrap';
+import { Card, Table, Badge } from 'react-bootstrap';
 import { FaArrowLeft } from 'react-icons/fa';
 
 const EquipmentDetail = () => {
