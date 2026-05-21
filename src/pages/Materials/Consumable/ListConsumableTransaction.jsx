@@ -254,7 +254,7 @@ export default function ConsumableList() {
                                         <td>
 
                                             {
-                                                item.quantity > 20 ? (
+                                                item.quantity > 10 ? (
 
                                                     <Badge bg="success">
                                                         Còn hàng

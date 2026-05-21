@@ -26,7 +26,7 @@ import {
 } from "../../../service/materials_manager/replacement/ReplacementTransactionService.js";
 
 import {
-    getAllOrSearch, save as saveMaterial
+    getAllMaterialsForDropdown, save as saveMaterial
 } from "../../../service/materials_manager/replacement/ReplacementCategoryService.js"
 import {ErrorMessage, Field,Form as FormikForm, Formik} from "formik";
 import * as Yup from "yup";
@@ -53,12 +53,9 @@ export default function ReplacementImport() {
 
     const loadMaterials = async () => {
         try {
-            // Gọi hàm Service (không truyền gì, mặc định lấy trang 0, size 5)
-            const data = await getAllOrSearch();
-
-            // Bóc tách mảng vật tư từ thuộc tính content
-            if (data && data.content) {
-                setMaterials(data.content);
+            const data = await getAllMaterialsForDropdown();
+            if (data && Array.isArray(data)) {
+                setMaterials(data);
             } else {
                 setMaterials([]);
             }
@@ -173,15 +170,13 @@ export default function ReplacementImport() {
             const result = await saveMaterial(values);
             if (result) {
                 toast.success("Thêm mới danh mục vật tư thành công!");
-                setShowAddMaterialModal(false); // Đóng modal
-                resetForm(); // Xóa sạch form cũ
+                setShowAddMaterialModal(false);
+                resetForm();
 
-                // Tải lại danh sách vật tư mới nhất từ DB
-                const data = await getAllOrSearch({ size: 9999 });
-                if (data && data.content) {
-                    setMaterials(data.content);
+                const data = await getAllMaterialsForDropdown();
+                if (data && Array.isArray(data)) { // <-- Đổi ở đây
+                    setMaterials(data);
 
-                    // Mẹo: Tự động chọn luôn vật tư mới vừa tạo vào ô Select cho tiện
                     setForm({
                         materialId: result.id.toString(),
                         quantity: form.quantity
@@ -475,7 +470,7 @@ export default function ReplacementImport() {
                         initialValues={{ name: "", code: "", unit: "", location: "", description: "" }}
                         validationSchema={Yup.object({
                             name: Yup.string().required("Không được bỏ trống").matches(/^\p{Lu}\p{L}+(?:\s\p{L}+)*$/u, "Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt"),
-                            code: Yup.string().required("Không được bỏ trống").matches(/^CON-[0-9]{4}$/, "Định dạng mã: CON-XXXX"),
+                            code: Yup.string().required("Không được bỏ trống").matches(/^REP-[0-9]{4}$/, "Định dạng mã: REP-XXXX"),
                             unit: Yup.string().required("Không được bỏ trống").matches(/^\p{Lu}\p{L}+(?:\s\p{L}+)*$/u, "Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt")
                         })}
                         onSubmit={handleCreateMaterialSuccess}
@@ -489,7 +484,7 @@ export default function ReplacementImport() {
                                 </Col>
                                 <Col md={6}>
                                     <label className="form-label">Mã vật tư</label>
-                                    <Field name="code" className="form-control" placeholder="CON-0001" />
+                                    <Field name="code" className="form-control" placeholder="REP-0001" />
                                     <div className="text-danger small"><ErrorMessage name="code" /></div>
                                 </Col>
                                 <Col md={6}>

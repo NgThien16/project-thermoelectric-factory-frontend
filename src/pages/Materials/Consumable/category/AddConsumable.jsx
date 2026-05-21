@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-import { save } from "../../../../service/materials_manager/consumable/ConsumableCategoryService.js";
+import {getAllOrSearch, save} from "../../../../service/materials_manager/consumable/ConsumableCategoryService.js";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -34,7 +34,11 @@ const AddConsumable = () => {
             .matches(
                 /^CON-[0-9]{4}$/,
                 "Định dạng mã: CON-XXXX"
-            ),
+            ).test("checkDupCode", "Mã vật tư này đã tồn tại trên hệ thống", async function (value) {
+                if (!value || !/^CON-[0-9]{4}$/.test(value)) return true;
+                const res = await getAllOrSearch({ code: value, size: 1 });
+                return !(res && res.content && res.content.length > 0);
+            }),
 
         unit: Yup.string()
             .required("Không được bỏ trống")

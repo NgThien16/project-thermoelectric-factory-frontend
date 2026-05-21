@@ -1,12 +1,7 @@
-import { Nav } from 'react-bootstrap';
-import { Link, useLocation } from 'react-router-dom';
-import {
-  FaUsers,
-  FaCogs,
-  FaWarehouse,
-  FaChartLine,
-  FaClipboardList
-} from 'react-icons/fa';
+import { Nav, Dropdown } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+import { FaUsers, FaChartLine, FaCogs, FaWarehouse, FaClipboardList } from 'react-icons/fa';
+import { Link,useLocation } from 'react-router-dom';
 import '../../styles/Layout.css';
 import {useState} from "react";
 
@@ -24,9 +19,19 @@ const Sidebar = () => {
         <Nav.Link as={Link} to="/" active={location.pathname === '/'}>
           <FaChartLine /> Dashboard
         </Nav.Link>
-        <Nav.Link as={Link} to="/nhan-su" active={location.pathname === '/nhan-su'}>
-          <FaUsers /> Nhân sự
-        </Nav.Link>
+          <Dropdown as={Nav.Item}>
+              <Dropdown.Toggle as={Nav.Link} active={location.pathname.startsWith('/personnels')}>
+                  <FaUsers /> Nhân sự
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                  <LinkContainer to="/personnels/employees"><Dropdown.Item>Nhân viên</Dropdown.Item></LinkContainer>
+                  <LinkContainer to="/personnels/departments"><Dropdown.Item>Phòng ban</Dropdown.Item></LinkContainer>
+                  <LinkContainer to="/personnels/positions"><Dropdown.Item>Chức vụ</Dropdown.Item></LinkContainer>
+                  <LinkContainer to="/personnels/roles"><Dropdown.Item>Vai trò</Dropdown.Item></LinkContainer>
+                  <LinkContainer to="/personnels/users"><Dropdown.Item>Người dùng</Dropdown.Item></LinkContainer>
+              </Dropdown.Menu>
+          </Dropdown>
+
         <Nav.Link as={Link} to="/system-equipments" active={location.pathname.startsWith('/system-equipments')}>
           <FaCogs /> Hệ thống
         </Nav.Link>

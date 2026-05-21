@@ -34,6 +34,10 @@ export const getAllOrSearch = async (
         };
     }
 }
+export const getAllMaterialsForDropdown = async () => {
+    const response = await axiosInstance.get("/replacement-materials/list");
+    return response.data;
+};
 
 // Tìm theo ID
 export async function findById(id) {

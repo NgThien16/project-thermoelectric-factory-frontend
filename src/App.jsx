@@ -19,6 +19,11 @@ import Detail from "./pages/Operations/EquipmentType/Detail.jsx";
 import EquipmentDetail from "./pages/Operations/Equipment/EquipmentDetail.jsx";
 import ToolManagement from "./pages/Tool/ToolManagement.jsx";
 import ToolBorrowingManagement from "./pages/Tool/ToolBorrowingManagement.jsx";
+import EmployeePage from "./pages/personnels/Employee.jsx";
+import DepartmentPage from "./pages/personnels/Department.jsx";
+import PositionPage from "./pages/personnels/Position.jsx";
+import RolePage from "./pages/personnels/Role.jsx";
+import UserPage from "./pages/personnels/User.jsx";
 import ListReplacement from "./pages/Materials/Replacement/category/ListReplacement.jsx";
 import ListConsumable from "./pages/Materials/Consumable/category/ListConsumable.jsx";
 import AddConsumable from "./pages/Materials/Consumable/category/AddConsumable.jsx";
@@ -38,6 +43,14 @@ function App() {
             <MainLayout>
                 <Routes>
                     <Route path={'/'} element={<Dashboard/>}/>
+
+                    {/* Nhân sự */}
+                    <Route path="/personnels" element={<EmployeePage />} />
+                    <Route path="/personnels/employees" element={<EmployeePage />} />
+                    <Route path="/personnels/departments" element={<DepartmentPage />} />
+                    <Route path="/personnels/positions" element={<PositionPage />} />
+                    <Route path="/personnels/roles" element={<RolePage />} />
+                    <Route path="/personnels/users" element={<UserPage />} />
 
                     {/* Hệ thống */}
                     <Route path={'/system-equipments'} element={<SystemEquipment/>}/>
@@ -66,7 +79,7 @@ function App() {
                     {/* Vật tư thay thế */}
                     <Route path={'/replacement-materials'} element={<ListReplacement/>}/>
                     <Route path={'/replacement-materials/add'} element={<AddReplacement/>}/>
-                    <Route path="/-materials/edit/:id" element={<EditReplacement />} />
+                    <Route path={"/replacement-materials/edit/:id"} element={<EditReplacement />} />
                     <Route path={"/replacement-transactions"} element={<ListReplacementTransaction/>}/>
                     <Route path={"/replacement-transactions/history"} element={<ReplacementTransactionHistory/>}/>
                     <Route path={"/replacement-transactions/import"} element={<ReplacementImport/>}/>
