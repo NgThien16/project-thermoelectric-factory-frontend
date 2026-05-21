@@ -23,6 +23,11 @@ import ListReplacement from "./pages/Materials/Replacement/ListReplacement.jsx";
 import ListConsumable from "./pages/Materials/Consumable/ListConsumable.jsx";
 import AddConsumable from "./pages/Materials/Consumable/AddConsumable.jsx";
 import AddReplacement from "./pages/Materials/Replacement/AddReplacement.jsx";
+import EmployeePage from "./pages/personnels/Employee.jsx";
+import DepartmentPage from "./pages/personnels/Department.jsx";
+import PositionPage from "./pages/personnels/Position.jsx";
+import RolePage from "./pages/personnels/Role.jsx";
+import UserPage from "./pages/personnels/User.jsx";
 
 function App() {
     return (
@@ -30,6 +35,14 @@ function App() {
             <MainLayout>
                 <Routes>
                     <Route path={'/'} element={<Dashboard/>}/>
+
+                    {/* Nhân sự */}
+                    <Route path="/personnels" element={<EmployeePage />} />
+                    <Route path="/personnels/employees" element={<EmployeePage />} />
+                    <Route path="/personnels/departments" element={<DepartmentPage />} />
+                    <Route path="/personnels/positions" element={<PositionPage />} />
+                    <Route path="/personnels/roles" element={<RolePage />} />
+                    <Route path="/personnels/users" element={<UserPage />} />
 
                     {/* Hệ thống */}
                     <Route path={'/system-equipments'} element={<SystemEquipment/>}/>
