@@ -7,6 +7,7 @@ import { save } from "../../../../service/materials_manager/replacement/Replacem
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {getAllOrSearch} from "../../../../service/materials_manager/consumable/ConsumableCategoryService.js";
 
 const AddReplacement = () => {
 
@@ -34,7 +35,11 @@ const AddReplacement = () => {
             .matches(
                 /^REP-[0-9]{4}$/,
                 "Định dạng mã: REP-XXXX"
-            ),
+            ).test("checkDupCode", "Mã vật tư này đã tồn tại trên hệ thống", async function (value) {
+                if (!value || !/^REP-[0-9]{4}$/.test(value)) return true;
+
+                const res = await getAllOrSearch({ code: value, size: 1 });
+                return !(res && res.content && res.content.length > 0);}),
 
         unit: Yup.string()
             .required("Không được bỏ trống")
@@ -126,7 +131,7 @@ const AddReplacement = () => {
                                     <Field
                                         name="code"
                                         className="form-control"
-                                        placeholder="MAT-0001"
+                                        placeholder="REP-0001"
                                     />
 
                                     <div className="text-danger small">
@@ -195,7 +200,7 @@ const AddReplacement = () => {
                                 <Button
                                     variant="secondary"
                                     type="button"
-                                    onClick={() => navigate("/replacement-material")}
+                                    onClick={() => navigate("/replacement-materials")}
                                 >
                                     Quay lại
                                 </Button>

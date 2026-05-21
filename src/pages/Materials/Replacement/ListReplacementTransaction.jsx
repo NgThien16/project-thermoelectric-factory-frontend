@@ -113,13 +113,13 @@ export default function ListReplacementTransaction() {
             <Card className="shadow border-0">
 
                 <Card.Header
-                    className="bg-primary text-white d-flex justify-content-between align-items-center"
+                    className="bg-success text-white d-flex justify-content-between align-items-center"
                 >
 
                     <div>
 
                         <h4 className="mb-0">
-                            Danh sách thiết bị/vật tư thay thế
+                            Danh sách vật tư thay thế
                         </h4>
 
                         <small>
@@ -307,7 +307,7 @@ export default function ListReplacementTransaction() {
                                 <tr>
 
                                     <td
-                                        colSpan="5" // Đồng bộ theo đúng số lượng cột <th> là 5
+                                        colSpan="5"
                                         className="text-center text-muted py-4"
                                     >
 
