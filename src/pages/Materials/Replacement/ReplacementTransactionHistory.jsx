@@ -311,7 +311,7 @@ export default function ReplacementTransactionHistory() {
                 </Card.Body>
 
             </Card>
-            <Link to="/consumable-transactions">
+            <Link to="/replacement-transactions">
                 <Button
 
                     variant="secondary"

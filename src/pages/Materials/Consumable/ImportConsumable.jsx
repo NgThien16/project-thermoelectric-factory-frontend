@@ -26,10 +26,11 @@ import {
 } from "../../../service/materials_manager/consumable/ConsumableTransactionService.js";
 
 import {
-    getAllOrSearch, save as saveMaterial
+     save as saveMaterial
 } from "../../../service/materials_manager/consumable/ConsumableCategoryService.js"
 import {ErrorMessage, Field,Form as FormikForm, Formik} from "formik";
 import * as Yup from "yup";
+import {getAllMaterialsForDropdown} from "../../../service/materials_manager/consumable/ConsumableCategoryService.js";
 
 export default function ConsumableImport() {
 
@@ -53,12 +54,11 @@ export default function ConsumableImport() {
 
     const loadMaterials = async () => {
         try {
-            // Gọi hàm Service (không truyền gì, mặc định lấy trang 0, size 5)
-            const data = await getAllOrSearch();
+            const data = await getAllMaterialsForDropdown();
 
-            // Bóc tách mảng vật tư từ thuộc tính content
-            if (data && data.content) {
-                setMaterials(data.content);
+            // Kiểm tra xem data trả về có phải là một mảng hợp lệ không
+            if (data && Array.isArray(data)) {
+                setMaterials(data); // Ăn ngay vì data chính là mảng vật tư
             } else {
                 setMaterials([]);
             }
@@ -173,15 +173,14 @@ export default function ConsumableImport() {
             const result = await saveMaterial(values);
             if (result) {
                 toast.success("Thêm mới danh mục vật tư thành công!");
-                setShowAddMaterialModal(false); // Đóng modal
-                resetForm(); // Xóa sạch form cũ
+                setShowAddMaterialModal(false);
+                resetForm();
 
-                // Tải lại danh sách vật tư mới nhất từ DB
-                const data = await getAllOrSearch({ size: 9999 });
-                if (data && data.content) {
-                    setMaterials(data.content);
+                const data = await getAllMaterialsForDropdown();
+                if (data && Array.isArray(data)) { // <-- Đổi ở đây
+                    setMaterials(data);
 
-                    // Mẹo: Tự động chọn luôn vật tư mới vừa tạo vào ô Select cho tiện
+
                     setForm({
                         materialId: result.id.toString(),
                         quantity: form.quantity

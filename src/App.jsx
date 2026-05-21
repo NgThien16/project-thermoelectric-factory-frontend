@@ -66,7 +66,7 @@ function App() {
                     {/* Vật tư thay thế */}
                     <Route path={'/replacement-materials'} element={<ListReplacement/>}/>
                     <Route path={'/replacement-materials/add'} element={<AddReplacement/>}/>
-                    <Route path="/-materials/edit/:id" element={<EditReplacement />} />
+                    <Route path={"/replacement-materials/edit/:id"} element={<EditReplacement />} />
                     <Route path={"/replacement-transactions"} element={<ListReplacementTransaction/>}/>
                     <Route path={"/replacement-transactions/history"} element={<ReplacementTransactionHistory/>}/>
                     <Route path={"/replacement-transactions/import"} element={<ReplacementImport/>}/>

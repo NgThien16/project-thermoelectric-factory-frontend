@@ -1,6 +1,10 @@
 import axiosInstance from "../../../api/axiosInstance.js";
 
 
+export const getAllMaterialsForDropdown = async () => {
+    const response = await axiosInstance.get("/consumable-materials/list");
+    return response.data;
+};
 export const getAllOrSearch = async ({
                                          code = "",
                                          name = "",
