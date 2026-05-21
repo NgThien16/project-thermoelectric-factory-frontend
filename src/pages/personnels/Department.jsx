@@ -91,15 +91,15 @@ export default function DepartmentPage() {
                     <Table striped bordered hover>
                         <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>STT</th>
                             <th>Tên</th>
                             <th>Hành động</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {departments.map(dep => (
+                        {departments.map((dep,i) => (
                             <tr key={dep.id}>
-                                <td>{dep.id}</td>
+                                <td>{i+1}</td>
                                 <td>{dep.name}</td>
                                 <td>
                                     <FaEdit style={{ cursor: "pointer", marginRight: "8px" }} onClick={() => setEditData(dep)} />

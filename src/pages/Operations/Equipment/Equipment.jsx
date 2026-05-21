@@ -33,8 +33,8 @@ const Equipment = () => {
                 search.type,
                 search.status,
                 page);
-            setSystemList(await getListSystem());
-            setTypeList(await getListType());
+            setSystemList(await getListSystem()||[]);
+            setTypeList(await getListType()||[]);
             setEquipmentList(res.data||[]);
             setTotal(res.totalPage||0);
 

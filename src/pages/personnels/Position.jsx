@@ -90,12 +90,16 @@ export default function PositionPage() {
 
                     <Table striped bordered hover>
                         <thead>
-                        <tr><th>ID</th><th>Tên</th><th>Hành động</th></tr>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên</th>
+                            <th>Hành động</th>
+                        </tr>
                         </thead>
                         <tbody>
-                        {positions.map(pos => (
+                        {positions.map((pos,i) => (
                             <tr key={pos.id}>
-                                <td>{pos.id}</td>
+                                <td>{i+1}</td>
                                 <td>{pos.name}</td>
                                 <td>
                                     <FaEdit style={{ cursor: "pointer", marginRight: "8px" }} onClick={() => setEditData(pos)} />

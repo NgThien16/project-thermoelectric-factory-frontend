@@ -93,15 +93,15 @@ export default function RolePage() {
                     <Table striped bordered hover>
                         <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>STT</th>
                             <th>Tên</th>
                             <th>Hành động</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {roles.map(role => (
+                        {roles.map((role,i) => (
                             <tr key={role.id}>
-                                <td>{role.id}</td>
+                                <td>{i+1}</td>
                                 <td>{role.name}</td>
                                 <td>
                                     <FaEdit style={{ cursor: "pointer", marginRight: "8px" }} onClick={() => setEditData(role)} />

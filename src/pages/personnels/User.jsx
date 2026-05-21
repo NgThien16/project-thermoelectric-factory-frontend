@@ -248,8 +248,8 @@ export default function UserPage() {
                     <Table striped bordered hover>
                         <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Username</th>
+                            <th>STT</th>
+                            <th>Tài khoản</th>
                             <th>Nhân viên</th>
                             <th>Quyền</th>
                             <th>Hành động</th>
@@ -264,9 +264,9 @@ export default function UserPage() {
                                 </td>
                             </tr>
                         ) : (
-                            users.map(user => (
+                            users.map((user,i) => (
                                 <tr key={user.id}>
-                                    <td>{user.id}</td>
+                                    <td>{i+1}</td>
                                     <td>{user.username}</td>
                                     <td>{user.employeeName || "Chưa có nhân viên"}</td>
                                     <td>

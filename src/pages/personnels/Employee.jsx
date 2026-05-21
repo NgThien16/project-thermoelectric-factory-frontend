@@ -119,7 +119,7 @@ export default function EmployeePage() {
                     <Table striped bordered hover>
                         <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>STT</th>
                             <th>Họ tên</th>
                             <th>Phòng ban</th>
                             <th>Chức vụ</th>
@@ -127,9 +127,9 @@ export default function EmployeePage() {
                         </tr>
                         </thead>
                         <tbody>
-                        {employees.map(emp => (
+                        {employees.map((emp,i) => (
                             <tr key={emp.id}>
-                                <td>{emp.id}</td>
+                                <td>{i+1}</td>
                                 <td>{emp.fullName}</td>
                                 <td>{emp.department?.name}</td>
                                 <td>{emp.position?.name}</td>

@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-import { save } from "../../../service/materials_manager/consumable/ConsumableService.js";
+import {getAllOrSearch, save} from "../../../../service/materials_manager/consumable/ConsumableCategoryService.js";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -34,7 +34,11 @@ const AddConsumable = () => {
             .matches(
                 /^CON-[0-9]{4}$/,
                 "Định dạng mã: CON-XXXX"
-            ),
+            ).test("checkDupCode", "Mã vật tư này đã tồn tại trên hệ thống", async function (value) {
+                if (!value || !/^CON-[0-9]{4}$/.test(value)) return true;
+                const res = await getAllOrSearch({ code: value, size: 1 });
+                return !(res && res.content && res.content.length > 0);
+            }),
 
         unit: Yup.string()
             .required("Không được bỏ trống")
@@ -42,9 +46,6 @@ const AddConsumable = () => {
                 /^\p{Lu}\p{L}+(?:\s\p{L}+)*$/u,
                 "Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt"
             ),
-
-        location: Yup.string()
-            .required("Không được bỏ trống"),
 
         description: Yup.string()
     });
@@ -156,23 +157,6 @@ const AddConsumable = () => {
 
                                 </Col>
 
-                                <Col md={6}>
-
-                                    <label className="form-label">
-                                        Vị trí
-                                    </label>
-
-                                    <Field
-                                        name="location"
-                                        className="form-control"
-                                    />
-
-                                    <div className="text-danger small">
-                                        <ErrorMessage name="location" />
-                                    </div>
-
-                                </Col>
-
                                 <Col md={12}>
 
                                     <label className="form-label">
@@ -202,7 +186,7 @@ const AddConsumable = () => {
                                 <Button
                                     variant="secondary"
                                     type="button"
-                                    onClick={() => navigate("/consumable-material")}
+                                    onClick={() => navigate("/consumable-materials")}
                                 >
                                     Quay lại
                                 </Button>
