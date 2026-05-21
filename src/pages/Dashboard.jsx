@@ -13,7 +13,7 @@ const Dashboard = () => {
     equipments: 0,
     materials: 0,
     borrowedTools: 0,
-    personnel: 85, // Giữ tạm thời vì chưa có service nhân sự
+    personnel: 0, // Giữ tạm thời vì chưa có service nhân sự
   });
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const Dashboard = () => {
           equipments: equipments?.data?.totalElements || 0,
           materials: (Array.isArray(consumables) ? consumables.length : 0) + (Array.isArray(replacements) ? replacements.length : 0),
           borrowedTools: Array.isArray(borrowings.data) ? borrowings.data.length : 0,
-          personnel: 85,
+          personnel: 0,
         });
       } catch (error) {
         console.error('Error fetching dashboard stats:', error);

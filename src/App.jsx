@@ -19,6 +19,7 @@ import Detail from "./pages/Operations/EquipmentType/Detail.jsx";
 import EquipmentDetail from "./pages/Operations/Equipment/EquipmentDetail.jsx";
 import ToolManagement from "./pages/Tool/ToolManagement.jsx";
 import ToolBorrowingManagement from "./pages/Tool/ToolBorrowingManagement.jsx";
+import UserToolBorrowing from "./pages/Tool/UserToolBorrowing.jsx";
 import ListReplacement from "./pages/Materials/Replacement/ListReplacement.jsx";
 import ListConsumable from "./pages/Materials/Consumable/ListConsumable.jsx";
 import AddConsumable from "./pages/Materials/Consumable/AddConsumable.jsx";
@@ -56,8 +57,9 @@ function App() {
                     <Route path={'/replacement-material/add'} element={<AddReplacement/>}/>
 
                     {/*CCDC */}
-                    <Route path={'/ccdc'} element={<ToolManagement/>}/>
-                    <Route path={'/ccdc/borrowings'} element={<ToolBorrowingManagement/>}/>
+                    <Route path={'/tool'} element={<ToolManagement/>}/>
+                    <Route path={'/tool/borrowings'} element={<ToolBorrowingManagement/>}/>
+                    <Route path={'/tool/user-borrow'} element={<UserToolBorrowing/>}/>
                 </Routes>
             </MainLayout>
             <ToastContainer position="top-right" autoClose={3000} />

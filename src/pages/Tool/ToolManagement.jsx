@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Card, Row, Col, Form, Modal, Badge } from 'react-bootstrap';
-import { FaPlus, FaEdit, FaTrash, FaSearch, FaArrowRight,} from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaSearch} from 'react-icons/fa';
 import toolService from '../../service/tool/toolService.js';
 import { toast } from 'react-toastify';
 
@@ -13,6 +13,7 @@ const ToolManagement = () => {
 
   // Search state
   const [searchName, setSearchName] = useState('');
+  const [searchCode, setSearchCode] = useState('');
   const [searchType, setSearchType] = useState('');
 
   // Form state cho Tool
@@ -39,10 +40,20 @@ const ToolManagement = () => {
     fetchTools();
   }, []);
 
+  const handleSearchClick = () => {
+    console.log('[DEBUG_LOG] Searching tools with filters:', { searchName, searchCode, searchType });
+    fetchTools();
+  };
+
   const fetchTools = async () => {
     try {
       setLoading(true);
-      const response = await toolService.getAllTools(searchName, searchType === 'Tất cả chủng loại' ? '' : searchType);
+      const typeParam = searchType === 'Tất cả chủng loại' ? '' : searchType;
+      const response = await toolService.getAllTools(
+        searchName, 
+        typeParam,
+        searchCode
+      );
       setTools(response.data);
     } catch (error) {
       toast.error('Không thể tải danh sách CCDC');
@@ -117,7 +128,7 @@ const ToolManagement = () => {
         employee: { id: parseInt(borrowForm.employee) },
         note: borrowForm.purpose,
         quantity: parseInt(borrowForm.quantity) || 0,
-        status: "Đang mượn",
+        status: "BORROWED",
         borrowDate: new Date().toISOString()
       };
 
@@ -163,9 +174,6 @@ const ToolManagement = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h3>Quản lý Công cụ dụng cụ (CCDC)</h3>
         <div className="d-flex gap-2">
-          <Button variant="info" className="d-flex align-items-center gap-2 text-white" onClick={() => setShowBorrowModal(true)}>
-            <FaArrowRight /> Mượn đồ
-          </Button>
           <Button variant="success" className="d-flex align-items-center gap-2" onClick={() => handleShowModal()}>
             <FaPlus /> Thêm CCDC mới
           </Button>
@@ -175,16 +183,25 @@ const ToolManagement = () => {
       <Card className="border-0 shadow-sm mb-4">
         <Card.Body>
           <Row className="g-3">
-            <Col md={5}>
+            <Col md={4}>
               <Form.Control 
                 type="text" 
-                placeholder="Tìm kiếm theo tên..."
-                value={searchName}
-                onChange={(e) => setSearchName(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && fetchTools()}
+                placeholder="Mã CCDC..."
+                value={searchCode}
+                onChange={(e) => setSearchCode(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearchClick()}
               />
             </Col>
-            <Col md={3}>
+            <Col md={4}>
+              <Form.Control 
+                type="text" 
+                placeholder="Tên CCDC..."
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearchClick()}
+              />
+            </Col>
+            <Col md={2}>
               <Form.Select 
                 value={searchType}
                 onChange={(e) => setSearchType(e.target.value)}
@@ -196,7 +213,7 @@ const ToolManagement = () => {
               </Form.Select>
             </Col>
             <Col md={2}>
-              <Button variant="primary" className="w-100" onClick={fetchTools}><FaSearch /> Tìm</Button>
+              <Button variant="primary" className="w-100" onClick={handleSearchClick}><FaSearch /> Tìm</Button>
             </Col>
           </Row>
         </Card.Body>
