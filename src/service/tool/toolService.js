@@ -52,7 +52,7 @@ const toolService = {
   },
 
   returnTool: (id) => {
-    return axiosInstance.post(`/tool-borrowings/return/${id}`);
+    return axiosInstance.post(`/tool-borrowings/${id}/return`);
   },
 
   confirmReturns: (ids) => {
@@ -60,7 +60,7 @@ const toolService = {
   },
 
   confirmBorrowing: (id) => {
-    return axiosInstance.post(`/tool-borrowings/confirm/${id}`);
+    return axiosInstance.post(`/tool-borrowings/${id}/confirm`);
   },
 
   updateBorrowing: (id, borrowingData) => {

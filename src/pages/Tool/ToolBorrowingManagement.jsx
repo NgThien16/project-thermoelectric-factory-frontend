@@ -97,18 +97,36 @@ const ToolBorrowingManagement = () => {
     }
 
     try {
+      setLoading(true);
       console.log('[DEBUG_LOG] Approving borrowings for IDs:', selectedItems);
       
       const promises = selectedItems.map(id => toolService.confirmBorrowing(id));
-
       await Promise.all(promises);
       
       toast.success('Duyệt cho mượn thành công');
       setShowDetailModal(false);
+      setSelectedItems([]);
       fetchBorrowings();
     } catch (error) {
-      toast.error('Lỗi khi duyệt cho mượn');
       console.error('[DEBUG_LOG] Error in handleApproveBorrow:', error);
+      
+      // Fallback: Nếu endpoint confirm riêng biệt bị lỗi, thử dùng update chung
+      try {
+        console.log('[DEBUG_LOG] Falling back to updateBorrowing...');
+        const fallbackPromises = selectedItems.map(id => 
+          toolService.updateBorrowing(id, { status: 'BORROWED' })
+        );
+        await Promise.all(fallbackPromises);
+        toast.success('Duyệt cho mượn thành công');
+        setShowDetailModal(false);
+        setSelectedItems([]);
+        fetchBorrowings();
+      } catch (fallbackError) {
+        toast.error('Lỗi khi duyệt cho mượn');
+        console.error('[DEBUG_LOG] Fallback error:', fallbackError);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -192,7 +210,7 @@ const ToolBorrowingManagement = () => {
                 <th>Mã phiếu</th>
                 <th>Người mượn</th>
                 <th>Ngày mượn</th>
-                <th>Số lượng món</th>
+                <th>Tên CCDC</th>
                 <th>Trạng thái</th>
                 <th>Thao tác</th>
               </tr>
@@ -208,7 +226,7 @@ const ToolBorrowingManagement = () => {
                     <td>TICKET-{b.id}</td>
                     <td>{b.employee?.fullName || b.employee?.name || 'N/A'} (ID: {b.employee?.id || '?'})</td>
                     <td>{b.borrowDate ? new Date(b.borrowDate).toLocaleDateString('vi-VN') : 'N/A'}</td>
-                    <td>{b.items?.length || 1} món</td>
+                    <td>{b.tool?.name || 'N/A'}</td>
                     <td>{getStatusBadge(b.status)}</td>
                     <td>
                       <Button variant="outline-info" size="sm" onClick={() => openDetail(b)}>

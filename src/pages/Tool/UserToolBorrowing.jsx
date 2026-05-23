@@ -18,17 +18,25 @@ const UserToolBorrowing = () => {
     quantity: 1
   });
 
+  const [searchCode, setSearchCode] = useState('');
+  const [searchName, setSearchName] = useState('');
+
   useEffect(() => {
     fetchTools();
   }, []);
 
   const fetchTools = async () => {
     try {
-      const response = await toolService.getAllTools();
+      const response = await toolService.getAllTools(searchName, '', searchCode);
       setTools(response.data);
     } catch (error) {
       console.error('Error fetching tools:', error);
     }
+  };
+
+  const handleSearchTools = (e) => {
+    if (e) e.preventDefault();
+    fetchTools();
   };
 
   const handleAddToTempList = () => {
@@ -156,24 +164,50 @@ const UserToolBorrowing = () => {
       <Card className="border-0 shadow-sm mb-4">
         <Card.Header className="bg-white fw-bold">Thêm CCDC vào danh sách</Card.Header>
         <Card.Body>
+          <Row className="g-3 mb-3 border-bottom pb-3">
+            <Col md={4}>
+              <Form.Control 
+                placeholder="Lọc theo mã CCDC..." 
+                value={searchCode}
+                onChange={(e) => setSearchCode(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearchTools()}
+              />
+            </Col>
+            <Col md={4}>
+              <Form.Control 
+                placeholder="Lọc theo tên CCDC..." 
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearchTools()}
+              />
+            </Col>
+            <Col md={4}>
+              <Button variant="outline-primary" onClick={handleSearchTools} className="w-100">
+                Lọc danh sách CCDC
+              </Button>
+            </Col>
+          </Row>
+          
           <Row className="align-items-end">
             <Col md={6}>
               <Form.Group>
-                <Form.Label>Chọn CCDC</Form.Label>
+                <Form.Label>Chọn CCDC (đã lọc)</Form.Label>
                 <Form.Select 
                   value={formItem.toolId}
                   onChange={e => setFormItem({...formItem, toolId: e.target.value})}
                 >
-                  <option value="">-- Chọn CCDC ([ID] - Tên) --</option>
+                  <option value="">-- Chọn CCDC ([Mã] - Tên - Còn lại) --</option>
                   {tools.map(t => (
-                    <option key={t.id} value={t.id}>[{t.code}] - {t.name}</option>
+                    <option key={t.id} value={t.id}>
+                      [{t.code}] - {t.name} (Kho: {t.availableQuantity})
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Col>
             <Col md={3}>
               <Form.Group>
-                <Form.Label>Số lượng</Form.Label>
+                <Form.Label>Số lượng mượn</Form.Label>
                 <Form.Control 
                   type="number" 
                   min="1" 
