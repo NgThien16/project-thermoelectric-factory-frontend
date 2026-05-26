@@ -268,15 +268,8 @@ const ListConsumable = () => {
                                     {m.code}
                                 </td>
 
-                                <td>
-
-                                    <Link
-                                        to={`/consumable-materials/${m.id}`}
-                                        className="text-decoration-none fw-semibold"
-                                    >
+                                <td className="text-decoration-none fw-semibold text-primary">
                                         {m.name}
-                                    </Link>
-
                                 </td>
 
                                 <td>{m.unit}</td>
