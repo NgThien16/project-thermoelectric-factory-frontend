@@ -98,11 +98,14 @@ const Sidebar = () => {
 
             </div>
         )}
-        <Nav.Link as={Link} to="/ccdc" active={location.pathname === '/ccdc'}>
+        <Nav.Link as={Link} to="/tool" active={location.pathname === '/tool'}>
           <FaClipboardList /> Công cụ dụng cụ
         </Nav.Link>
-        <Nav.Link as={Link} to="/ccdc/borrowings" active={location.pathname === '/ccdc/borrowings'}>
+        <Nav.Link as={Link} to="/tool/borrowings" active={location.pathname === '/tool/borrowings'}>
           <FaClipboardList /> Quản lý mượn/trả
+        </Nav.Link>
+        <Nav.Link as={Link} to="/tool/user-borrow" active={location.pathname === '/tool/user-borrow'}>
+          <FaClipboardList /> Đăng ký mượn đồ
         </Nav.Link>
       </Nav>
     </div>
