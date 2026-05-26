@@ -28,7 +28,7 @@ const UserToolBorrowing = () => {
   const fetchTools = async () => {
     try {
       const response = await toolService.getAllTools(searchName, '', searchCode);
-      setTools(response.data);
+      setTools(response.data.content || []);
     } catch (error) {
       console.error('Error fetching tools:', error);
     }

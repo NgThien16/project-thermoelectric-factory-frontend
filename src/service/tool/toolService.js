@@ -1,71 +1,212 @@
+
 import axiosInstance from '../../api/axiosInstance.js';
 
 const toolService = {
-  // --- Quản lý Công cụ (Tools) ---
-  getAllTools: (name = '', type = '', code = '') => {
+
+  // =====================================================
+  // QUẢN LÝ CÔNG CỤ DỤNG CỤ (TOOLS)
+  // =====================================================
+
+  // Lấy danh sách + search + pagination
+  getAllTools: (
+    name = '',
+    type = '',
+    code = '',
+    page = 0,
+    size = 5
+  ) => {
+
     const params = {};
-    if (name) params.name = name;
-    if (type) params.type = type;
-    if (code) params.code = code;
-    
-    console.log('[DEBUG_LOG] Fetching tools with params:', params);
-    return axiosInstance.get('/tools', { params });
+
+    // Search params
+    if (name && name.trim() !== '') {
+      params.name = name.trim();
+    }
+
+    if (type && type.trim() !== '') {
+      params.type = type.trim();
+    }
+
+    if (code && code.trim() !== '') {
+      params.code = code.trim();
+    }
+
+    // Pagination params
+    params.page = page;
+    params.size = size;
+
+    console.log(
+      '[DEBUG_LOG] Fetching tools with params:',
+      params
+    );
+
+    return axiosInstance.get(
+      '/tools',
+      { params }
+    );
   },
 
+  // Lấy chi tiết tool theo ID
   getToolById: (id) => {
     return axiosInstance.get(`/tools/${id}`);
   },
 
+  // Tạo mới tool
   createTool: (toolData) => {
-    return axiosInstance.post('/tools', toolData);
+    return axiosInstance.post(
+      '/tools',
+      toolData
+    );
   },
 
+  // Cập nhật tool
   updateTool: (id, toolData) => {
-    return axiosInstance.put(`/tools/${id}`, toolData);
+    return axiosInstance.put(
+      `/tools/${id}`,
+      toolData
+    );
   },
 
+  // Xóa tool
   deleteTool: (id) => {
-    return axiosInstance.delete(`/tools/${id}`);
+    return axiosInstance.delete(
+      `/tools/${id}`
+    );
   },
 
+  // Nhập thêm số lượng tool
   importTool: (code, quantity) => {
-    return axiosInstance.post('/tools/import', { code, quantity });
+
+    const payload = {
+      code,
+      quantity
+    };
+
+    return axiosInstance.post(
+      '/tools/import',
+      payload
+    );
   },
 
-  // --- Quản lý Mượn/Trả (Tool Borrowings) ---
-  getAllBorrowings: (params = {}) => {
+  // =====================================================
+  // QUẢN LÝ MƯỢN / TRẢ CÔNG CỤ
+  // =====================================================
+
+  // Lấy danh sách phiếu mượn
+  getAllBorrowings: (
+    params = {}
+  ) => {
+
     const queryParams = {};
-    if (params.toolId && params.toolId.trim() !== '') queryParams.toolCode = params.toolId.trim();
-    if (params.user && params.user.trim() !== '') queryParams.employeeSearch = params.user.trim();
-    if (params.status && params.status.trim() !== '') queryParams.status = params.status;
-    
-    console.log('[DEBUG_LOG] Fetching borrowings with params:', queryParams);
-    return axiosInstance.get('/tool-borrowings', { params: queryParams });
+
+    // Search theo mã tool
+    if (
+      params.toolId &&
+      params.toolId.trim() !== ''
+    ) {
+
+      queryParams.toolCode =
+        params.toolId.trim();
+    }
+
+    // Search theo nhân viên
+    if (
+      params.user &&
+      params.user.trim() !== ''
+    ) {
+
+      queryParams.employeeSearch =
+        params.user.trim();
+    }
+
+    // Search theo trạng thái
+    if (
+      params.status &&
+      params.status.trim() !== ''
+    ) {
+
+      queryParams.status =
+        params.status;
+    }
+
+    // Pagination
+    queryParams.page =
+      params.page || 0;
+
+    queryParams.size =
+      params.size || 5;
+
+    console.log(
+      '[DEBUG_LOG] Fetching borrowings with params:',
+      queryParams
+    );
+
+    return axiosInstance.get(
+      '/tool-borrowings',
+      {
+        params: queryParams
+      }
+    );
   },
 
-  borrowToolsBatch: (borrowingRequest) => {
-    return axiosInstance.post('/tool-borrowings/batch', borrowingRequest);
+  // Mượn nhiều tool cùng lúc
+  borrowToolsBatch: (
+    borrowingRequest
+  ) => {
+
+    return axiosInstance.post(
+      '/tool-borrowings/batch',
+      borrowingRequest
+    );
   },
 
-  borrowTool: (borrowingData) => {
-    return axiosInstance.post('/tool-borrowings/borrow', borrowingData);
+  // Mượn 1 tool
+  borrowTool: (
+    borrowingData
+  ) => {
+
+    return axiosInstance.post(
+      '/tool-borrowings/borrow',
+      borrowingData
+    );
   },
 
+  // Trả tool
   returnTool: (id) => {
-    return axiosInstance.post(`/tool-borrowings/${id}/return`);
-  },
 
-  confirmReturns: (ids) => {
-    return axiosInstance.post('/tool-borrowings/confirm-returns', ids);
-  },
+    return axiosInstance.post(
+      `/tool-borrowings/${id}/return`
+);
+},
 
-  confirmBorrowing: (id) => {
-    return axiosInstance.post(`/tool-borrowings/${id}/confirm`);
-  },
+// Xác nhận trả nhiều tool
+confirmReturns: (ids) => {
 
-  updateBorrowing: (id, borrowingData) => {
-    return axiosInstance.put(`/tool-borrowings/${id}`, borrowingData);
-  }
+  return axiosInstance.post(
+      '/tool-borrowings/confirm-returns',
+      ids
+  );
+},
+
+    // Xác nhận mượn
+    confirmBorrowing: (id) => {
+
+  return axiosInstance.post(
+      `/tool-borrowings/${id}/confirm`
+  );
+},
+
+    // Cập nhật phiếu mượn
+    updateBorrowing: (
+    id,
+    borrowingData
+) => {
+
+  return axiosInstance.put(
+      `/tool-borrowings/${id}`,
+      borrowingData
+  );
+}
 };
 
 export default toolService;
