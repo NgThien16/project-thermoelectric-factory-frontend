@@ -1,75 +1,87 @@
 import {useEffect, useState} from "react";
-import {useParams, Link} from "react-router-dom";
-import {findById} from "../../../service/operations_manager/equipment/EquipmentService.js";
-import { Card, Table, Badge } from 'react-bootstrap';
-import { FaArrowLeft } from 'react-icons/fa';
+import {Link, useParams} from "react-router-dom";
+import {getDetail} from "../../../service/operations_manager/equipment/EquipmentService.js";
 
-const EquipmentDetail = () => {
+const TypeDetail = () => {
 
-    const {id} = useParams();
-    const [equipment, setEquipment] = useState(null);
+    const {typeId, equipmentId} = useParams();
+    const [detail, setDetail] = useState(null);
 
     useEffect(() => {
 
         const fetchData = async () => {
-            const res = await findById(id);
-            setEquipment(res);
+
+            const res = await getDetail(typeId, equipmentId);
+            setDetail(res);
         };
 
         fetchData();
 
-    }, [id]);
+    }, [typeId, equipmentId]);
 
-    if (!equipment) {
-        return <div className="p-4 text-center"><h3>Đ đang tải dữ liệu...</h3></div>;
+    if (!detail) {
+        return <h4 className="text-center mt-4">Đang tải dữ liệu...</h4>;
     }
 
     return (
-        <div className="p-4">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h3 className="fw-bold">Chi tiết thiết bị</h3>
-                <Link to={`/equipments`} className="btn btn-outline-secondary d-flex align-items-center gap-2">
-                    <FaArrowLeft /> Quay lại
-                </Link>
+        <div className="container mt-4">
+
+            <h2 className="fw-bold mb-3">Chi tiết thiết bị <span className={'text-danger'}>--{detail.name}--</span></h2>
+
+            <div className="card shadow-sm mb-3">
+
+                <div className="card-body">
+
+                    <div><b>Loại thiết bị:</b> {detail.type}</div>
+                    <div><b>Mã KKS:</b> {detail.kks}</div>
+
+                </div>
+
             </div>
 
-            <Card className="border-0 shadow-sm">
-                <Card.Body>
-                    <Table bordered className="mb-0">
+            <div className="card shadow-sm">
+
+                <div className="card-body p-0">
+
+                    <table className="table table-striped mb-0">
+
+                        <thead className="table-dark">
+                        <tr>
+                            <th>Thông số</th>
+                            <th>Đơn vị</th>
+                            <th>Giá trị</th>
+                        </tr>
+                        </thead>
+
                         <tbody>
-                        <tr>
-                            <th className="bg-light" style={{ width: '250px' }}>Tên thiết bị</th>
-                            <td>{equipment.name}</td>
-                        </tr>
 
-                        <tr>
-                            <th className="bg-light">Mã KKS</th>
-                            <td>{equipment.code}</td>
-                        </tr>
+                        {detail.parameters.map((d,i) => (
 
-                        <tr>
-                            <th className="bg-light">Hệ thống</th>
-                            <td>{equipment.system?.name || 'Chưa xác định'}</td>
-                        </tr>
+                            <tr key={i}>
+                                <td>{d.parameter}</td>
+                                <td>{d.unit}</td>
+                                <td>{d.value}</td>
+                            </tr>
 
-                        <tr>
-                            <th className="bg-light">Loại thiết bị</th>
-                            <td>{equipment.type?.name || 'Chưa xác định'}</td>
-                        </tr>
+                        ))}
 
-                        <tr>
-                            <th className="bg-light">Trạng thái</th>
-                            <td>
-                                <Badge bg="info" className="fw-normal">
-                                    {equipment.status}
-                                </Badge>
-                            </td>
-                        </tr>
                         </tbody>
-                    </Table>
-                </Card.Body>
-            </Card>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+            <Link
+                className="btn btn-outline-secondary mt-3"
+                to={`/equipments`}
+            >
+                ← Quay lại
+            </Link>
+
         </div>
     );
 };
-export default EquipmentDetail;
+
+export default TypeDetail;

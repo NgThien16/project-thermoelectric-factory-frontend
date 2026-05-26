@@ -60,7 +60,7 @@ function App() {
 
                     {/* Thiết bị */}
                     <Route path={'/equipments'} element={<Equipment/>}/>
-                    <Route path={'/equipments/:id'} element={<EquipmentDetail/>}/>
+                    <Route path={'/equipments/:typeId/equipment-types/:equipmentId/detail'} element={<EquipmentDetail/>}/>
                     <Route path={'/equipments/add'} element={<AddEquipment/>}/>
                     <Route path={'/equipments/edit/:id'} element={<EditEquipment/>}/>
 

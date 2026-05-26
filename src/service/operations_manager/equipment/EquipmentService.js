@@ -32,11 +32,33 @@ export async function searchListEquipment(searchName,searchCode,searchSystem,sea
 }
 export async function findById(id){
     try {
-        const res = await axiosInstance.get(`/equipments/${id}`);
+
+        const res = await axiosInstance.get(
+            `/equipments/${id}`
+        );
+
         return res.data;
-    }catch (e) {
+
+    } catch (e) {
+
         console.log(e);
-        return [];
+
+        return null;
+    }
+}
+
+export async function getDetail(typeId, equipmentId) {
+
+    try {
+        const res = await axiosInstance.get(
+            `/equipments/${typeId}/equipment-types/${equipmentId}/detail`
+        );
+        return res.data;
+    } catch (e) {
+
+        console.log(e);
+
+        return null;
     }
 }
 
@@ -53,6 +75,16 @@ export async function save(equipment){
 export async function edit(equipment) {
     try {
         const res = await axiosInstance.put(`/equipments/${equipment.id}`,equipment);
+        if (res.status===200) return true;
+    }catch (e) {
+        console.log(e);
+        return false;
+    }
+}
+
+export async function deleteById(id) {
+    try {
+        const res = await axiosInstance.delete(`/equipments/${id}`);
         if (res.status===200) return true;
     }catch (e) {
         console.log(e);
