@@ -1,27 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Table,
-  Button,
-  Card,
-  Row,
-  Col,
-  Form,
-  Modal,
-  Badge,
-  Spinner
-} from 'react-bootstrap';
-
-import {
-  FaPlus,
-  FaEdit,
-  FaTrash,
-  FaSearch
-} from 'react-icons/fa';
-
+import {Table, Button, Card, Row, Col, Form, Modal, Badge, Spinner} from 'react-bootstrap';
+import {FaPlus, FaEdit, FaTrash, FaSearch} from 'react-icons/fa';
 import toolService from '../../service/tool/toolService.js';
-
 import { toast } from 'react-toastify';
-
 const ToolManagement = () => {
 
   // =====================================================
@@ -29,6 +10,9 @@ const ToolManagement = () => {
   // =====================================================
 
   const [tools, setTools] = useState([]);
+
+  // Dynamic tool types
+  const [toolTypes, setToolTypes] = useState([]);
 
   const [showModal, setShowModal] = useState(false);
 
@@ -63,12 +47,8 @@ const ToolManagement = () => {
   });
 
   // =====================================================
-  // LOAD DATA
+  // LOAD TOOLS
   // =====================================================
-
-  useEffect(() => {
-    fetchTools();
-  }, [currentPage]);
 
   const fetchTools = async () => {
 
@@ -76,15 +56,10 @@ const ToolManagement = () => {
 
       setLoading(true);
 
-      const typeParam =
-        searchType === 'Tất cả chủng loại'
-          ? ''
-          : searchType;
-
       const response =
         await toolService.getAllTools(
           searchName,
-          typeParam,
+          searchType,
           searchCode,
           currentPage,
           pageSize
@@ -114,6 +89,60 @@ const ToolManagement = () => {
       setLoading(false);
     }
   };
+
+  // =====================================================
+  // LOAD TOOL TYPES
+  // =====================================================
+
+  const fetchToolTypes = async () => {
+
+    try {
+
+      const response =
+        await toolService.getAllTools(
+          '',
+          '',
+          '',
+          0,
+          999
+        );
+
+      const allTools =
+        response.data.content || [];
+
+      const uniqueTypes =
+        [...new Set(
+          allTools
+            .map(tool => tool.type)
+            .filter(type => type)
+        )];
+
+      setToolTypes(uniqueTypes);
+
+    } catch (error) {
+
+      console.error(
+        'Lỗi load chủng loại:',
+        error
+      );
+    }
+  };
+
+  // =====================================================
+  // USE EFFECT
+  // =====================================================
+
+  useEffect(() => {
+
+    fetchTools();
+
+  }, [currentPage]);
+
+  useEffect(() => {
+
+    fetchToolTypes();
+
+  }, []);
 
   // =====================================================
   // SEARCH
@@ -194,6 +223,9 @@ const ToolManagement = () => {
         toast.success(
           'Thêm CCDC mới thành công'
         );
+
+        // reload type
+        fetchToolTypes();
       }
 
       setShowModal(false);
@@ -232,6 +264,8 @@ const ToolManagement = () => {
       );
 
       fetchTools();
+
+      fetchToolTypes();
 
     } catch (error) {
 
@@ -340,21 +374,20 @@ const ToolManagement = () => {
                 }
               >
 
-                <option>
+                <option value="">
                   Tất cả chủng loại
                 </option>
 
-                <option>
-                  Điện
-                </option>
+                {toolTypes.map((type, index) => (
 
-                <option>
-                  Cơ khí
-                </option>
+                  <option
+                    key={index}
+                    value={type}
+                  >
+                    {type}
+                  </option>
 
-                <option>
-                  Xây dựng
-                </option>
+                ))}
 
               </Form.Select>
 
