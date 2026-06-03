@@ -26,11 +26,28 @@ const UserToolBorrowing = () => {
   }, []);
 
   const fetchTools = async () => {
+
     try {
-      const response = await toolService.getAllTools(searchName, '', searchCode);
-      setTools(response.data.content || []);
+
+      const response =
+          await toolService.getAllTools(
+              searchName,
+              '',
+              searchCode,
+              0,
+              999
+          );
+
+      setTools(
+          response.data.content || []
+      );
+
     } catch (error) {
-      console.error('Error fetching tools:', error);
+
+      console.error(
+          'Error fetching tools:',
+          error
+      );
     }
   };
 
@@ -192,16 +209,30 @@ const UserToolBorrowing = () => {
             <Col md={6}>
               <Form.Group>
                 <Form.Label>Chọn CCDC (đã lọc)</Form.Label>
-                <Form.Select 
-                  value={formItem.toolId}
-                  onChange={e => setFormItem({...formItem, toolId: e.target.value})}
+                <Form.Select
+                    value={formItem.toolId}
+                    onChange={e =>
+                        setFormItem({
+                          ...formItem,
+                          toolId: e.target.value
+                        })
+                    }
                 >
-                  <option value="">-- Chọn CCDC ([Mã] - Tên - Còn lại) --</option>
-                  {tools.map(t => (
-                    <option key={t.id} value={t.id}>
-                      [{t.code}] - {t.name} (Kho: {t.availableQuantity})
-                    </option>
-                  ))}
+                  <option value="">
+                    -- Chọn CCDC --
+                  </option>
+                  {tools
+                      .filter(t => t.availableQuantity > 0)
+                      .map(t => (
+                          <option
+                              key={t.id}
+                              value={t.id}
+                          >
+                            [{t.code}] - {t.name}
+                            {' '}
+                            (Kho: {t.availableQuantity})
+                          </option>
+                      ))}
                 </Form.Select>
               </Form.Group>
             </Col>
