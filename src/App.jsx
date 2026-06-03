@@ -86,9 +86,9 @@ function App() {
                     <Route path={"/replacement-transactions/import"} element={<ReplacementImport/>}/>
 
                     {/*CCDC */}
-                    <Route path={'/tool'} element={<ToolManagement/>}/>
-                    <Route path={'/tool/borrowings'} element={<ToolBorrowingManagement/>}/>
-                    <Route path={'/tool/user-borrow'} element={<UserToolBorrowing/>}/>
+                    <Route path={'/tools'} element={<ToolManagement/>}/>
+                    <Route path={'/tools/borrowings'} element={<ToolBorrowingManagement/>}/>
+                    <Route path={'/tools/user-borrow'} element={<UserToolBorrowing/>}/>
                 </Routes>
             </MainLayout>
             <ToastContainer position="top-right" autoClose={3000} />
