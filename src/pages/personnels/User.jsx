@@ -97,6 +97,7 @@ export default function UserPage() {
             const payload = {
                 username: values.username,
                 password: values.password,
+                confirmPassword: values.confirmPassword,
                 employeeId: values.employeeId
             };
 
@@ -165,7 +166,7 @@ export default function UserPage() {
             <Card className="mb-4">
                 <Card.Body>
                     <div className="d-flex justify-content-between align-items-center mb-3">
-                        <h3>Danh sách User</h3>
+                        <h3>Danh sách tài khoản nhân viên</h3>
                         <FaPlus
                             style={{cursor: "pointer"}}
                             onClick={() => setEditData(null)}
@@ -177,6 +178,7 @@ export default function UserPage() {
                         initialValues={{
                             username: editData?.username || "",
                             password: editData?.password || "",
+                            confirmPassword: "",
                             employeeId: editData?.employee?.id || ""
                         }}
                         onSubmit={handleSubmit}
@@ -191,6 +193,12 @@ export default function UserPage() {
                             <Field
                                 name="password"
                                 placeholder="Mật khẩu"
+                                className="form-control me-2"
+                            />
+                            <Field
+                                type="password"
+                                name="confirmPassword"
+                                placeholder="Xác nhận mật khẩu"
                                 className="form-control me-2"
                             />
 
