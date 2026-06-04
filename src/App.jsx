@@ -41,6 +41,8 @@ import Login from "./pages/auth/Login.jsx";
 import RoleProtectedRoute from "./components/auth/RoleProtectedRoute.jsx";
 import RequestManagement from "./pages/repair_order/RequestManagement.jsx";
 import { ROLE } from "./utils/roleUtils.js";
+import WarehouseRelease from "./pages/Materials/WarehouseRelease.jsx";
+import Export from "./pages/Materials/Export.jsx";
 
 function App() {
     return (
@@ -376,6 +378,10 @@ function App() {
                     >
                         <ReplacementImport />
                     </RoleProtectedRoute>}/>
+                    {/*Quản đốc*/}
+                    <Route path="/material-export/supply-slip/:requestId" element={<Export/>} />
+                    {/*Thủ Kho*/}
+                    <Route path="/warehouse/release/:requestId" element={<WarehouseRelease />} />
 
                     {/*CCDC */}
                     <Route path={'/tool'} element={<RoleProtectedRoute
@@ -420,5 +426,5 @@ function App() {
 
     )
 }
-
+// app jsx
 export default App
