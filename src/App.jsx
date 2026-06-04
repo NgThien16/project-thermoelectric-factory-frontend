@@ -37,6 +37,9 @@ import ReplacementTransactionHistory from "./pages/Materials/Replacement/Replace
 import ListReplacementTransaction from "./pages/Materials/Replacement/ListReplacementTransaction.jsx";
 import EditConsumable from "./pages/Materials/Consumable/category/EditConsumable.jsx";
 import EditReplacement from "./pages/Materials/Replacement/category/EditReplacement.jsx";
+import Login from "./pages/auth/Login.jsx";
+import RoleProtectedRoute from "./components/auth/RoleProtectedRoute.jsx";
+import { ROLE } from "./utils/roleUtils.js";
 
 import Export from "./pages/Materials/Export.jsx";
 import WarehouseRelease from "./pages/Materials/WarehouseRelease.jsx";
@@ -47,14 +50,87 @@ function App() {
             <MainLayout>
                 <Routes>
                     <Route path={'/'} element={<Dashboard/>}/>
+                    <Route path="/login" element={<Login />} />
 
                     {/* Nhân sự */}
-                    <Route path="/personnels" element={<EmployeePage />} />
-                    <Route path="/personnels/employees" element={<EmployeePage />} />
-                    <Route path="/personnels/departments" element={<DepartmentPage />} />
-                    <Route path="/personnels/positions" element={<PositionPage />} />
-                    <Route path="/personnels/roles" element={<RolePage />} />
-                    <Route path="/personnels/users" element={<UserPage />} />
+                    <Route
+                        path="/personnels"
+                        element={
+                            <RoleProtectedRoute
+                                allowedRoles={[
+                                    ROLE.ADMIN,
+                                    ROLE.HR
+                                ]}
+                            >
+                                <EmployeePage />
+                            </RoleProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/personnels/employees"
+                        element={
+                            <RoleProtectedRoute
+                                allowedRoles={[
+                                    ROLE.ADMIN,
+                                    ROLE.HR
+                                ]}
+                            >
+                                <EmployeePage />
+                            </RoleProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/personnels/departments"
+                        element={
+                            <RoleProtectedRoute
+                                allowedRoles={[
+                                    ROLE.ADMIN,
+                                    ROLE.HR
+                                ]}
+                            >
+                                <DepartmentPage />
+                            </RoleProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/personnels/positions"
+                        element={
+                            <RoleProtectedRoute
+                                allowedRoles={[
+                                    ROLE.ADMIN,
+                                    ROLE.HR
+                                ]}
+                            >
+                                <PositionPage />
+                            </RoleProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/personnels/roles"
+                        element={
+                            <RoleProtectedRoute
+                                allowedRoles={[
+                                    ROLE.ADMIN,
+                                    ROLE.HR
+                                ]}
+                            >
+                                <RolePage />
+                            </RoleProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/personnels/users"
+                        element={
+                            <RoleProtectedRoute
+                                allowedRoles={[
+                                    ROLE.ADMIN,
+                                    ROLE.HR
+                                ]}
+                            >
+                                <UserPage />
+                            </RoleProtectedRoute>
+                        }
+                    />
 
                     {/* Hệ thống */}
                     <Route path={'/system-equipments'} element={<SystemEquipment/>}/>
@@ -84,18 +160,129 @@ function App() {
                     <Route path="/material-export/supply-slip/:requestId" element={<Export />} />
                     {/*Thủ Kho*/}
                     <Route path="/warehouse/release/:requestId" element={<WarehouseRelease />} />
+                    <Route path={'/consumable-materials'} element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.MATERIAL
+                        ]}
+                    >
+                        <ListConsumable />
+                    </RoleProtectedRoute>}/>
+                    <Route path={"/consumable-materials/add"} element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.MATERIAL
+                        ]}
+                    >
+                        <AddConsumable />
+                    </RoleProtectedRoute>}/>
+                    <Route path="/consumable-materials/edit/:id" element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.MATERIAL
+                        ]}
+                    >
+                        <EditConsumable />
+                    </RoleProtectedRoute>} />
+                    <Route path={"/consumable-transactions"} element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.MATERIAL
+                        ]}
+                    >
+                        <ConsumableTransactionList />
+                    </RoleProtectedRoute>}/>
+                    <Route path={"/consumable-transactions/history"} element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.MATERIAL
+                        ]}
+                    >
+                        <ConsumableTransactionHistory />
+                    </RoleProtectedRoute>}/>
+                    <Route path={"/consumable-transactions/import"} element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.MATERIAL
+                        ]}
+                    >
+                        <ConsumableImport />
+                    </RoleProtectedRoute>}/>
                     {/* Vật tư thay thế */}
-                    <Route path={'/replacement-materials'} element={<ListReplacement/>}/>
-                    <Route path={'/replacement-materials/add'} element={<AddReplacement/>}/>
-                    <Route path={"/replacement-materials/edit/:id"} element={<EditReplacement />} />
-                    <Route path={"/replacement-transactions"} element={<ListReplacementTransaction/>}/>
-                    <Route path={"/replacement-transactions/history"} element={<ReplacementTransactionHistory/>}/>
-                    <Route path={"/replacement-transactions/import"} element={<ReplacementImport/>}/>
+                    <Route path={'/replacement-materials'} element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.MATERIAL
+                        ]}
+                    >
+                        <ListReplacement />
+                    </RoleProtectedRoute>}/>
+                    <Route path={'/replacement-materials/add'} element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.MATERIAL
+                        ]}
+                    >
+                        <AddReplacement />
+                    </RoleProtectedRoute>}/>
+                    <Route path={"/replacement-materials/edit/:id"} element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.MATERIAL
+                        ]}
+                    >
+                        <EditReplacement />
+                    </RoleProtectedRoute>} />
+                    <Route path={"/replacement-transactions"} element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.MATERIAL
+                        ]}
+                    >
+                        <ListReplacementTransaction />
+                    </RoleProtectedRoute>}/>
+                    <Route path={"/replacement-transactions/history"} element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.MATERIAL
+                        ]}
+                    >
+                        <ReplacementTransactionHistory />
+                    </RoleProtectedRoute>}/>
+                    <Route path={"/replacement-transactions/import"} element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.MATERIAL
+                        ]}
+                    >
+                        <ReplacementImport />
+                    </RoleProtectedRoute>}/>
 
                     {/*CCDC */}
-                    <Route path={'/tool'} element={<ToolManagement/>}/>
-                    <Route path={'/tool/borrowings'} element={<ToolBorrowingManagement/>}/>
-                    <Route path={'/tool/user-borrow'} element={<UserToolBorrowing/>}/>
+                    <Route path={'/tool'} element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.TOOL
+                        ]}
+                    >
+                        <ToolManagement />
+                    </RoleProtectedRoute>}/>
+                    <Route path={'/tool/borrowings'} element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.TOOL
+                        ]}
+                    >
+                        <ToolBorrowingManagement />
+                    </RoleProtectedRoute>}/>
+                    <Route path={'/tool/user-borrow'} element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.TOOL
+                        ]}
+                    >
+                        <UserToolBorrowing />
+                    </RoleProtectedRoute>}/>
                 </Routes>
             </MainLayout>
             <ToastContainer position="top-right" autoClose={3000} />

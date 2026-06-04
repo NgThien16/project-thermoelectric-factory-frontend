@@ -3,7 +3,7 @@ import {searchListEquipment} from "../../../service/operations_manager/equipment
 import {Field, Form, Formik} from "formik";
 import {Button, Table, Card, Row, Col} from "react-bootstrap";
 import {Link} from "react-router-dom";
-import {FaSearch, FaPlus, FaEdit, FaBackward, FaArrowLeft} from 'react-icons/fa';
+import {FaSearch, FaPlus, FaEdit, FaArrowLeft} from 'react-icons/fa';
 import {getListSystem} from "../../../service/operations_manager/system/SystemService.js";
 import {getListType} from "../../../service/operations_manager/equipment/EquipmentTypeService.js";
 import DeleteEquipment from "./DeleteEquipment.jsx";
