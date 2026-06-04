@@ -13,5 +13,8 @@ export const ROLE = {
         "ROLE_THỦ KHO VẬT TƯ",
 
     TOOL:
-        "ROLE_THỦ KHO CCDC"
+        "ROLE_THỦ KHO CCDC",
+
+    SHIFT_LEADER: "ROLE_TRƯỞNG CA",
+    SHIFT_LEADER_ALT: "ROLE_TRƯỞNG KÍP"
 };
