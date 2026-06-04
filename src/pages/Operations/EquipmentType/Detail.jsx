@@ -48,17 +48,19 @@ const TypeDetail = () => {
                         <thead className="table-dark">
                         <tr>
                             <th>Thông số</th>
+                            <th>Đơn vị</th>
                             <th>Giá trị</th>
                         </tr>
                         </thead>
 
                         <tbody>
 
-                        {Object.entries(detail.parameters).map(([key, value]) => (
+                        {detail.parameters.map((d,i) => (
 
-                            <tr key={key}>
-                                <td>{key}</td>
-                                <td>{value || "Chưa có dữ liệu"}</td>
+                            <tr key={i}>
+                                <td>{d.parameter}</td>
+                                <td>{d.unit}</td>
+                                <td>{d.value}</td>
                             </tr>
 
                         ))}

@@ -272,14 +272,8 @@ const ListReplacement = () => {
                                     {m.code}
                                 </td>
 
-                                <td>
-
-                                    <Link
-                                        to={`/replacement-materials/${m.id}`}
-                                        className="text-decoration-none fw-semibold"
-                                    >
+                                <td className="text-decoration-none fw-semibold text-primary">
                                         {m.name}
-                                    </Link>
 
                                 </td>
 

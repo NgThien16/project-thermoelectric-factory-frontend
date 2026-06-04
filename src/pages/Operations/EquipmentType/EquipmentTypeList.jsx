@@ -4,7 +4,7 @@ import {searchEquipmentType} from "../../../service/operations_manager/equipment
 import {Link} from "react-router-dom";
 import {Button, Card, Row, Col, Table} from "react-bootstrap";
 import {getListDomain} from "../../../service/operations_manager/domain/DomainService.js";
-import { FaSearch, FaPlus } from 'react-icons/fa';
+import {FaSearch, FaPlus, FaArrowLeft} from 'react-icons/fa';
 
 const EquipmentTypeList = () => {
 
@@ -28,8 +28,7 @@ const EquipmentTypeList = () => {
                 search.domain,
                 page
             );
-            const data = setDomains(await getListDomain());
-            console.log(data);
+            setDomains(await getListDomain());
 
             setTypes(res.data);
             setTotalPages(res.totalPages);
@@ -92,10 +91,10 @@ const EquipmentTypeList = () => {
                                 </Col>
                                 <Col md={3} className="d-flex gap-2">
                                     <Button type={"submit"} className={"btn btn-primary d-flex align-items-center gap-2"}>
-                                        <FaSearch /> Tìm
+                                        <FaSearch />
                                     </Button>
                                     <Button variant="outline-secondary" onClick={handleReset} type={'reset'}>
-                                        Hủy
+                                        <FaArrowLeft />
                                     </Button>
                                 </Col>
                             </Row>

@@ -1,4 +1,5 @@
 import axiosInstance from "../../../api/axiosInstance.js";
+import axios from "axios";
 
 export const getInventory = async (
     code = "",
@@ -90,4 +91,18 @@ export async function save (consumableTransaction) {
 
         return false;
     }
+}
+export async function exportConsumable(exportData) {
+    try {
+
+        const res = await axiosInstance.post(
+            "/consumable-transactions/export",
+            exportData
+        );
+        return res.data;
+    } catch (e) {
+        console.log("Lỗi khi gọi API cấp phát vật tư:", e);
+        return false;
+    }
+
 }

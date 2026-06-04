@@ -90,10 +90,10 @@ const DetailSystem = () => {
                                 </Col>
                                 <Col md={4} className="d-flex gap-2">
                                     <Button variant="primary" type={'submit'} className="d-flex align-items-center gap-2">
-                                        <FaSearch /> Tìm kiếm
+                                        <FaSearch />
                                     </Button>
                                     <Button variant="outline-secondary" onClick={handleReset} type={'reset'}>
-                                        Quay lại
+                                        <FaArrowLeft />
                                     </Button>
                                 </Col>
                             </Row>
@@ -117,7 +117,7 @@ const DetailSystem = () => {
                             <tr key={e.id}>
                                 <td>
                                     <Link
-                                        to={`/equipment-types/${e.typeId}/equipments/${e.id}/detail`}
+                                        to={`/equipments/${e.typeId}/equipment-types/${e.id}/detail`}
                                         className="text-primary fw-semibold text-decoration-none"
                                     >
                                         {e.name}

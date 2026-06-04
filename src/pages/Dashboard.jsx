@@ -1,86 +1,156 @@
-import { useEffect, useState } from 'react';
-import { Card, Row, Col } from 'react-bootstrap';
-import { FaCogs, FaTools, FaWarehouse, FaClipboardList, FaUsers } from 'react-icons/fa';
-import { getListSystem } from '../service/operations_manager/system/SystemService';
-import { searchListEquipment } from '../service/operations_manager/equipment/EquipmentService';
-import { getAllOrSearch as getConsumables } from '../service/materials_manager/consumable/ConsumableCategoryService.js';
-import { getAllOrSearch as getReplacements } from '../service/materials_manager/replacement/ReplacementCategoryService.js';
-import toolService from '../service/tool/toolService.js';
+import {Card, Row, Col, Alert} from "react-bootstrap";
+import {
+    FaCogs,
+    FaTools,
+    FaWarehouse,
+    FaClipboardList,
+    FaUsers,
+    FaWrench
+} from "react-icons/fa";
+import useAuth from "../context/useAuth";
 
-const Dashboard = () => {
-  const [counts, setCounts] = useState({
-    systems: 0,
-    equipments: 0,
-    materials: 0,
-    borrowedTools: 0,
-    personnel: 85, // Giữ tạm thời vì chưa có service nhân sự
-  });
+export default function Dashboard() {
+    const { user } = useAuth();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [systems, equipments, consumables, replacements, borrowings] = await Promise.all([
-          getListSystem(),
-          searchListEquipment('', '', '', 1),
-          getConsumables(),
-          getReplacements(),
-          toolService.getAllBorrowings(),
-        ]);
+    const modules = [
+        {
+            title: "Quản đốc vận hành",
+            icon: <FaCogs size={40}/>,
+            description:
+                "Quản lý hệ thống, thiết bị và các thông tin vận hành."
+        },
+        {
+            title: "Thiết bị",
+            icon: <FaTools size={40}/>,
+            description:
+                "Quản lý danh mục thiết bị, loại thiết bị và thông tin chi tiết."
+        },
+        {
+            title: "Yêu cầu sửa chữa",
+            icon: <FaWrench size={40}/>,
+            description:
+                "Tạo và theo dõi các yêu cầu sửa chữa thiết bị trong nhà máy."
+        },
+        {
+            title: "Kho vật tư",
+            icon: <FaWarehouse size={40}/>,
+            description:
+                "Quản lý vật tư tiêu hao, vật tư thay thế và các giao dịch nhập xuất."
+        },
+        {
+            title: "Kho CCDC",
+            icon: <FaClipboardList size={40}/>,
+            description:
+                "Quản lý công cụ dụng cụ và các phiếu mượn trả."
+        },
+        {
+            title: "Nhân sự",
+            icon: <FaUsers size={40}/>,
+            description:
+                "Quản lý nhân viên, tài khoản, phòng ban và phân quyền."
+        }
+    ];
 
-        setCounts({
-          systems: Array.isArray(systems) ? systems.length : 0,
-          equipments: equipments?.data?.totalElements || 0,
-          materials: (Array.isArray(consumables) ? consumables.length : 0) + (Array.isArray(replacements) ? replacements.length : 0),
-          borrowedTools: Array.isArray(borrowings.data) ? borrowings.data.length : 0,
-          personnel: 85,
-        });
-      } catch (error) {
-        console.error('Error fetching dashboard stats:', error);
-      }
-    };
+    return (
+        <div className="container-fluid p-4">
 
-    fetchData();
-  }, []);
+            <div className="mb-4">
+                <h2 className="fw-bold">
+                    Hệ thống quản lý nhà máy nhiệt điện
+                </h2>
 
-  const stats = [
-    { title: 'Hệ thống', count: counts.systems, icon: <FaCogs />, color: 'primary' },
-    { title: 'Thiết bị', count: counts.equipments, icon: <FaTools />, color: 'success' },
-    { title: 'Kho vật tư', count: counts.materials, icon: <FaWarehouse />, color: 'warning' },
-    { title: 'CCDC mượn', count: counts.borrowedTools, icon: <FaClipboardList />, color: 'info' },
-    { title: 'Nhân sự', count: counts.personnel, icon: <FaUsers />, color: 'secondary' },
-  ];
+                <p className="text-muted mb-0">
+                    Hệ thống hỗ trợ quản lý thiết bị, vật tư,
+                    công cụ dụng cụ và bảo trì trong nhà máy.
+                </p>
+            </div>
 
-  return (
-    <div className="p-4">
-      <h3 className="mb-4 fw-bold">Tổng quan hệ thống</h3>
-      <Row className="g-4">
-        {stats.map((stat, index) => (
-          <Col key={index} md={4} lg={2.4} style={{ flex: '0 0 20%', maxWidth: '20%' }}>
-            <Card className="border-0 shadow-sm h-100">
-              <Card.Body className="d-flex align-items-center">
-                <div className={`bg-${stat.color} text-white p-3 rounded-circle me-3 d-flex align-items-center justify-content-center`} style={{ width: '50px', height: '50px' }}>
-                  {stat.icon}
-                </div>
-                <div>
-                  <p className="text-muted mb-0 small">{stat.title}</p>
-                  <h4 className="mb-0 fw-bold">{stat.count}</h4>
-                </div>
-              </Card.Body>
+            {!user ? (
+                <Alert variant="info">
+                    <b>Thông báo</b>: Để sử dụng hệ thống, vui lòng đăng nhập bằng
+                    tài khoản đã được cung cấp.
+                </Alert>
+            ) : (
+                <Alert variant="success">
+                    Chào mừng <b className={'text-danger'}>{user.username}</b>, hệ thống đã sẵn sàng sử dụng.
+                </Alert>
+            )}
+
+            <Row className="g-4 mt-2">
+
+                {modules.map((module, index) => (
+                    <Col
+                        key={index}
+                        xl={3}
+                        lg={4}
+                        md={6}
+                    >
+                        <Card className="h-100 shadow-sm border-0">
+
+                            <Card.Body className="text-center">
+
+                                <div className="mb-3 text-primary">
+                                    {module.icon}
+                                </div>
+
+                                <h5 className="fw-bold">
+                                    {module.title}
+                                </h5>
+
+                                <p className="text-muted">
+                                    {module.description}
+                                </p>
+
+                            </Card.Body>
+
+                        </Card>
+                    </Col>
+                ))}
+
+            </Row>
+
+            <Card className="mt-5 border-0 shadow-sm">
+
+                <Card.Body>
+
+                    <h4 className="mb-3">
+                        Giới thiệu hệ thống
+                    </h4>
+
+                    <p>
+                        Hệ thống được xây dựng nhằm hỗ trợ công tác quản lý
+                        thiết bị, vật tư, công cụ dụng cụ và nhân sự trong
+                        nhà máy nhiệt điện.
+                    </p>
+
+                    <p>
+                        Các chức năng được phân quyền theo từng bộ phận nhằm
+                        đảm bảo tính bảo mật và phù hợp với quy trình vận hành
+                        thực tế của doanh nghiệp.
+                    </p>
+
+                    <ul>
+                        <li>
+                            Quản lý hệ thống và thiết bị.
+                        </li>
+                        <li>
+                            Quản lý vật tư tiêu hao và vật tư thay thế.
+                        </li>
+                        <li>
+                            Quản lý công cụ dụng cụ và phiếu mượn trả.
+                        </li>
+                        <li>
+                            Quản lý nhân viên, phòng ban và tài khoản.
+                        </li>
+                        <li>
+                            Phân quyền truy cập theo vai trò người dùng.
+                        </li>
+                    </ul>
+
+                </Card.Body>
+
             </Card>
-          </Col>
-        ))}
-      </Row>
 
-      <Row className="mt-4">
-        <Col md={12}>
-          <Card className="border-0 shadow-sm p-4 text-center bg-light">
-            <h5 className="text-muted">Chào mừng quay trở lại, Admin!</h5>
-            <p className="mb-0">Hệ thống quản lý thiết bị, sửa chữa và bảo dưỡng nhà máy nhiệt điện đã sẵn sàng.</p>
-          </Card>
-        </Col>
-      </Row>
-    </div>
-  );
-};
-
-export default Dashboard;
+        </div>
+    );
+}

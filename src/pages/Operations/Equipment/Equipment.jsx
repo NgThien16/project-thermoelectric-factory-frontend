@@ -2,10 +2,12 @@ import {useEffect, useState} from "react";
 import {searchListEquipment} from "../../../service/operations_manager/equipment/EquipmentService.js";
 import {Field, Form, Formik} from "formik";
 import {Button, Table, Card, Row, Col} from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { FaSearch, FaPlus, FaEdit } from 'react-icons/fa';
+import {Link} from "react-router-dom";
+import {FaSearch, FaPlus, FaEdit, FaArrowLeft} from 'react-icons/fa';
 import {getListSystem} from "../../../service/operations_manager/system/SystemService.js";
 import {getListType} from "../../../service/operations_manager/equipment/EquipmentTypeService.js";
+import DeleteEquipment from "./DeleteEquipment.jsx";
+import {FaDeleteLeft} from "react-icons/fa6";
 
 const Equipment = () => {
     const [equipmentList,setEquipmentList] = useState([]);
@@ -22,6 +24,13 @@ const Equipment = () => {
         type:"",
         status:""
     })
+
+    const [deleteEquipment,setDeleteEquipment] = useState({
+        id:"",
+        code:""
+    });
+    const [reload,setReload] = useState(false);
+    const [isShowModal,setIsShowModal] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -40,7 +49,12 @@ const Equipment = () => {
 
         }
         fetchData();
-    }, [page,search]);
+    }, [reload,page,search]);
+
+    const handleOpenModal = (equipment)=>{
+        setDeleteEquipment(equipment);
+        setIsShowModal(true);
+    }
 
     const handleSearch = async (value) => {
         setSearch(value);
@@ -101,7 +115,7 @@ const Equipment = () => {
                                         <FaSearch />
                                     </Button>
                                     <Button variant="outline-secondary" onClick={handleReset} type={'reset'}>
-                                        Quay lại
+                                        <FaArrowLeft />
                                     </Button>
                                 </Col>
                             </Row>
@@ -125,7 +139,7 @@ const Equipment = () => {
                         {equipmentList.map((e)=>(
                             <tr key={e.id}>
                                 <td>
-                                    <Link to={`/equipments/${e.id}`} className="text-decoration-none fw-semibold">
+                                    <Link to={`/equipments/${e.typeId}/equipment-types/${e.id}/detail`} className="text-decoration-none fw-semibold">
                                         {e.name}
                                     </Link>
                                 </td>
@@ -135,6 +149,9 @@ const Equipment = () => {
                                     <Link to={`/equipments/edit/${e.id}`} className="btn btn-outline-primary btn-sm me-2">
                                         <FaEdit />
                                     </Link>
+                                    <Button className={'btn btn-sm btn-danger'} onClick={()=> handleOpenModal(e)}>
+                                        <FaDeleteLeft/>
+                                    </Button>
                                 </td>
                             </tr>
                         ))}
@@ -145,6 +162,11 @@ const Equipment = () => {
                         )}
                         </tbody>
                     </Table>
+                    <DeleteEquipment isShowModal={isShowModal}
+                                     deleteEquipment={deleteEquipment}
+                                     closeModal={setIsShowModal}
+                                     setReload={setReload}
+                    />
                 </Card.Body>
                 {total > 1 && (
                     <Card.Footer className="bg-white border-0 d-flex justify-content-center py-3">
