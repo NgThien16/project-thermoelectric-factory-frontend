@@ -38,6 +38,9 @@ import ListReplacementTransaction from "./pages/Materials/Replacement/ListReplac
 import EditConsumable from "./pages/Materials/Consumable/category/EditConsumable.jsx";
 import EditReplacement from "./pages/Materials/Replacement/category/EditReplacement.jsx";
 
+import Export from "./pages/Materials/Export.jsx";
+import WarehouseRelease from "./pages/Materials/WarehouseRelease.jsx";
+
 function App() {
     return (
         <>
@@ -77,6 +80,10 @@ function App() {
                     <Route path={"/consumable-transactions"} element={<ConsumableTransactionList/>}/>
                     <Route path={"/consumable-transactions/history"} element={<ConsumableTransactionHistory/>}/>
                     <Route path={"/consumable-transactions/import"} element={<ConsumableImport/>}/>
+                    {/*Quản đốc*/}
+                    <Route path="/material-export/supply-slip/:requestId" element={<Export />} />
+                    {/*Thủ Kho*/}
+                    <Route path="/warehouse/release/:requestId" element={<WarehouseRelease />} />
                     {/* Vật tư thay thế */}
                     <Route path={'/replacement-materials'} element={<ListReplacement/>}/>
                     <Route path={'/replacement-materials/add'} element={<AddReplacement/>}/>
