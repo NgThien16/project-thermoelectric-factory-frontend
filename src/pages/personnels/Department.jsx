@@ -16,9 +16,11 @@ export default function DepartmentPage() {
     const [showModal, setShowModal] = useState(false);
     const [selectedDepartment, setSelectedDepartment] = useState(null);
 
+    const pageSize = 5;
+
     const fetchDepartments = async () => {
         try {
-            const res = await DepartmentService.searchDepartments(keyword, page, 3); // size = 3
+            const res = await DepartmentService.searchDepartments(keyword, page, 5);
             setDepartments(res.content || []);
             setTotalPages(res.totalPages);
         } catch {
@@ -99,7 +101,7 @@ export default function DepartmentPage() {
                         <tbody>
                         {departments.map((dep,i) => (
                             <tr key={dep.id}>
-                                <td>{i+1}</td>
+                                <td>{page * pageSize + i + 1}</td>
                                 <td>{dep.name}</td>
                                 <td>
                                     <FaEdit style={{ cursor: "pointer", marginRight: "8px" }} onClick={() => setEditData(dep)} />

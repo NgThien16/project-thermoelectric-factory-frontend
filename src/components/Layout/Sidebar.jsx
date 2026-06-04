@@ -25,13 +25,19 @@ const Sidebar = () => {
               </Dropdown.Toggle>
               <Dropdown.Menu>
                   <LinkContainer to="/personnels/employees"><Dropdown.Item>Nhân viên</Dropdown.Item></LinkContainer>
+                  <LinkContainer to="/personnels/work_positions"><Dropdown.Item>Vị trí công việc</Dropdown.Item></LinkContainer>
+                  <LinkContainer to="/personnels/employees/{employeeId}/positions"><Dropdown.Item>Vị trí công việc nhân viên</Dropdown.Item></LinkContainer>
                   <LinkContainer to="/personnels/departments"><Dropdown.Item>Phòng ban</Dropdown.Item></LinkContainer>
                   <LinkContainer to="/personnels/positions"><Dropdown.Item>Chức vụ</Dropdown.Item></LinkContainer>
                   <LinkContainer to="/personnels/roles"><Dropdown.Item>Vai trò</Dropdown.Item></LinkContainer>
                   <LinkContainer to="/personnels/users"><Dropdown.Item>Người dùng</Dropdown.Item></LinkContainer>
               </Dropdown.Menu>
           </Dropdown>
-
+          <LinkContainer to="/technical-reports">
+              <Nav.Link active={location.pathname.startsWith('/technical-reports')}>
+                  <FaClipboardList /> Biên bản kỹ thuật
+              </Nav.Link>
+          </LinkContainer>
         <Nav.Link as={Link} to="/system-equipments" active={location.pathname.startsWith('/system-equipments')}>
           <FaCogs /> Hệ thống
         </Nav.Link>

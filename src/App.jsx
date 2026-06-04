@@ -36,6 +36,9 @@ import ReplacementTransactionHistory from "./pages/Materials/Replacement/Replace
 import ListReplacementTransaction from "./pages/Materials/Replacement/ListReplacementTransaction.jsx";
 import EditConsumable from "./pages/Materials/Consumable/category/EditConsumable.jsx";
 import EditReplacement from "./pages/Materials/Replacement/category/EditReplacement.jsx";
+import WorkPositionPage from "./pages/personnels/WorkPosition.jsx";
+import EmployeeWorkPositionPage from "./pages/personnels/EmployeeWorkPosition.jsx";
+import TechnicalReportPage from './pages/technical_report/TechnicalReportPage.jsx';
 
 function App() {
     return (
@@ -47,10 +50,15 @@ function App() {
                     {/* Nhân sự */}
                     <Route path="/personnels" element={<EmployeePage />} />
                     <Route path="/personnels/employees" element={<EmployeePage />} />
+                    <Route path="/personnels/work_positions" element={<WorkPositionPage />} />
+                    <Route path="/personnels/employees/{employeeId}/positions" element={<EmployeeWorkPositionPage />} />
                     <Route path="/personnels/departments" element={<DepartmentPage />} />
                     <Route path="/personnels/positions" element={<PositionPage />} />
                     <Route path="/personnels/roles" element={<RolePage />} />
                     <Route path="/personnels/users" element={<UserPage />} />
+
+                    {/* Biên bản kỹ thuật */}
+                    <Route path="technical-reports" element={<TechnicalReportPage />} />
 
                     {/* Hệ thống */}
                     <Route path={'/system-equipments'} element={<SystemEquipment/>}/>
