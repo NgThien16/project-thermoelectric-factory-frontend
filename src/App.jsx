@@ -41,6 +41,9 @@ import Login from "./pages/auth/Login.jsx";
 import RoleProtectedRoute from "./components/auth/RoleProtectedRoute.jsx";
 import { ROLE } from "./utils/roleUtils.js";
 
+import Export from "./pages/Materials/Export.jsx";
+import WarehouseRelease from "./pages/Materials/WarehouseRelease.jsx";
+
 function App() {
     return (
         <>
@@ -130,154 +133,33 @@ function App() {
                     />
 
                     {/* Hệ thống */}
-                    <Route
-                        path="/system-equipments"
-                        element={
-                            <RoleProtectedRoute
-                                allowedRoles={[
-                                    ROLE.ADMIN,
-                                    ROLE.OPERATION
-                                ]}
-                            >
-                                <SystemEquipment />
-                            </RoleProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/system-equipments/add"
-                        element={
-                            <RoleProtectedRoute
-                                allowedRoles={[
-                                    ROLE.ADMIN,
-                                    ROLE.OPERATION
-                                ]}
-                            >
-                                <AddSystem />
-                            </RoleProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/system-equipments/:id/equipments"
-                        element={
-                            <RoleProtectedRoute
-                                allowedRoles={[
-                                    ROLE.ADMIN,
-                                    ROLE.OPERATION
-                                ]}
-                            >
-                                <DetailSystem />
-                            </RoleProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/system-equipments/:id/add-equipment"
-                        element={
-                            <RoleProtectedRoute
-                                allowedRoles={[
-                                    ROLE.ADMIN,
-                                    ROLE.OPERATION
-                                ]}
-                            >
-                                <AddEquipmentToSystem />
-                            </RoleProtectedRoute>
-                        }
-                    />
+                    <Route path={'/system-equipments'} element={<SystemEquipment/>}/>
+                    <Route path={"/system-equipments/add"} element={<AddSystem/>}/>
+                    <Route path={"/system-equipments/:id/equipments"} element={<DetailSystem/>}/>
+                    <Route path={"/system-equipments/:id/add-equipment"} element={<AddEquipmentToSystem/>}/>
 
                     {/* Thiết bị */}
-                    <Route
-                        path="/equipments"
-                        element={
-                            <RoleProtectedRoute
-                                allowedRoles={[
-                                    ROLE.ADMIN,
-                                    ROLE.OPERATION
-                                ]}
-                            >
-                                <Equipment />
-                            </RoleProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/equipments/add"
-                        element={
-                            <RoleProtectedRoute
-                                allowedRoles={[
-                                    ROLE.ADMIN,
-                                    ROLE.OPERATION
-                                ]}
-                            >
-                                <AddEquipment />
-                            </RoleProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/equipments/edit/:id"
-                        element={
-                            <RoleProtectedRoute
-                                allowedRoles={[
-                                    ROLE.ADMIN,
-                                    ROLE.OPERATION
-                                ]}
-                            >
-                                <EditEquipment />
-                            </RoleProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/equipments/:typeId/equipment-types/:equipmentId/detail"
-                        element={
-                            <RoleProtectedRoute
-                                allowedRoles={[
-                                    ROLE.ADMIN,
-                                    ROLE.OPERATION
-                                ]}
-                            >
-                                <EquipmentDetail />
-                            </RoleProtectedRoute>
-                        }
-                    />
+                    <Route path={'/equipments'} element={<Equipment/>}/>
+                    <Route path={'/equipments/:typeId/equipment-types/:equipmentId/detail'} element={<EquipmentDetail/>}/>
+                    <Route path={'/equipments/add'} element={<AddEquipment/>}/>
+                    <Route path={'/equipments/edit/:id'} element={<EditEquipment/>}/>
 
                     {/* Loại thiết bị */}
-                    <Route
-                        path="/equipment-types"
-                        element={
-                            <RoleProtectedRoute
-                                allowedRoles={[
-                                    ROLE.ADMIN,
-                                    ROLE.OPERATION
-                                ]}
-                            >
-                                <EquipmentTypeList />
-                            </RoleProtectedRoute>
-                        }
-                    />
-                    <Route path={"/equipment-types/create"} element={<RoleProtectedRoute
-                        allowedRoles={[
-                            ROLE.ADMIN,
-                            ROLE.OPERATION
-                        ]}
-                    >
-                        <AddEquipmentType />
-                    </RoleProtectedRoute>}/>
-
-                    <Route path={"/equipment-types/:typeId/equipments"} element={<RoleProtectedRoute
-                        allowedRoles={[
-                            ROLE.ADMIN,
-                            ROLE.OPERATION
-                        ]}
-                    >
-                        <EquipmentByType />
-                    </RoleProtectedRoute>}/>
-
-                    <Route path={"/equipment-types/:typeId/equipments/:equipmentId/detail"} element={<RoleProtectedRoute
-                        allowedRoles={[
-                            ROLE.ADMIN,
-                            ROLE.OPERATION
-                        ]}
-                    >
-                        <Detail />
-                    </RoleProtectedRoute>}/>
+                    <Route path={"/equipment-types"} element={<EquipmentTypeList/>}/>
+                    <Route path={"/equipment-types/create"} element={<AddEquipmentType/>}/>
+                    <Route path={"/equipment-types/:typeId/equipments"} element={<EquipmentByType/>}/>
+                    <Route path={"/equipment-types/:typeId/equipments/:equipmentId/detail"} element={<Detail/>}/>
                     {/* Vật tư tiêu hao */}
+                    <Route path={'/consumable-materials'} element={<ListConsumable/>}/>
+                    <Route path={"/consumable-materials/add"} element={<AddConsumable/>}/>
+                    <Route path="/consumable-materials/edit/:id" element={<EditConsumable />} />
+                    <Route path={"/consumable-transactions"} element={<ConsumableTransactionList/>}/>
+                    <Route path={"/consumable-transactions/history"} element={<ConsumableTransactionHistory/>}/>
+                    <Route path={"/consumable-transactions/import"} element={<ConsumableImport/>}/>
+                    {/*Quản đốc*/}
+                    <Route path="/material-export/supply-slip/:requestId" element={<Export />} />
+                    {/*Thủ Kho*/}
+                    <Route path="/warehouse/release/:requestId" element={<WarehouseRelease />} />
                     <Route path={'/consumable-materials'} element={<RoleProtectedRoute
                         allowedRoles={[
                             ROLE.ADMIN,
