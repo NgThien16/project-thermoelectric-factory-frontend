@@ -6,7 +6,7 @@ export const ROLE = {
     HR:
         "ROLE_NHÂN SỰ",
 
-    OPERATION_MANAGER:
+    OPERATION:
         "ROLE_QUẢN ĐỐC VẬN HÀNH",
 
     MAINTENANCE_MANAGER:
@@ -14,12 +14,6 @@ export const ROLE = {
 
     TEAM_LEADER:
         "ROLE_TỔ TRƯỞNG",
-
-    SHIFT_MANAGER:
-        "ROLE_TRƯỞNG_CA",
-
-    CHIEF_OPERATOR:
-        "ROLE_TRƯỞNG_KÍP",
 
     MATERIAL:
         "ROLE_THỦ KHO VẬT TƯ",
