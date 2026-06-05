@@ -47,16 +47,6 @@ export default function Dashboard() {
     return (
         <div className="container-fluid p-4">
 
-            <div className="mb-4">
-                <h2 className="fw-bold">
-                    Hệ thống quản lý nhà máy nhiệt điện
-                </h2>
-
-                <p className="text-muted mb-0">
-                    Hệ thống hỗ trợ quản lý thiết bị, vật tư,
-                    công cụ dụng cụ và bảo trì trong nhà máy.
-                </p>
-            </div>
 
             {!user ? (
                 <Alert variant="info">

@@ -4,16 +4,13 @@ import { FaArrowLeft, FaPlus, FaSave, FaTrash, FaFileAlt, FaSearch } from "react
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-// 1. Import API xuất kho gộp tổng hợp
+
 import { exportMaterialsToWorkOrder } from "../../service/materials_manager/ExportMaterialService.js";
 
-// 2. Import API Vật tư tiêu hao và đổi tên bằng 'as' để tránh trùng lặp
 import { getAllMaterialsForDropdown as getConsumablesFromApi } from "../../service/materials_manager/consumable/ConsumableCategoryService.js";
 
-// 3. Import API Phụ tùng thay thế và đổi tên bằng 'as'
 import { getAllMaterialsForDropdown as getReplacementsFromApi } from "../../service/materials_manager/replacement/ReplacementCategoryService.js";
 
-// Import hoặc cấu hình axiosInstance dùng chung
 import axiosInstance from "../../api/axiosInstance.js";
 
 export default function Export() {
@@ -28,7 +25,6 @@ export default function Export() {
     const [repairRequest, setRepairRequest] = useState(null);
     const [loadingRequest, setLoadingRequest] = useState(true);
 
-    // Quản lý thông tin phiếu để lấy trạng thái materialStatus độc lập
     const [workOrderData, setWorkOrderData] = useState(null);
 
     const [formInput, setFormInput] = useState({

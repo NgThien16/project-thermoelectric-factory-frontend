@@ -8,6 +8,7 @@ export const ROLE = {
 
     OPERATION:
         "ROLE_QUẢN ĐỐC VẬN HÀNH",
+        // "ROLE_QUẢN ĐỐC SỬA CHỮA",
 
     MATERIAL:
         "ROLE_THỦ KHO VẬT TƯ",
