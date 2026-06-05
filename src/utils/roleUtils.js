@@ -9,6 +9,12 @@ export const ROLE = {
     OPERATION:
         "ROLE_QUẢN ĐỐC VẬN HÀNH",
 
+    MAINTENANCE_MANAGER:
+        "ROLE_QUẢN ĐỐC SỬA CHỮA",
+
+    TEAM_LEADER:
+        "ROLE_TỔ TRƯỞNG",
+
     MATERIAL:
         "ROLE_THỦ KHO VẬT TƯ",
 
