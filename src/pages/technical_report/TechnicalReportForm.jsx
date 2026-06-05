@@ -48,7 +48,7 @@ const TechnicalReportForm = ({ report, onClose, onSave }) => {
 
         const dto = {
             workOrderId: Number(workOrderId),
-            createdBy: 12,
+            createdBy: 11,
             conclusion,
             equipmentReports
         };

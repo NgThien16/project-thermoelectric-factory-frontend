@@ -18,31 +18,31 @@ const TechnicalReportDetail = ({ report, onClose }) => {
         return new Date(dateValue).toLocaleString();
     };
 
-    const renderReplacements = (replacements) => {
-        if (!replacements || replacements.length === 0) {
-            return <span>Không có</span>;
-        }
-
-        if (typeof replacements === "string") {
-            return <div style={{ whiteSpace: "pre-line" }}>{replacements}</div>;
-        }
-
-        if (Array.isArray(replacements)) {
-            return (
-                <ul className="mb-0">
-                    {replacements.map((item, index) => (
-                        <li key={index}>
-                            {item.name || `Vật tư ID: ${item.materialId || ""}`}
-                            {item.quantity ? ` - SL: ${item.quantity}` : ""}
-                            {item.note ? ` - ${item.note}` : ""}
-                        </li>
-                    ))}
-                </ul>
-            );
-        }
-
-        return <span>Không có</span>;
-    };
+    // const renderReplacements = (replacements) => {
+    //     if (!replacements || replacements.length === 0) {
+    //         return <span>Không có</span>;
+    //     }
+    //
+    //     if (typeof replacements === "string") {
+    //         return <div style={{ whiteSpace: "pre-line" }}>{replacements}</div>;
+    //     }
+    //
+    //     if (Array.isArray(replacements)) {
+    //         return (
+    //             <ul className="mb-0">
+    //                 {replacements.map((item, index) => (
+    //                     <li key={index}>
+    //                         {item.name || `Vật tư ID: ${item.materialId || ""}`}
+    //                         {item.quantity ? ` - SL: ${item.quantity}` : ""}
+    //                         {item.note ? ` - ${item.note}` : ""}
+    //                     </li>
+    //                 ))}
+    //             </ul>
+    //         );
+    //     }
+    //
+    //     return <span>Không có</span>;
+    // };
 
     const content = parseContent();
     const equipmentReports = content.equipmentReports || [];
