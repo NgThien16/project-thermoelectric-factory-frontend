@@ -594,7 +594,7 @@ const ToolManagement = () => {
                 }
               >
 
-                Prev
+                Trước
 
               </Button>
 
@@ -610,7 +610,7 @@ const ToolManagement = () => {
                 }
               >
 
-                Next
+                Sau
 
               </Button>
 
