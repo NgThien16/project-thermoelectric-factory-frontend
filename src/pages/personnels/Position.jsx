@@ -15,10 +15,11 @@ export default function PositionPage() {
     const [editData, setEditData] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedPosition, setSelectedPosition] = useState(null);
+    const pageSize = 5;
 
     const fetchPositions = async () => {
         try {
-            const res = await PositionService.searchPositions(keyword, page,3);
+            const res = await PositionService.searchPositions(keyword, page,5);
             setPositions(res.content || []);
             setTotalPages(res.totalPages);
         } catch {
@@ -99,7 +100,7 @@ export default function PositionPage() {
                         <tbody>
                         {positions.map((pos,i) => (
                             <tr key={pos.id}>
-                                <td>{i+1}</td>
+                                <td>{page * pageSize + i+1}</td>
                                 <td>{pos.name}</td>
                                 <td>
                                     <FaEdit style={{ cursor: "pointer", marginRight: "8px" }} onClick={() => setEditData(pos)} />

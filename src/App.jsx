@@ -37,6 +37,7 @@ import ReplacementTransactionHistory from "./pages/Materials/Replacement/Replace
 import ListReplacementTransaction from "./pages/Materials/Replacement/ListReplacementTransaction.jsx";
 import EditConsumable from "./pages/Materials/Consumable/category/EditConsumable.jsx";
 import EditReplacement from "./pages/Materials/Replacement/category/EditReplacement.jsx";
+import TechnicalReportPage from './pages/technical_report/TechnicalReportPage.jsx';
 import Login from "./pages/auth/Login.jsx";
 import RoleProtectedRoute from "./components/auth/RoleProtectedRoute.jsx";
 import RequestManagement from "./pages/repair_order/RequestManagement.jsx";
@@ -131,6 +132,9 @@ function App() {
                             </RoleProtectedRoute>
                         }
                     />
+
+                    {/* Biên bản kỹ thuật */}
+                    <Route path="technical-reports" element={<TechnicalReportPage />} />
 
                     {/* Hệ thống */}
                     <Route
