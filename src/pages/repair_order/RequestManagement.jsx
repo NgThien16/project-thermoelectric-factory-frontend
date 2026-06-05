@@ -245,40 +245,30 @@ const RequestManagement = () => {
         }
     };
 
-    const getStatusBadge =
-        (status) => {
+    const getStatusBadge = (status) => {
+        switch (status) {
+            case "PENDING":
+                return <Badge bg="warning">Chờ xử lý</Badge>;
 
-            switch (status) {
+            case "APPROVED":
+                return <Badge bg="info">Đã duyệt</Badge>;
 
-                case "PENDING":
-                    return (
-                        <Badge bg="warning">
-                            Chờ xử lý
-                        </Badge>
-                    );
+            case "IN_PROGRESS":
+                return <Badge bg="primary">Đang thực hiện</Badge>;
 
-                case "PROCESSING":
-                    return (
-                        <Badge bg="primary">
-                            Đang xử lý
-                        </Badge>
-                    );
+            case "COMPLETED":
+                return <Badge bg="success">Hoàn thành</Badge>;
 
-                case "COMPLETED":
-                    return (
-                        <Badge bg="success">
-                            Hoàn thành
-                        </Badge>
-                    );
+            case "REJECTED":
+                return <Badge bg="danger">Từ chối</Badge>;
 
-                default:
-                    return (
-                        <Badge bg="secondary">
-                            {status}
-                        </Badge>
-                    );
-            }
-        };
+            case "CANCELLED":
+                return <Badge bg="secondary">Đã hủy</Badge>;
+
+            default:
+                return <Badge bg="dark">{status}</Badge>;
+        }
+    };
 
     return (
 
