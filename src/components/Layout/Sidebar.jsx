@@ -177,7 +177,7 @@ const Sidebar = () => {
                     </>
                 )}
                 {/* ================= YÊU CẦU SỬA CHỮA ================= */}
-                {(isAdmin || hasRole(["ROLE_TRƯỞNG_CA"])) && (
+                {(isAdmin || hasRole(["ROLE_TRƯỞNG CA","ROLE_TRƯỞNG KÍP"])) && (
                     <>
                         <Nav.Link as={Link} to="/repair-orders">
                             <FaWrench />
