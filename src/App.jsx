@@ -37,8 +37,10 @@ import ReplacementTransactionHistory from "./pages/Materials/Replacement/Replace
 import ListReplacementTransaction from "./pages/Materials/Replacement/ListReplacementTransaction.jsx";
 import EditConsumable from "./pages/Materials/Consumable/category/EditConsumable.jsx";
 import EditReplacement from "./pages/Materials/Replacement/category/EditReplacement.jsx";
+import TechnicalReportPage from './pages/technical_report/TechnicalReportPage.jsx';
 import Login from "./pages/auth/Login.jsx";
 import RoleProtectedRoute from "./components/auth/RoleProtectedRoute.jsx";
+import RequestManagement from "./pages/repair_order/RequestManagement.jsx";
 import { ROLE } from "./utils/roleUtils.js";
 import WarehouseRelease from "./pages/Materials/WarehouseRelease.jsx";
 import Export from "./pages/Materials/Export.jsx";
@@ -130,6 +132,9 @@ function App() {
                             </RoleProtectedRoute>
                         }
                     />
+
+                    {/* Biên bản kỹ thuật */}
+                    <Route path="technical-reports" element={<TechnicalReportPage />} />
 
                     {/* Hệ thống */}
                     <Route
@@ -407,10 +412,22 @@ function App() {
                     >
                         <UserToolBorrowing />
                     </RoleProtectedRoute>}/>
+                    {/* Repair Order */}
+                    <Route
+                        path="/repair-orders"
+                        element={
+                            <RoleProtectedRoute
+                                allowedRoles={[ROLE.ADMIN, ROLE.SHIFT_LEADER, ROLE.SHIFT_LEADER_ALT]}
+                            >
+                                <RequestManagement />
+                            </RoleProtectedRoute>
+                        }
+                    />
                 </Routes>
             </MainLayout>
             <ToastContainer position="top-right" autoClose={3000} />
         </>
+
     )
 }
 // app jsx

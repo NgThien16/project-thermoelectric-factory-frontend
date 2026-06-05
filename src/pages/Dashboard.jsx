@@ -4,7 +4,8 @@ import {
     FaTools,
     FaWarehouse,
     FaClipboardList,
-    FaUsers
+    FaUsers,
+    FaWrench
 } from "react-icons/fa";
 import useAuth from "../context/useAuth";
 
@@ -23,6 +24,12 @@ export default function Dashboard() {
             icon: <FaTools size={40}/>,
             description:
                 "Quản lý danh mục thiết bị, loại thiết bị và thông tin chi tiết."
+        },
+        {
+            title: "Yêu cầu sửa chữa",
+            icon: <FaWrench size={40}/>,
+            description:
+                "Tạo và theo dõi các yêu cầu sửa chữa thiết bị trong nhà máy."
         },
         {
             title: "Kho vật tư",

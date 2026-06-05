@@ -5,7 +5,8 @@ import {
     FaChartLine,
     FaCogs,
     FaWarehouse,
-    FaClipboardList
+    FaClipboardList,
+    FaWrench
 } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 import "../../styles/Layout.css";
@@ -85,6 +86,12 @@ const Sidebar = () => {
                         </Dropdown.Menu>
                     </Dropdown>
                 )}
+
+                <LinkContainer to="/technical-reports">
+                    <Nav.Link active={location.pathname.startsWith('/technical-reports')}>
+                        <FaClipboardList /> Biên bản kỹ thuật
+                    </Nav.Link>
+                </LinkContainer>
 
                 {/* ================= HỆ THỐNG ================= */}
                 {(isAdmin || hasRole(["ROLE_QUẢN ĐỐC VẬN HÀNH"])) && (
@@ -175,7 +182,15 @@ const Sidebar = () => {
                         </Nav.Link>
                     </>
                 )}
-
+                {/* ================= YÊU CẦU SỬA CHỮA ================= */}
+                {(isAdmin || hasRole(["ROLE_TRƯỞNG CA","ROLE_TRƯỞNG KÍP"])) && (
+                    <>
+                        <Nav.Link as={Link} to="/repair-orders">
+                            <FaWrench />
+                            Yêu cầu sửa chữa
+                        </Nav.Link>
+                    </>
+                )}
             </Nav>
 
         </div>

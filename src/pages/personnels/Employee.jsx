@@ -21,10 +21,11 @@ export default function EmployeePage() {
     const [editData, setEditData] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const pageSize = 5;
 
     const fetchAll = async () => {
         try {
-            const res = await EmployeeService.searchEmployees(keyword, page,3);
+            const res = await EmployeeService.searchEmployees(keyword, page,5);
             setEmployees(res.content || []);
             setTotalPages(res.totalPages);
 
@@ -129,7 +130,7 @@ export default function EmployeePage() {
                         <tbody>
                         {employees.map((emp,i) => (
                             <tr key={emp.id}>
-                                <td>{i+1}</td>
+                                <td>{page * pageSize +i+1}</td>
                                 <td>{emp.fullName}</td>
                                 <td>{emp.department?.name}</td>
                                 <td>{emp.position?.name}</td>

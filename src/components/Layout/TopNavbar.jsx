@@ -33,10 +33,9 @@ const TopNavbar = () => {
             className="top-navbar px-3"
         >
             <Container fluid>
-
                 <Navbar.Brand className={'fw-bold'}>
-                    Hệ thống hỗ trợ quản lý thiết bị, vật tư,
-                    công cụ dụng cụ và bảo trì trong nhà máy.
+                        Hệ thống hỗ trợ quản lý thiết bị, vật tư,
+                        công cụ dụng cụ và bảo trì trong nhà máy.
                 </Navbar.Brand>
 
                 <Nav className="ms-auto align-items-center">

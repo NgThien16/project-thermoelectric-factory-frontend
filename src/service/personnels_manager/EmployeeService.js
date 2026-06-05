@@ -6,7 +6,7 @@ export const EmployeeService = {
     create: (data) => axiosInstance.post('/employees', data),
     update: (id, data) => axiosInstance.put(`/employees/${id}`, data),
     delete: (id) => axiosInstance.delete(`/employees/${id}`),
-    searchEmployees: (keyword = "", page = 0,size = 3) =>
+    searchEmployees: (keyword = "", page = 0,size = 5) =>
         axiosInstance.get('/employees/search', { params: { keyword, page,size } })
             .then(res => res.data)
 };
