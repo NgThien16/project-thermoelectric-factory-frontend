@@ -385,7 +385,7 @@ function App() {
                     {/*Quản đốc*/}
                     <Route path="/material-export/supply-slip/:requestId" element={<Export/>} />
                     {/*Thủ Kho*/}
-                    <Route path="/warehouse/release/:requestId" element={<WarehouseRelease />} />
+                    <Route path="/material-export/release/:requestId" element={<WarehouseRelease/>} />
 
                     {/*CCDC */}
                     <Route path={'/tool'} element={<RoleProtectedRoute

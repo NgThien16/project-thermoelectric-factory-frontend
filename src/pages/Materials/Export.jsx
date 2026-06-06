@@ -4,14 +4,13 @@ import { FaArrowLeft, FaPlus, FaSave, FaTrash, FaFileAlt, FaSearch } from "react
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-
 import { exportMaterialsToWorkOrder } from "../../service/materials_manager/ExportMaterialService.js";
-
 import { getAllMaterialsForDropdown as getConsumablesFromApi } from "../../service/materials_manager/consumable/ConsumableCategoryService.js";
-
 import { getAllMaterialsForDropdown as getReplacementsFromApi } from "../../service/materials_manager/replacement/ReplacementCategoryService.js";
-
 import axiosInstance from "../../api/axiosInstance.js";
+
+// 🆕 IMPORT SERVICE BIÊN BẢN KỸ THUẬT THỰC TẾ TRÊN FRONTEND
+import { TechnicalReportService } from "../../service/technical_report/TechnicalReportService.js";
 
 export default function Export() {
     const navigate = useNavigate();
@@ -34,13 +33,12 @@ export default function Export() {
         quantity: ""
     });
 
-    // KHÓA GIAO DIỆN: Nếu trạng thái không phải "NOT_REQUESTED" thì bật chế độ Read-Only
     const isReadOnly = workOrderData && workOrderData.materialStatus && workOrderData.materialStatus !== "NOT_REQUESTED";
 
     useEffect(() => {
-        if (requestId) {
+        if (requestId && requestId !== "undefined" && requestId !== "null" && !isNaN(requestId)) {
             loadWorkOrderDetails(requestId);
-            loadMockTechnicalReport(requestId);
+            loadRealTechnicalReport(requestId); // 🆕 GỌI HÀM THỰC TẾ THAY VÌ MOCK
         }
         loadAllMaterialsFromDatabase();
     }, [requestId]);
@@ -57,22 +55,27 @@ export default function Export() {
         }
     };
 
-    const loadMockTechnicalReport = (id) => {
+    // 🆕 HÀM GỌI API THỰC TẾ QUA SERVICE LAYER ĐỂ LẤY BIÊN BẢN KỸ THUẬT
+    const loadRealTechnicalReport = async (id) => {
         setLoadingRequest(true);
-        setTimeout(() => {
+        try {
+            const response = await TechnicalReportService.getByWorkOrder(id);
+            // Vì API backend trả về danh sách List<TechnicalReport>, ta bốc phần tử đầu tiên
+            if (response && response.data && response.data.length > 0) {
+                setRepairRequest(response.data[0]);
+            } else {
+                setRepairRequest({
+                    content: "Chưa có biên bản đánh giá kỹ thuật cho phiếu sửa chữa này."
+                });
+            }
+        } catch (error) {
+            console.error("Lỗi khi tải biên bản kỹ thuật thực tế:", error);
             setRepairRequest({
-                workOrderId: id,
-                content: `[BIÊN BẢN ĐÁNH GIÁ KỸ THUẬT PHIẾU SỬA CHỮA #${id}]
-                
-⚠️ TÌNH TRẠNG: Thiết bị băng tải khu A bị kẹt trục chính do thiếu dầu bôi trơn và mòn vòng bi.
-
-🛠️ YÊU CẦU VẬT TƯ SỬA CHỮA:
-- 05 Lít dầu máy bôi trơn công nghiệp.
-- 02 Cuộn băng keo cách điện.
-- 02 Vòng bi SKF-6204 thay thế mới.`
+                content: "Không thể kết nối đến máy chủ để tải biên bản đánh giá kỹ thuật."
             });
+        } finally {
             setLoadingRequest(false);
-        }, 400);
+        }
     };
 
     const loadAllMaterialsFromDatabase = async () => {
@@ -167,6 +170,38 @@ export default function Export() {
         }
     };
 
+    // 🆕 HÀM HELPER: TỰ ĐỘNG PARSE CHUỖI JSON ĐỂ IN RA VĂN BẢN ĐẸP MẮT TRÊN GIAO DIỆN
+    const renderReportContent = () => {
+        if (!repairRequest || !repairRequest.content) {
+            return "Không có dữ liệu biên bản kỹ thuật.";
+        }
+
+        const contentStr = repairRequest.content.trim();
+        // Kiểm tra xem chuỗi có bắt đầu bằng ký tự cấu trúc JSON không
+        if (contentStr.startsWith("{") || contentStr.startsWith("[")) {
+            try {
+                const parsedData = JSON.parse(contentStr);
+                let formattedText = `[BIÊN BẢN ĐÁNH GIÁ KỸ THUẬT PHIẾU #${parsedData.workOrderId || requestId}]\n\n`;
+
+                if (parsedData.equipmentReports && parsedData.equipmentReports.length > 0) {
+                    formattedText += `🛠️ DANH SÁCH THIẾT BỊ KHẢO SÁT CHI TIẾT:\n`;
+                    parsedData.equipmentReports.forEach((eq, idx) => {
+                        formattedText += `${idx + 1}. ${eq.equipmentName || "Tên thiết bị trống"} (Mã ID: ${eq.equipmentId})\n`;
+                        if (eq.description) formattedText += `   - Hiện trạng khảo sát: ${eq.description}\n`;
+                    });
+                } else {
+                    formattedText += `⚠️ Biên bản trống hoặc cấu trúc JSON không chứa danh sách thiết bị.`;
+                }
+                return formattedText;
+            } catch (e) {
+                console.error("Lỗi định dạng cấu trúc JSON biên bản:", e);
+                return repairRequest.content; // Dự phòng: Nếu parse lỗi thì in chuỗi thô ra
+            }
+        }
+        // Trường hợp là Text thuần túy (Dữ liệu mồi bằng SQL cũ)
+        return repairRequest.content;
+    };
+
     return (
         <div className="container-fluid mt-4 px-4">
             <Card className="shadow border-0 mb-4">
@@ -194,7 +229,8 @@ export default function Export() {
                                 </div>
                             ) : (
                                 <div className="p-3 bg-white border rounded flex-grow-1 text-muted" style={{ minHeight: "380px", whiteSpace: "pre-line", fontSize: "0.95rem" }}>
-                                    {repairRequest?.content}
+                                    {/* 🆕 GỌI HÀM TỰ ĐỘNG FORMAT NỘI DUNG Ở ĐÂY */}
+                                    {renderReportContent()}
                                 </div>
                             )}
                         </Card.Body>
