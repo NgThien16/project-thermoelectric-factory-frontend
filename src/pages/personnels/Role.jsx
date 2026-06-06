@@ -16,10 +16,11 @@ export default function RolePage() {
     const [editData, setEditData] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedRole, setSelectedRole] = useState(null);
+    const pageSize = 5;
 
     const fetchRoles = async () => {
         try {
-            const res = await RoleService.searchRoles(keyword, page,3);
+            const res = await RoleService.searchRoles(keyword, page,5);
             setRoles(res.content || []);
             setTotalPages(res.totalPages);
         } catch {
@@ -101,7 +102,7 @@ export default function RolePage() {
                         <tbody>
                         {roles.map((role,i) => (
                             <tr key={role.id}>
-                                <td>{i+1}</td>
+                                <td>{page * pageSize + i+1}</td>
                                 <td>{role.name}</td>
                                 <td>
                                     <FaEdit style={{ cursor: "pointer", marginRight: "8px" }} onClick={() => setEditData(role)} />

@@ -87,6 +87,24 @@ const Sidebar = () => {
                     </Dropdown>
                 )}
 
+                {/* ================= BIÊN BẢN KỸ THUẬT ================= */}
+                {(
+                    isAdmin ||
+                    hasRole([
+                        "ROLE_QUẢN ĐỐC SỬA CHỮA",
+                        "ROLE_TỔ TRƯỞNG"
+                    ])
+                ) && (
+                    <LinkContainer to="/technical-reports">
+                        <Nav.Link
+                            active={location.pathname.startsWith("/technical-reports")}
+                        >
+                            <FaClipboardList />
+                            Biên bản kỹ thuật
+                        </Nav.Link>
+                    </LinkContainer>
+                )}
+
                 {/* ================= HỆ THỐNG ================= */}
                 {(isAdmin || hasRole(["ROLE_QUẢN ĐỐC VẬN HÀNH"])) && (
                     <>
