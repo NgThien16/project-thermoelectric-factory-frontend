@@ -134,7 +134,20 @@ function App() {
                     />
 
                     {/* Biên bản kỹ thuật */}
-                    <Route path="technical-reports" element={<TechnicalReportPage />} />
+                    <Route
+                        path="/technical-reports"
+                        element={
+                            <RoleProtectedRoute
+                                allowedRoles={[
+                                    ROLE.ADMIN,
+                                    ROLE.MAINTENANCE_MANAGER,
+                                    ROLE.TEAM_LEADER
+                                ]}
+                            >
+                                <TechnicalReportPage />
+                            </RoleProtectedRoute>
+                        }
+                    />
 
                     {/* Hệ thống */}
                     <Route
