@@ -217,34 +217,39 @@ const RequestManagement = () => {
         }
     };
 
-    const handleDelete = async (
-        id
-    ) => {
+    const handleDelete = async (id) => {
 
-        if (
-            !window.confirm(
-                "Bạn chắc chắn muốn xóa?"
-            )
-        ) return;
+        const ok = window.confirm(
+            "⚠️ Bạn có chắc muốn xóa yêu cầu sửa chữa này?\n\nSau khi xóa sẽ không thể khôi phục."
+        );
+
+        if (!ok) return;
 
         try {
 
             await deleteRepairOrder(id);
 
             toast.success(
-                "Đã xóa"
+                "🗑️ Xóa yêu cầu sửa chữa thành công!",
+                {
+                    autoClose: 2000
+                }
             );
 
             loadData();
 
-        } catch {
+        } catch (e) {
+
+            console.log(e);
 
             toast.error(
-                "Xóa thất bại"
+                "❌ Không thể xóa.\nYêu cầu này đã được lập Work Order hoặc đang được sử dụng.",
+                {
+                    autoClose: 3500
+                }
             );
         }
     };
-
     const getStatusBadge = (status) => {
         switch (status) {
             case "PENDING":
@@ -269,7 +274,9 @@ const RequestManagement = () => {
                 return <Badge bg="dark">{status}</Badge>;
         }
     };
-
+    const canEditOrDelete = (status) => {
+        return status === "PENDING";
+    };
     return (
 
         <div className="p-4">
@@ -397,11 +404,13 @@ const RequestManagement = () => {
                                             size="sm"
                                             variant="outline-primary"
                                             className="me-2"
-                                            onClick={() =>
-                                                openEditModal(
-                                                    r
-                                                )
+                                            disabled={!canEditOrDelete(r.status)}
+                                            title={
+                                                !canEditOrDelete(r.status)
+                                                    ? "Yêu cầu đã được xử lý, không thể chỉnh sửa"
+                                                    : ""
                                             }
+                                            onClick={() => openEditModal(r)}
                                         >
                                             <FaEdit />
                                         </Button>
@@ -409,11 +418,13 @@ const RequestManagement = () => {
                                         <Button
                                             size="sm"
                                             variant="outline-danger"
-                                            onClick={() =>
-                                                handleDelete(
-                                                    r.id
-                                                )
+                                            disabled={!canEditOrDelete(r.status)}
+                                            title={
+                                                !canEditOrDelete(r.status)
+                                                    ? "Yêu cầu đã được xử lý, không thể xóa"
+                                                    : ""
                                             }
+                                            onClick={() => handleDelete(r.id)}
                                         >
                                             <FaTrash />
                                         </Button>
