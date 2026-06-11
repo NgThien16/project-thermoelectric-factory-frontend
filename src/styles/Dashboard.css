@@ -1,0 +1,18 @@
+.dashboard-card {
+    transition: all .3s ease;
+    cursor: pointer;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0,0,0,.15) !important;
+}
+
+.dashboard-icon {
+    color: #0d6efd;
+    transition: .3s;
+}
+
+.dashboard-card:hover .dashboard-icon {
+    transform: scale(1.15);
+}
