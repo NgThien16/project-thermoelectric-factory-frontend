@@ -9,7 +9,6 @@ import { getAllMaterialsForDropdown as getConsumablesFromApi } from "../../servi
 import { getAllMaterialsForDropdown as getReplacementsFromApi } from "../../service/materials_manager/replacement/ReplacementCategoryService.js";
 import axiosInstance from "../../api/axiosInstance.js";
 
-// 🆕 IMPORT SERVICE BIÊN BẢN KỸ THUẬT THỰC TẾ TRÊN FRONTEND
 import { TechnicalReportService } from "../../service/technical_report/TechnicalReportService.js";
 
 export default function Export() {
@@ -33,34 +32,76 @@ export default function Export() {
         quantity: ""
     });
 
-    const isReadOnly = workOrderData && workOrderData.materialStatus && workOrderData.materialStatus !== "NOT_REQUESTED";
+    // Trạng thái ReadOnly đóng băng màn hình nếu đã xuất kho thành công
+    const isReadOnly = workOrderData?.materialStatus === "DA_CAP_PHAT";
 
     useEffect(() => {
         if (requestId && requestId !== "undefined" && requestId !== "null" && !isNaN(requestId)) {
             loadWorkOrderDetails(requestId);
-            loadRealTechnicalReport(requestId); // 🆕 GỌI HÀM THỰC TẾ THAY VÌ MOCK
+            loadRealTechnicalReport(requestId);
         }
         loadAllMaterialsFromDatabase();
     }, [requestId]);
 
+    // Tự động load lại danh sách vật tư cũ lên bảng nếu trạng thái là CHO_CAP_PHAT
     const loadWorkOrderDetails = async (id) => {
         try {
             const response = await axiosInstance.get(`/material-export/work-order/${id}`);
             if (response && response.data) {
                 setWorkOrderData(response.data);
+
+                // Nếu đang ở trạng thái CHO_CAP_PHAT -> Quản đốc chỉnh sửa dữ liệu cũ
+                if (response.data.materialStatus === "CHO_CAP_PHAT") {
+                    const [consRes, repRes] = await Promise.all([
+                        axiosInstance.get(`/material-export/work-order-consumables/work-order/${id}`),
+                        axiosInstance.get(`/material-export/work-order-replacements/work-order/${id}`)
+                    ]);
+
+                    const loadedItems = [];
+                    // Sử dụng Optional Chaining (?.) để phòng tránh dữ liệu lỗi/null từ API danh mục
+                    if (consRes.data && Array.isArray(consRes.data)) {
+                        consRes.data.forEach(item => {
+                            if (item.material) {
+                                loadedItems.push({
+                                    uniqueKey: `CONSUMABLE_${item.material.id}`,
+                                    materialId: item.material.id,
+                                    materialCode: item.material.code,
+                                    materialName: item.material.name,
+                                    type: "CONSUMABLE",
+                                    typeName: "Tiêu hao",
+                                    quantity: item.quantity
+                                });
+                            }
+                        });
+                    }
+                    if (repRes.data && Array.isArray(repRes.data)) {
+                        repRes.data.forEach(item => {
+                            if (item.material) {
+                                loadedItems.push({
+                                    uniqueKey: `REPLACEMENT_${item.material.id}`,
+                                    materialId: item.material.id,
+                                    materialCode: item.material.code,
+                                    materialName: item.material.name,
+                                    type: "REPLACEMENT",
+                                    typeName: "Thay thế",
+                                    quantity: item.quantity
+                                });
+                            }
+                        });
+                    }
+                    setTempItems(loadedItems);
+                }
             }
         } catch (error) {
             console.error("Lỗi khi tải trạng thái phiếu từ API:", error);
-            setWorkOrderData({ materialStatus: "NOT_REQUESTED" });
+            setWorkOrderData({ materialStatus: "CHUA_YEU_CAU_CAP_PHAT" });
         }
     };
 
-    // 🆕 HÀM GỌI API THỰC TẾ QUA SERVICE LAYER ĐỂ LẤY BIÊN BẢN KỸ THUẬT
     const loadRealTechnicalReport = async (id) => {
         setLoadingRequest(true);
         try {
             const response = await TechnicalReportService.getByWorkOrder(id);
-            // Vì API backend trả về danh sách List<TechnicalReport>, ta bốc phần tử đầu tiên
             if (response && response.data && response.data.length > 0) {
                 setRepairRequest(response.data[0]);
             } else {
@@ -87,7 +128,7 @@ export default function Export() {
             setReplacementsList(Array.isArray(replacementData) ? replacementData : []);
         } catch (error) {
             console.error("Lỗi tải danh mục vật tư:", error);
-            toast.error("Không thể tải danh sách vật tư từ hệ thống!");
+            // Không kích hoạt toast lỗi làm phiền người dùng khi token hoặc quyền hạn bị 403 cục bộ
         }
     };
 
@@ -170,35 +211,34 @@ export default function Export() {
         }
     };
 
-    // 🆕 HÀM HELPER: TỰ ĐỘNG PARSE CHUỖI JSON ĐỂ IN RA VĂN BẢN ĐẸP MẮT TRÊN GIAO DIỆN
+    // 🛡️ PHÒNG VỆ AN TOÀN: Hàm hiển thị nội dung biên bản phòng chống crash JSON hoàn hảo
     const renderReportContent = () => {
         if (!repairRequest || !repairRequest.content) {
             return "Không có dữ liệu biên bản kỹ thuật.";
         }
 
         const contentStr = repairRequest.content.trim();
-        // Kiểm tra xem chuỗi có bắt đầu bằng ký tự cấu trúc JSON không
-        if (contentStr.startsWith("{") || contentStr.startsWith("[")) {
+
+        // Chỉ tiến hành kiểm tra JSON nếu ký tự bắt đầu thực sự là dấu ngoặc nhọn đặc trưng của JSON Object
+        if (contentStr.startsWith("{")) {
             try {
                 const parsedData = JSON.parse(contentStr);
                 let formattedText = `[BIÊN BẢN ĐÁNH GIÁ KỸ THUẬT PHIẾU #${parsedData.workOrderId || requestId}]\n\n`;
 
-                if (parsedData.equipmentReports && parsedData.equipmentReports.length > 0) {
+                if (parsedData.equipmentReports && Array.isArray(parsedData.equipmentReports)) {
                     formattedText += `🛠️ DANH SÁCH THIẾT BỊ KHẢO SÁT CHI TIẾT:\n`;
                     parsedData.equipmentReports.forEach((eq, idx) => {
                         formattedText += `${idx + 1}. ${eq.equipmentName || "Tên thiết bị trống"} (Mã ID: ${eq.equipmentId})\n`;
                         if (eq.description) formattedText += `   - Hiện trạng khảo sát: ${eq.description}\n`;
                     });
-                } else {
-                    formattedText += `⚠️ Biên bản trống hoặc cấu trúc JSON không chứa danh sách thiết bị.`;
+                    return formattedText;
                 }
-                return formattedText;
             } catch (e) {
-                console.error("Lỗi định dạng cấu trúc JSON biên bản:", e);
-                return repairRequest.content; // Dự phòng: Nếu parse lỗi thì in chuỗi thô ra
+                console.warn("Nội dung có ký tự giống JSON nhưng parse thất bại, chuyển sang hiển thị văn bản thường.");
             }
         }
-        // Trường hợp là Text thuần túy (Dữ liệu mồi bằng SQL cũ)
+
+        // Trả về văn bản thuần nếu không lọt vào block JSON hoặc parse lỗi
         return repairRequest.content;
     };
 
@@ -212,6 +252,12 @@ export default function Export() {
                     </Button>
                 </Card.Header>
             </Card>
+
+            {workOrderData?.materialStatus === "CHO_CAP_PHAT" && (
+                <div className="alert alert-warning border-0 shadow-sm fw-bold mb-4">
+                    📝 Phiếu sửa chữa này đang ở trạng thái <span className="text-danger">CHỜ CẤP PHÁT</span>. Hệ thống đã nạp lại danh sách vật tư cũ, bạn có thể chỉnh sửa và bấm cập nhật lại!
+                </div>
+            )}
 
             <Row className="g-4">
                 <Col lg={4} md={5}>
@@ -229,7 +275,6 @@ export default function Export() {
                                 </div>
                             ) : (
                                 <div className="p-3 bg-white border rounded flex-grow-1 text-muted" style={{ minHeight: "380px", whiteSpace: "pre-line", fontSize: "0.95rem" }}>
-                                    {/* 🆕 GỌI HÀM TỰ ĐỘNG FORMAT NỘI DUNG Ở ĐÂY */}
                                     {renderReportContent()}
                                 </div>
                             )}
@@ -351,10 +396,10 @@ export default function Export() {
                             {isReadOnly ? (
                                 <div className="d-flex justify-content-end mt-4">
                                     <div className="alert alert-info border-0 shadow-sm fw-bold px-5 py-3 text-center w-100 mb-0">
-                                        🔒 Danh sách yêu cầu cấp phát này đã được gửi lên Kho (Chế độ xem lại).
+                                        🔒 Danh sách yêu cầu cấp phát này đã được hoàn tất xuất kho thực tế (Chế độ xem lại).
                                         <br />
-                                        <span className="text-warning fs-6 fw-semibold">
-                                            Trạng thái vật tư hiện tại: {workOrderData?.materialStatus === "RELEASED" ? "ĐÃ XUẤT KHO" : "CHỜ THỦ KHO DUYỆT"}
+                                        <span className="text-success fs-6 fw-semibold">
+                                            Trạng thái vật tư hiện tại: ĐÃ CẤP PHÁT (DA_CAP_PHAT)
                                         </span>
                                     </div>
                                 </div>
@@ -362,7 +407,7 @@ export default function Export() {
                                 tempItems.length > 0 && (
                                     <div className="d-flex justify-content-end mt-4">
                                         <Button variant="success" size="lg" className="px-5 fw-bold shadow-sm" onClick={handleFinalExport}>
-                                            <FaSave className="me-2" /> Xác nhận cấp vật tư
+                                            <FaSave className="me-2" /> {workOrderData?.materialStatus === "CHO_CAP_PHAT" ? "Cập nhật yêu cầu cấp" : "Xác nhận cấp vật tư"}
                                         </Button>
                                     </div>
                                 )
