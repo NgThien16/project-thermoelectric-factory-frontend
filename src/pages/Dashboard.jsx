@@ -1,85 +1,222 @@
-import {Card, Row, Col, Alert} from "react-bootstrap";
+import { useEffect, useState } from "react";
+import {
+    Card,
+    Row,
+    Col,
+    Alert
+} from "react-bootstrap";
+
 import {
     FaCogs,
     FaTools,
     FaWarehouse,
     FaClipboardList,
     FaUsers,
-    FaWrench
+    FaWrench,
+    FaIndustry
 } from "react-icons/fa";
+
 import useAuth from "../context/useAuth";
+import {getDashboard} from "../service/getDashboard.js";
+import "../styles/Dashboard.css";
 
 export default function Dashboard() {
+    const [stats, setStats] = useState({
+        totalEquipments: 0,
+        totalRepairOrders: 0,
+        totalUsers: 0,
+        totalTools: 0
+    });
+
+    useEffect(() => {
+        loadDashboard();
+    }, []);
+
+    const loadDashboard = async () => {
+
+        try {
+
+            const res = await getDashboard();
+
+            setStats(res);
+
+        } catch (e) {
+
+            console.log(e);
+        }
+    };
+
     const { user } = useAuth();
 
     const modules = [
         {
             title: "Quản đốc vận hành",
-            icon: <FaCogs size={40}/>,
+            icon: <FaCogs size={35}/>,
             description:
-                "Quản lý hệ thống, thiết bị và các thông tin vận hành."
+                "Quản lý hệ thống, thiết bị và thông tin vận hành."
         },
         {
             title: "Thiết bị",
-            icon: <FaTools size={40}/>,
+            icon: <FaTools size={35}/>,
             description:
-                "Quản lý danh mục thiết bị, loại thiết bị và thông tin chi tiết."
+                "Danh mục thiết bị và thông số kỹ thuật."
         },
         {
             title: "Yêu cầu sửa chữa",
-            icon: <FaWrench size={40}/>,
+            icon: <FaWrench size={35}/>,
             description:
-                "Tạo và theo dõi các yêu cầu sửa chữa thiết bị trong nhà máy."
+                "Theo dõi các yêu cầu sửa chữa."
         },
         {
             title: "Kho vật tư",
-            icon: <FaWarehouse size={40}/>,
+            icon: <FaWarehouse size={35}/>,
             description:
-                "Quản lý vật tư tiêu hao, vật tư thay thế và các giao dịch nhập xuất."
+                "Quản lý vật tư tiêu hao và thay thế."
         },
         {
             title: "Kho CCDC",
-            icon: <FaClipboardList size={40}/>,
+            icon: <FaClipboardList size={35}/>,
             description:
-                "Quản lý công cụ dụng cụ và các phiếu mượn trả."
+                "Quản lý công cụ dụng cụ."
         },
         {
             title: "Nhân sự",
-            icon: <FaUsers size={40}/>,
+            icon: <FaUsers size={35}/>,
             description:
-                "Quản lý nhân viên, tài khoản, phòng ban và phân quyền."
+                "Quản lý nhân viên và tài khoản."
         }
     ];
 
     return (
-        <div className="container-fluid p-4">
+        <div className="container-fluid">
 
+            {/* Banner */}
+            <Card
+                className="border-0 shadow-lg mb-4 text-white"
+                style={{
+                    background:
+                        "linear-gradient(135deg,#0d6efd,#0dcaf0)"
+                }}
+            >
+                <Card.Body className="p-4">
 
+                    <div className="d-flex align-items-center">
+
+                        <FaIndustry
+                            size={55}
+                            className="me-3"
+                        />
+
+                        <div>
+
+                            <h2 className="fw-bold mb-1">
+                                CMMS Nhiệt Điện
+                            </h2>
+
+                            <p className="mb-0">
+                                Hệ thống quản lý bảo trì thiết bị
+                                nhà máy nhiệt điện
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </Card.Body>
+            </Card>
+
+            {/* Welcome */}
             {!user ? (
                 <Alert variant="info">
-                    <b>Thông báo</b>: Để sử dụng hệ thống, vui lòng đăng nhập bằng
-                    tài khoản đã được cung cấp.
+                    Vui lòng đăng nhập để sử dụng hệ thống.
                 </Alert>
             ) : (
                 <Alert variant="success">
-                    Chào mừng <b className={'text-danger'}>{user.username}</b>, hệ thống đã sẵn sàng sử dụng.
+                    Xin chào{" "}
+                    <strong className="text-danger">
+                        {user.username}
+                    </strong>
+                    , chúc bạn một ngày làm việc hiệu quả.
                 </Alert>
             )}
 
-            <Row className="g-4 mt-2">
+            {/* Statistics */}
+            <Row className="g-4 mb-4">
+
+                <Col md={3}>
+                    <Card className="shadow-sm border-0">
+                        <Card.Body>
+
+                            <h6>Tổng thiết bị</h6>
+
+                            <h2 className="fw-bold text-primary">
+                                {stats.totalEquipments}
+                            </h2>
+
+                        </Card.Body>
+                    </Card>
+                </Col>
+
+                <Col md={3}>
+                    <Card className="shadow-sm border-0">
+                        <Card.Body>
+
+                            <h6>Yêu cầu sửa chữa</h6>
+
+                            <h2 className="fw-bold text-warning">
+                                {stats.totalRepairOrders}
+                            </h2>
+
+                        </Card.Body>
+                    </Card>
+                </Col>
+
+                <Col md={3}>
+                    <Card className="shadow-sm border-0">
+                        <Card.Body>
+
+                            <h6>Nhân sự</h6>
+
+                            <h2 className="fw-bold text-success">
+                                {stats.totalUsers}
+                            </h2>
+
+                        </Card.Body>
+                    </Card>
+                </Col>
+
+                <Col md={3}>
+                    <Card className="shadow-sm border-0">
+                        <Card.Body>
+
+                            <h6>Công cụ dụng cụ</h6>
+
+                            <h2 className="fw-bold text-danger">
+                                {stats.totalTools}
+                            </h2>
+
+                        </Card.Body>
+                    </Card>
+                </Col>
+
+            </Row>
+
+            {/* Modules */}
+            <Row className="g-4">
 
                 {modules.map((module, index) => (
+
                     <Col
                         key={index}
-                        xl={3}
-                        lg={4}
+                        xl={4}
                         md={6}
                     >
-                        <Card className="h-100 shadow-sm border-0">
+                        <Card
+                            className="h-100 border-0 shadow dashboard-card"
+                        >
+                            <Card.Body className="text-center p-4">
 
-                            <Card.Body className="text-center">
-
-                                <div className="mb-3 text-primary">
+                                <div className="dashboard-icon mb-3">
                                     {module.icon}
                                 </div>
 
@@ -92,48 +229,44 @@ export default function Dashboard() {
                                 </p>
 
                             </Card.Body>
-
                         </Card>
                     </Col>
+
                 ))}
 
             </Row>
 
-            <Card className="mt-5 border-0 shadow-sm">
+            {/* About */}
+            <Card className="mt-5 border-0 shadow">
 
                 <Card.Body>
 
-                    <h4 className="mb-3">
+                    <h4 className="fw-bold mb-3">
                         Giới thiệu hệ thống
                     </h4>
 
                     <p>
-                        Hệ thống được xây dựng nhằm hỗ trợ công tác quản lý
-                        thiết bị, vật tư, công cụ dụng cụ và nhân sự trong
-                        nhà máy nhiệt điện.
-                    </p>
-
-                    <p>
-                        Các chức năng được phân quyền theo từng bộ phận nhằm
-                        đảm bảo tính bảo mật và phù hợp với quy trình vận hành
-                        thực tế của doanh nghiệp.
+                        CMMS Thermoelectric hỗ trợ quản lý
+                        bảo trì, thiết bị, vật tư, công cụ
+                        dụng cụ và nhân sự trong nhà máy
+                        nhiệt điện.
                     </p>
 
                     <ul>
                         <li>
-                            Quản lý hệ thống và thiết bị.
+                            Quản lý thiết bị theo hệ thống.
                         </li>
                         <li>
-                            Quản lý vật tư tiêu hao và vật tư thay thế.
+                            Theo dõi quy trình:
+                            Repair Order → Work Order →
+                            Technical Report →
+                            Maintenance Log.
                         </li>
                         <li>
-                            Quản lý công cụ dụng cụ và phiếu mượn trả.
+                            Quản lý kho vật tư và CCDC.
                         </li>
                         <li>
-                            Quản lý nhân viên, phòng ban và tài khoản.
-                        </li>
-                        <li>
-                            Phân quyền truy cập theo vai trò người dùng.
+                            Quản lý nhân sự và phân quyền.
                         </li>
                     </ul>
 

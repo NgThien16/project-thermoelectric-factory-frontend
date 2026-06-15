@@ -2,17 +2,18 @@ import {
     Navbar,
     Container,
     Nav,
-    Dropdown
+    Dropdown,
 } from "react-bootstrap";
 
 import {
     FaUserCircle,
-    FaBell
+    FaSignOutAlt,
+    FaSignInAlt
 } from "react-icons/fa";
 
 import useAuth from "../../context/useAuth";
 import { useNavigate } from "react-router-dom";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 
 const TopNavbar = () => {
 
@@ -20,72 +21,119 @@ const TopNavbar = () => {
         user,
         logout
     } = useAuth();
+
     const navigate = useNavigate();
+
     const handleLogout = () => {
+
         logout();
-        toast.success("Đăng xuất thành công");
+
+        toast.success(
+            "Đăng xuất thành công"
+        );
+
         navigate("/");
     };
 
     return (
         <Navbar
             expand="lg"
-            className="top-navbar px-3"
+            className="top-navbar px-4"
         >
             <Container fluid>
-                <Navbar.Brand className={'fw-bold'}>
-                        Hệ thống hỗ trợ quản lý thiết bị, vật tư,
-                        công cụ dụng cụ và bảo trì trong nhà máy.
+
+                <Navbar.Brand
+                    className="fw-semibold text-secondary"
+                >
+                    CMMS Nhiệt Điện
                 </Navbar.Brand>
 
                 <Nav className="ms-auto align-items-center">
 
-                    <Nav.Link className="me-3">
-                        <FaBell size={20}/>
-                    </Nav.Link>
-
+                    {/* User */}
                     <Dropdown align="end">
 
                         <Dropdown.Toggle
                             variant="light"
                             id="dropdown-user"
-                            className="d-flex align-items-center border-0 bg-transparent"
+                            className="border-0 bg-transparent shadow-none d-flex align-items-center"
                         >
+
                             <FaUserCircle
-                                size={24}
-                                className="me-2"
+                                size={32}
+                                className="text-primary me-2"
                             />
 
-                            <span>
-                                {user?.username || "Khách"}
-                            </span>
+                            <div
+                                className="text-start"
+                            >
+                                <div
+                                    className="fw-semibold"
+                                >
+                                    {
+                                        user?.username ||
+                                        "Khách"
+                                    }
+                                </div>
+
+                                {/*{*/}
+                                {/*    user && (*/}
+                                {/*        <small*/}
+                                {/*            className="text-muted"*/}
+                                {/*        >*/}
+                                {/*            {*/}
+                                {/*                user.roles?.[0]*/}
+                                {/*                    ?.replace(*/}
+                                {/*                        "ROLE_",*/}
+                                {/*                        ""*/}
+                                {/*                    )*/}
+                                {/*            }*/}
+                                {/*        </small>*/}
+                                {/*    )*/}
+                                {/*}*/}
+                            </div>
 
                         </Dropdown.Toggle>
 
-                        <Dropdown.Menu>
+                        <Dropdown.Menu
+                            className="shadow border-0"
+                        >
 
                             {!user ? (
 
                                 <Dropdown.Item
-                                    href="/login"
+                                    onClick={() =>
+                                        navigate(
+                                            "/login"
+                                        )
+                                    }
                                 >
+                                    <FaSignInAlt className="me-2" />
                                     Đăng nhập
                                 </Dropdown.Item>
 
                             ) : (
 
                                 <>
-                                    <Dropdown.Item disabled>
-                                        {user.username}
-                                    </Dropdown.Item>
+                                    <Dropdown.Header>
+                                        Xin chào,
+                                        {" "}
+                                        <strong>
+                                            {user.username}
+                                        </strong>
+                                    </Dropdown.Header>
 
-                                    <Dropdown.Divider/>
+                                    <Dropdown.Divider />
 
                                     <Dropdown.Item
-                                        onClick={handleLogout}
+                                        onClick={
+                                            handleLogout
+                                        }
                                     >
+                                        <FaSignOutAlt className="me-2" />
                                         Đăng xuất
                                     </Dropdown.Item>
+
                                 </>
                             )}
 
@@ -96,6 +144,7 @@ const TopNavbar = () => {
                 </Nav>
 
             </Container>
+
         </Navbar>
     );
 };
