@@ -192,7 +192,7 @@ confirmReturns: (ids) => {
     confirmBorrowing: (id) => {
 
   return axiosInstance.post(
-      `/tool-borrowings/${id}/confirm`
+      `/tool-borrowings/confirm-borrow/${id}`
   );
 },
 

@@ -30,6 +30,7 @@ import {
 } from "../../service/repair_order/requestService.js";
 
 import { toast } from "react-toastify";
+import Pagination from "react-bootstrap/Pagination";
 
 const RequestManagement = () => {
 
@@ -60,7 +61,7 @@ const RequestManagement = () => {
         id: null,
         title: "",
         description: "",
-        status: "PENDING",
+        status: "CHO_DUYET",
         equipmentId: ""
     });
 
@@ -123,11 +124,27 @@ const RequestManagement = () => {
         loadEquipments();
     };
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
 
-        setPage(0);
+        try {
 
-        loadData();
+            const res = await getRepairOrders(
+                keyword,
+                0
+            );
+
+            setPage(0);
+
+            setRequests(res.content || []);
+
+            setTotalPages(res.totalPages || 0);
+
+        } catch {
+
+            toast.error(
+                "Không tải được dữ liệu"
+            );
+        }
     };
 
     const openCreateModal = () => {
@@ -138,7 +155,7 @@ const RequestManagement = () => {
             id: null,
             title: "",
             description: "",
-            status: "PENDING",
+            status: "CHO_DUYET",
             equipmentId: ""
         });
 
@@ -252,30 +269,27 @@ const RequestManagement = () => {
     };
     const getStatusBadge = (status) => {
         switch (status) {
-            case "PENDING":
-                return <Badge bg="warning">Chờ xử lý</Badge>;
+            case "CHO_DUYET":
+                return <Badge bg="warning">Chờ duyệt</Badge>;
 
-            case "APPROVED":
+            case "DA_DUYET":
                 return <Badge bg="info">Đã duyệt</Badge>;
 
-            case "IN_PROGRESS":
+            case "DANG_THUC_HIEN":
                 return <Badge bg="primary">Đang thực hiện</Badge>;
 
-            case "COMPLETED":
+            case "DA_HOAN_THANH":
                 return <Badge bg="success">Hoàn thành</Badge>;
 
-            case "REJECTED":
+            case "KHONG_DUYET":
                 return <Badge bg="danger">Từ chối</Badge>;
-
-            case "CANCELLED":
-                return <Badge bg="secondary">Đã hủy</Badge>;
 
             default:
                 return <Badge bg="dark">{status}</Badge>;
         }
     };
     const canEditOrDelete = (status) => {
-        return status === "PENDING";
+        return status === "CHO_DUYET";
     };
     return (
 
@@ -350,8 +364,7 @@ const RequestManagement = () => {
                         <thead>
 
                         <tr>
-
-                            <th>ID</th>
+                            <th>STT</th>
 
                             <th>Tiêu đề</th>
 
@@ -369,12 +382,11 @@ const RequestManagement = () => {
 
                         <tbody>
 
-                        {requests.map(
-                            (r) => (
+                        {requests.map((r, index) => (
 
-                                <tr key={r.id}>
+                            <tr key={r.id}>
 
-                                    <td>{r.id}</td>
+                                <td>{page * 3 + index + 1}</td>
 
                                     <td>{r.title}</td>
 
@@ -438,7 +450,35 @@ const RequestManagement = () => {
                         </tbody>
 
                     </Table>
+                    <div className="d-flex justify-content-center mt-3">
 
+                        <Pagination>
+
+                            <Pagination.Prev
+                                disabled={page === 0}
+                                onClick={() => setPage(page - 1)}
+                            />
+
+                            {[...Array(totalPages).keys()].map((p) => (
+
+                                <Pagination.Item
+                                    key={p}
+                                    active={p === page}
+                                    onClick={() => setPage(p)}
+                                >
+                                    {p + 1}
+                                </Pagination.Item>
+
+                            ))}
+
+                            <Pagination.Next
+                                disabled={page >= totalPages - 1}
+                                onClick={() => setPage(page + 1)}
+                            />
+
+                        </Pagination>
+
+                    </div>
                 </Card.Body>
 
             </Card>

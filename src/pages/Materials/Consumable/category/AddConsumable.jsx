@@ -1,4 +1,5 @@
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { useState } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik"
 import * as Yup from "yup";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +20,7 @@ const AddConsumable = () => {
         location: "",
         description: ""
     };
+    const [ saving,setSaving] = useState(false);
 
     const validationSchema = Yup.object({
 
@@ -54,6 +56,8 @@ const AddConsumable = () => {
 
         try {
 
+            setSaving(true);
+
             const result = await save(values);
 
             if (result) {
@@ -75,8 +79,13 @@ const AddConsumable = () => {
             toast.error("Có lỗi xảy ra!");
 
             console.log(e);
+
+        } finally {
+
+            setSaving(false);
+
         }
-    }
+    };
 
     return (
 
@@ -87,14 +96,39 @@ const AddConsumable = () => {
                 autoClose={2000}
             />
 
-            <Card className="border-0 shadow-sm">
-
-                <Card.Body>
-
-                    <h3 className="fw-bold mb-4">
+            <Card className="border-0 shadow">
+                <Card.Header
+                    className="text-white"
+                    style={{
+                        background:
+                            "linear-gradient(135deg,#198754,#20c997)"
+                    }}
+                >
+                    <h3 className="mb-1 fw-bold">
                         Thêm mới vật tư tiêu hao
                     </h3>
 
+                    <small>
+                        Khai báo danh mục vật tư mới vào hệ thống
+                    </small>
+                </Card.Header>
+                <Card.Body>
+
+                    <Card
+                        className="mb-4 border-0 bg-light">
+                        <Card.Body>
+                            <h6 className="fw-bold">
+                                📌 Hướng dẫn
+                            </h6>
+
+                            <ul className="mb-0">
+                                <li>Mã vật tư theo dạng CON-0001</li>
+                                <li>Tên vật tư viết hoa chữ cái đầu</li>
+                                <li>Không được trùng mã vật tư</li>
+                            </ul>
+
+                        </Card.Body>
+                    </Card>
                     <Formik
                         initialValues={initialValues}
                         validationSchema={validationSchema}
@@ -108,7 +142,7 @@ const AddConsumable = () => {
                                 <Col md={6}>
 
                                     <label className="form-label">
-                                        Tên vật tư
+                                        📦 Tên vật tư <span className="text-danger">*</span>
                                     </label>
 
                                     <Field
@@ -125,7 +159,7 @@ const AddConsumable = () => {
                                 <Col md={6}>
 
                                     <label className="form-label">
-                                        Mã vật tư
+                                        🔖  Mã vật tư  <span className="text-danger">*</span>
                                     </label>
 
                                     <Field
@@ -143,7 +177,7 @@ const AddConsumable = () => {
                                 <Col md={6}>
 
                                     <label className="form-label">
-                                        Đơn vị
+                                        📏 Đơn vị  <span className="text-danger">*</span>
                                     </label>
 
                                     <Field
@@ -160,12 +194,13 @@ const AddConsumable = () => {
                                 <Col md={12}>
 
                                     <label className="form-label">
-                                        Mô tả
+                                        📝 Mô tả  <span className="text-danger">*</span>
                                     </label>
 
                                     <Field
                                         as="textarea"
-                                        rows={4}
+                                        rows={3}
+                                        placeholder="Nhập mô tả vật tư..."
                                         name="description"
                                         className="form-control"
                                     />
@@ -174,21 +209,34 @@ const AddConsumable = () => {
 
                             </Row>
 
-                            <div className="mt-4 d-flex gap-2">
-
+                            <div className="mt-4 d-flex justify-content-end gap-2">
                                 <Button
                                     variant="success"
+                                    size="lg"
                                     type="submit"
+                                    disabled={saving}
                                 >
-                                    Thêm mới
+                                    {
+                                        saving ? (
+                                            <>
+                                                <span className="spinner-border spinner-border-sm me-2"></span>
+                                                Đang lưu...
+                                            </>
+                                        ) : (
+                                            <>
+                                                💾 Lưu vật tư
+                                            </>
+                                        )
+                                    }
                                 </Button>
 
                                 <Button
-                                    variant="secondary"
+                                    variant="outline-secondary"
+                                    size="lg"
                                     type="button"
                                     onClick={() => navigate("/consumable-materials")}
                                 >
-                                    Quay lại
+                                    ↩ Quay lại
                                 </Button>
 
                             </div>

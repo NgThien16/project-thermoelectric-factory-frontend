@@ -33,6 +33,8 @@ const EditConsumable = () => {
     const {id} = useParams();
 
     const [initialValues, setInitialValues] = useState(null);
+    const [saving, setSaving] = useState(false);
+
 
     // validation
     const validationSchema = Yup.object({
@@ -87,6 +89,8 @@ const EditConsumable = () => {
 
         try {
 
+            setSaving(true);
+
             const result = await update({
                 ...values,
                 id: id
@@ -97,9 +101,7 @@ const EditConsumable = () => {
                 toast.success("Cập nhật thành công!");
 
                 setTimeout(() => {
-
-                    navigate("/replacement-materials");
-
+                    navigate("/consumable-materials");
                 }, 1500);
 
             } else {
@@ -112,13 +114,27 @@ const EditConsumable = () => {
             console.log(e);
 
             toast.error("Có lỗi xảy ra!");
+
+        } finally {
+
+            setSaving(false);
         }
-    }
+    };
 
     // loading
     if (!initialValues) {
 
-        return <h5 className="p-4">Loading...</h5>;
+        return (
+            <div className="text-center py-5">
+                <div
+                    className="spinner-border text-warning"
+                    role="status"
+                />
+                <p className="mt-3">
+                    Đang tải dữ liệu vật tư...
+                </p>
+            </div>
+        );
     }
 
     return (
@@ -134,9 +150,39 @@ const EditConsumable = () => {
 
                 <Card.Body>
 
-                    <h3 className="fw-bold mb-4">
-                        Cập nhật vật tư tiêu hao
-                    </h3>
+                    <Card.Header
+                        className="text-white"
+                        style={{
+                            background:
+                                "linear-gradient(135deg,#fd7e14,#ffc107)"
+                        }}
+                    >
+                        <h3 className="fw-bold mb-1">
+                            ✏️ Cập nhật vật tư tiêu hao
+                        </h3>
+
+                        <small>
+                            Chỉnh sửa thông tin danh mục vật tư
+                        </small>
+                    </Card.Header>
+
+                    <Card
+                        className="mb-4 border-0 bg-light"
+                    >
+                        <Card.Body>
+
+                            <h6 className="fw-bold">
+                                📌 Thông tin chỉnh sửa
+                            </h6>
+
+                            <ul className="mb-0">
+                                <li>Mã vật tư phải đúng định dạng CON-0001</li>
+                                <li>Tên vật tư viết hoa chữ cái đầu</li>
+                                <li>Kiểm tra kỹ trước khi cập nhật</li>
+                            </ul>
+
+                        </Card.Body>
+                    </Card>
 
                     <Formik
                         initialValues={initialValues}
@@ -151,8 +197,9 @@ const EditConsumable = () => {
 
                                 <Col md={6}>
 
-                                    <label className="form-label">
-                                        Tên vật tư
+                                    <label className="form-label fw-semibold">
+                                        📦 Tên vật tư
+                                        <span className="text-danger">*</span>
                                     </label>
 
                                     <Field
@@ -168,8 +215,9 @@ const EditConsumable = () => {
 
                                 <Col md={6}>
 
-                                    <label className="form-label">
-                                        Mã vật tư
+                                    <label className="form-label fw-semibold">
+                                        🔖 Mã vật tư
+                                        <span className="text-danger">*</span>
                                     </label>
 
                                     <Field
@@ -186,8 +234,9 @@ const EditConsumable = () => {
 
                                 <Col md={6}>
 
-                                    <label className="form-label">
-                                        Đơn vị
+                                    <label className="form-label fw-semibold">
+                                        📏 Đơn vị
+                                        <span className="text-danger">*</span>
                                     </label>
 
                                     <Field
@@ -203,8 +252,8 @@ const EditConsumable = () => {
 
                                 <Col md={12}>
 
-                                    <label className="form-label">
-                                        Mô tả
+                                    <label className="form-label fw-semibold">
+                                        📝 Mô tả
                                     </label>
 
                                     <Field
@@ -218,21 +267,28 @@ const EditConsumable = () => {
 
                             </Row>
 
-                            <div className="mt-4 d-flex gap-2">
+                            <div className="mt-4 d-flex justify-content-end gap-2">
 
                                 <Button
                                     variant="warning"
+                                    size="lg"
                                     type="submit"
+                                    disabled={saving}
                                 >
-                                    Cập nhật
+                                    {
+                                        saving
+                                            ? "⏳ Đang cập nhật..."
+                                            : "💾 Cập nhật"
+                                    }
                                 </Button>
 
                                 <Button
-                                    variant="secondary"
+                                    variant="outline-secondary"
+                                    size="lg"
                                     type="button"
                                     onClick={() => navigate("/consumable-materials")}
                                 >
-                                    Quay lại
+                                    ↩ Quay lại
                                 </Button>
 
                             </div>

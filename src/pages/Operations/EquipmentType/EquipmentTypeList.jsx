@@ -5,6 +5,7 @@ import {Link} from "react-router-dom";
 import {Button, Card, Row, Col, Table} from "react-bootstrap";
 import {getListDomain} from "../../../service/operations_manager/domain/DomainService.js";
 import {FaSearch, FaPlus, FaArrowLeft} from 'react-icons/fa';
+import ListSummaryCards from "../../../components/UI/ListSummaryCards.jsx";
 
 const EquipmentTypeList = () => {
 
@@ -64,6 +65,13 @@ const EquipmentTypeList = () => {
                     <FaPlus /> Thêm mới
                 </Link>
             </div>
+
+            <ListSummaryCards
+                total={types.length}
+                currentPage={page + 1}
+                totalPages={totalPages || 1}
+                totalLabel="Tổng loại thiết bị"
+            />
 
             <Card className="border-0 shadow-sm mb-4">
                 <Card.Body>

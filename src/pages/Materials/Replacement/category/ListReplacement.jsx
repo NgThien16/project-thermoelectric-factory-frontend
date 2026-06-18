@@ -18,6 +18,7 @@ import {
     FaSearch,
     FaTrash
 } from "react-icons/fa";
+import ListSummaryCards from "../../../../components/UI/ListSummaryCards.jsx";
 
 import {
     getAllOrSearch,
@@ -159,6 +160,12 @@ const ListReplacement = () => {
                 </Link>
 
             </div>
+
+            <ListSummaryCards
+                total={materialPage.content?.length || 0}
+                currentPage={page + 1}
+                totalPages={materialPage.totalPages || 1}
+            />
 
             {/* Search */}
 
