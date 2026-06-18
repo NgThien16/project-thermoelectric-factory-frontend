@@ -44,7 +44,7 @@ import RequestManagement from "./pages/repair_order/RequestManagement.jsx";
 import { ROLE } from "./utils/roleUtils.js";
 import WarehouseRelease from "./pages/Materials/WarehouseRelease.jsx";
 import Export from "./pages/Materials/Export.jsx";
-import ForemanList from "./pages/Materials/ForemanList.jsx";
+
 import WarehouseList from "./pages/Materials/WarehouseList.jsx";
 
 function App() {
@@ -399,8 +399,7 @@ function App() {
                     </RoleProtectedRoute>}/>
                     {/*Quản đốc*/}
                     <Route path="/material-export/supply-slip/:requestId" element={<Export/>} />
-                    <Route path="/material-export/supply-slip" element={<ForemanList/>} />
-                    {/*Thủ Kho*/}
+
                     <Route path="/material-export/release/:requestId" element={<WarehouseRelease/>} />
                     <Route path="/material-export/release" element={<WarehouseList/>} />
 

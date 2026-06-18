@@ -1,63 +1,84 @@
 import { useEffect, useState } from "react";
-import { Card, Table, Button, Badge } from "react-bootstrap";
+import { Table, Button, Badge, Card, Spinner } from "react-bootstrap";
+import { FaEye, FaBoxes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { getWorkOrdersForExport } from "../../service/materials_manager/ExportMaterialService.js";
+import axiosInstance from "../../api/axiosInstance.js";
 
-export default function WarehouseList() {
+export default function WarehousePendingList() {
+    const [pendingOrders, setPendingOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const [workOrders, setWorkOrders] = useState([]);
 
     useEffect(() => {
-        const loadData = async () => {
-            const allOrders = await getWorkOrdersForExport("", "");
-            // 🆕 Lọc danh sách theo Enum: Chỉ lấy các phiếu CHO_CAP_PHAT hoặc DA_CAP_PHAT
-            const filtered = allOrders.filter(w => w.materialStatus === "CHO_CAP_PHAT" || w.materialStatus === "DA_CAP_PHAT");
-            setWorkOrders(filtered);
-        };
-        loadData();
+        fetchPendingRequests();
     }, []);
+
+    const fetchPendingRequests = async () => {
+        try {
+            // Gọi đúng endpoint vừa tạo ở Backend
+            const response = await axiosInstance.get("/material-export/pending-list");
+            setPendingOrders(response.data || []);
+        } catch (error) {
+            console.error("Lỗi tải danh sách chờ cấp phát:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="container mt-4">
-            <h4 className="fw-bold mb-4 text-success">Danh Sách Thủ Kho: Tiếp Nhận & Xuất Kho</h4>
-            <Card className="shadow-sm">
-                <Table bordered hover className="text-center align-middle mb-0">
-                    <thead className="table-success">
-                    <tr>
-                        <th>Mã Phiếu</th>
-                        <th>Nội dung sự cố</th>
-                        <th>Trạng thái xuất kho</th>
-                        <th>Hành động</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {workOrders.length > 0 ? workOrders.map(item => (
-                        <tr key={item.id}>
-                            <td className="fw-bold">#{item.id}</td>
-                            <td className="text-start">{item.description}</td>
-                            <td>
-                                {/* 🆕 Áp dụng Enum mới */}
-                                {item.materialStatus === "CHO_CAP_PHAT" ? (
-                                    <Badge bg="warning" text="dark">Cần kiểm tra & Cấp phát</Badge>
-                                ) : (
-                                    <Badge bg="success">Đã xuất kho</Badge>
-                                )}
-                            </td>
-                            <td>
-                                <Button
-                                    variant={item.materialStatus === "CHO_CAP_PHAT" ? "success" : "outline-secondary"}
-                                    size="sm"
-                                    onClick={() => navigate(`/storekeeper/approve/${item.id}`)}
-                                >
-                                    {item.materialStatus === "CHO_CAP_PHAT" ? "Xử lý cấp hàng" : "Xem chi tiết"}
-                                </Button>
-                            </td>
-                        </tr>
-                    )) : (
-                        <tr><td colSpan="4">Hiện tại không có yêu cầu xuất kho nào.</td></tr>
+            <Card className="shadow-sm border-0">
+                <Card.Header className="bg-dark text-white py-3">
+                    <h5 className="mb-0 fw-bold">
+                        <FaBoxes className="me-2 text-warning"/>
+                        DANH SÁCH PHIẾU CHỜ CẤP PHÁT VẬT TƯ
+                    </h5>
+                </Card.Header>
+                <Card.Body>
+                    {loading ? (
+                        <div className="text-center py-5">
+                            <Spinner animation="border" variant="primary" />
+                        </div>
+                    ) : pendingOrders.length > 0 ? (
+                        <Table striped bordered hover responsive className="align-middle text-center">
+                            <thead className="table-secondary">
+                            <tr>
+                                <th>STT</th>
+                                <th>Mã Phiếu Sửa Chữa</th>
+                                <th>Trạng Thái Vật Tư</th>
+                                <th>Thao Tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {pendingOrders.map((order, index) => (
+                                <tr key={order.id}>
+                                    <td>{index + 1}</td>
+                                    {/* Hiển thị ID của WorkOrder */}
+                                    <td className="fw-bold text-primary">#{order.id}</td>
+                                    <td>
+                                        <Badge bg="warning" className="text-dark">
+                                            {order.materialStatus || "CHO_CAP_PHAT"}
+                                        </Badge>
+                                    </td>
+                                    <td>
+                                        {/* Khi bấm, nhảy sang trang Export.jsx kèm ID của WorkOrder để thủ kho xử lý */}
+                                        <Button
+                                            variant="outline-primary" size="sm"
+                                            onClick={() => navigate(`/export/${order.id}`)}
+                                        >
+                                            <FaEye className="me-1"/> Xử lý xuất kho
+                                        </Button>
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </Table>
+                    ) : (
+                        <div className="text-center py-5 text-muted">
+                            🎉 Tuyệt vời! Hiện tại không có phiếu nào chờ cấp phát vật tư.
+                        </div>
                     )}
-                    </tbody>
-                </Table>
+                </Card.Body>
             </Card>
         </div>
     );
