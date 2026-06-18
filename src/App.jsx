@@ -1,5 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.js'
+import './styles/PageUI.css'
 import {Route, Routes} from "react-router-dom";
 import MainLayout from "./components/Layout/MainLayout.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
