@@ -1,0 +1,15 @@
+.table tbody tr {
+    transition: all .2s ease;
+}
+
+.table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.card {
+    transition: all .2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
