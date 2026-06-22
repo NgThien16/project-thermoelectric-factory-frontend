@@ -8,7 +8,6 @@ const UserToolBorrowing = () => {
   const [tools, setTools] = useState([]);
   const [tempList, setTempList] = useState([]);
   const [generalInfo, setGeneralInfo] = useState({
-    employeeId: '', // Nhập mã nhân viên
     borrowDate: new Date().toISOString().split('T')[0],
     reason: ''
   });
@@ -101,10 +100,6 @@ const UserToolBorrowing = () => {
       toast.error('Danh sách mượn trống');
       return;
     }
-    if (!generalInfo.employeeId) {
-      toast.error('Vui lòng nhập mã nhân viên');
-      return;
-    }
     if (!generalInfo.reason) {
       toast.error('Vui lòng nhập lý do mượn');
       return;
@@ -114,17 +109,11 @@ const UserToolBorrowing = () => {
       // Biến đổi tempList thành List<ToolBorrowing> khớp với Backend yêu cầu
       const payload = tempList.map(item => ({
         tool: { id: parseInt(item.toolId) },
-        employee: { id: parseInt(generalInfo.employeeId) }, // Sử dụng mã nhân viên từ form
         note: generalInfo.reason,
         quantity: item.quantity,
         status: "WAITING",
         borrowDate: new Date().toISOString()
       }));
-
-      if (isNaN(parseInt(generalInfo.employeeId))) {
-        toast.error('Mã nhân viên phải là số');
-        return;
-      }
 
       await toolService.borrowToolsBatch(payload);
       toast.success('Gửi yêu cầu mượn thành công!');
@@ -145,17 +134,6 @@ const UserToolBorrowing = () => {
         <Card.Header className="bg-white fw-bold">Thông tin chung</Card.Header>
         <Card.Body>
           <Row>
-            <Col md={4}>
-              <Form.Group className="mb-3">
-                <Form.Label>Mã nhân viên (ID)</Form.Label>
-                <Form.Control 
-                  type="number" 
-                  placeholder="Nhập mã NV..."
-                  value={generalInfo.employeeId} 
-                  onChange={e => setGeneralInfo({...generalInfo, employeeId: e.target.value})} 
-                />
-              </Form.Group>
-            </Col>
             <Col md={4}>
               <Form.Group className="mb-3">
                 <Form.Label>Ngày mượn</Form.Label>

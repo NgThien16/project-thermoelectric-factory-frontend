@@ -1,5 +1,14 @@
 import axiosInstance from "../../../api/axiosInstance.js";
 
+export async function showList() {
+    try {
+        const res = await axiosInstance.get('/equipments/list');
+        return res.data;
+    } catch (e) {
+        console.log(e);
+        return [];
+    }
+}
 export async function searchListEquipment(searchName,searchCode,searchSystem,searchType,status,page) {
     let url = `/equipments?page=${page}`;
     if (searchName){

@@ -1,4 +1,4 @@
-import { Nav, Dropdown } from "react-bootstrap";
+import { Nav } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import {
     FaUsers,
@@ -14,7 +14,8 @@ import { useState } from "react";
 import useAuth from "../../context/useAuth";
 
 const Sidebar = () => {
-
+    const [openPersonnelMenu, setOpenPersonnelMenu] =
+        useState(false);
     const location = useLocation();
     const { user } = useAuth();
 
@@ -51,40 +52,65 @@ const Sidebar = () => {
 
                 {/* ================= NHÂN SỰ ================= */}
                 {(isAdmin || hasRole(["ROLE_NHÂN SỰ"])) && (
-                    <Dropdown as={Nav.Item}>
-
-                        <Dropdown.Toggle
-                            as={Nav.Link}
-                            active={location.pathname.startsWith("/personnels")}
+                    <>
+                        <div
+                            className="sidebar-parent-menu"
+                            onClick={() =>
+                                setOpenPersonnelMenu(
+                                    !openPersonnelMenu
+                                )
+                            }
                         >
-                            <FaUsers />
+                            <FaUsers className="me-2" />
                             Nhân sự
-                        </Dropdown.Toggle>
+                        </div>
 
-                        <Dropdown.Menu>
+                        {openPersonnelMenu && (
+                            <div className="sidebar-submenu">
 
-                            <LinkContainer to="/personnels/employees">
-                                <Dropdown.Item>Nhân viên</Dropdown.Item>
-                            </LinkContainer>
+                                <Nav.Link
+                                    as={Link}
+                                    to="/personnels/employees"
+                                    active={location.pathname.startsWith("/personnels/employees")}
+                                >
+                                    Nhân viên
+                                </Nav.Link>
 
-                            <LinkContainer to="/personnels/departments">
-                                <Dropdown.Item>Phòng ban</Dropdown.Item>
-                            </LinkContainer>
+                                <Nav.Link
+                                    as={Link}
+                                    to="/personnels/departments"
+                                    active={location.pathname.startsWith("/personnels/departments")}
+                                >
+                                    Phòng ban
+                                </Nav.Link>
 
-                            <LinkContainer to="/personnels/positions">
-                                <Dropdown.Item>Chức vụ</Dropdown.Item>
-                            </LinkContainer>
+                                <Nav.Link
+                                    as={Link}
+                                    to="/personnels/positions"
+                                    active={location.pathname.startsWith("/personnels/positions")}
+                                >
+                                    Chức vụ
+                                </Nav.Link>
 
-                            <LinkContainer to="/personnels/roles">
-                                <Dropdown.Item>Vai trò</Dropdown.Item>
-                            </LinkContainer>
+                                <Nav.Link
+                                    as={Link}
+                                    to="/personnels/roles"
+                                    active={location.pathname.startsWith("/personnels/roles")}
+                                >
+                                    Vai trò
+                                </Nav.Link>
 
-                            <LinkContainer to="/personnels/users">
-                                <Dropdown.Item>Người dùng</Dropdown.Item>
-                            </LinkContainer>
+                                <Nav.Link
+                                    as={Link}
+                                    to="/personnels/users"
+                                    active={location.pathname.startsWith("/personnels/users")}
+                                >
+                                    Người dùng
+                                </Nav.Link>
 
-                        </Dropdown.Menu>
-                    </Dropdown>
+                            </div>
+                        )}
+                    </>
                 )}
 
                 {/* ================= BIÊN BẢN KỸ THUẬT ================= */}
@@ -108,15 +134,27 @@ const Sidebar = () => {
                 {/* ================= HỆ THỐNG ================= */}
                 {(isAdmin || hasRole(["ROLE_QUẢN ĐỐC VẬN HÀNH"])) && (
                     <>
-                        <Nav.Link as={Link} to="/system-equipments">
+                        <Nav.Link
+                            as={Link}
+                            to="/system-equipments"
+                            active={location.pathname.startsWith("/system-equipments")}
+                        >
                             <FaCogs /> Hệ thống
                         </Nav.Link>
 
-                        <Nav.Link as={Link} to="/equipments">
+                        <Nav.Link
+                            as={Link}
+                            to="/equipments"
+                            active={location.pathname.startsWith("/equipments")}
+                        >
                             <FaCogs /> Thiết bị
                         </Nav.Link>
 
-                        <Nav.Link as={Link} to="/equipment-types">
+                        <Nav.Link
+                            as={Link}
+                            to="/equipment-types"
+                            active={location.pathname.startsWith("/equipment-types")}
+                        >
                             <FaCogs /> Loại thiết bị
                         </Nav.Link>
                     </>
@@ -138,11 +176,19 @@ const Sidebar = () => {
                         {openMaterialMenu && (
                             <div style={{ marginLeft: "20px" }}>
 
-                                <Nav.Link as={Link} to="/consumable-materials">
+                                <Nav.Link
+                                    as={Link}
+                                    to="/consumable-materials"
+                                    active={location.pathname.startsWith("/consumable-materials")}
+                                >
                                     Vật tư tiêu hao
                                 </Nav.Link>
 
-                                <Nav.Link as={Link} to="/replacement-materials">
+                                <Nav.Link
+                                    as={Link}
+                                    to="/replacement-materials"
+                                    active={location.pathname.startsWith("/replacement-materials")}
+                                >
                                     Vật tư thay thế
                                 </Nav.Link>
 
@@ -162,11 +208,19 @@ const Sidebar = () => {
                         {openTransactionMenu && (
                             <div style={{ marginLeft: "20px" }}>
 
-                                <Nav.Link as={Link} to="/consumable-transactions">
+                                <Nav.Link
+                                    as={Link}
+                                    to="/consumable-transactions"
+                                    active={location.pathname.startsWith("/consumable-transactions")}
+                                >
                                     Vật tư tiêu hao
                                 </Nav.Link>
 
-                                <Nav.Link as={Link} to="/replacement-transactions">
+                                <Nav.Link
+                                    as={Link}
+                                    to="/replacement-transactions"
+                                    active={location.pathname.startsWith("/replacement-transactions")}
+                                >
                                     Vật tư thay thế
                                 </Nav.Link>
 
@@ -178,17 +232,31 @@ const Sidebar = () => {
                 {/* ================= CCDC ================= */}
                 {(isAdmin || hasRole(["ROLE_THỦ KHO CCDC"])) && (
                     <>
-                        <Nav.Link as={Link} to="/tool">
+                        <Nav.Link
+                            as={Link}
+                            to="/tool"
+                            active={
+                                location.pathname === "/tool"
+                            }
+                        >
                             <FaClipboardList />
                             Công cụ dụng cụ
                         </Nav.Link>
 
-                        <Nav.Link as={Link} to="/tool/borrowings">
+                        <Nav.Link
+                            as={Link}
+                            to="/tool/borrowings"
+                            active={location.pathname.startsWith("/tool/borrowings")}
+                        >
                             <FaClipboardList />
                             Quản lý mượn/trả
                         </Nav.Link>
 
-                        <Nav.Link as={Link} to="/tool/user-borrow">
+                        <Nav.Link
+                            as={Link}
+                            to="/tool/user-borrow"
+                            active={location.pathname.startsWith("/tool/user-borrow")}
+                        >
                             <FaClipboardList />
                             Đăng ký mượn đồ
                         </Nav.Link>
@@ -197,11 +265,29 @@ const Sidebar = () => {
                 {/* ================= YÊU CẦU SỬA CHỮA ================= */}
                 {(isAdmin || hasRole(["ROLE_TRƯỞNG CA","ROLE_TRƯỞNG KÍP"])) && (
                     <>
-                        <Nav.Link as={Link} to="/repair-orders">
+                        <Nav.Link
+                            as={Link}
+                            to="/repair-orders"
+                            active={location.pathname.startsWith("/repair-orders")}
+                        >
                             <FaWrench />
                             Yêu cầu sửa chữa
                         </Nav.Link>
                     </>
+                )}
+                {/* ================= PHIẾU CÔNG TÁC ================= */}
+                {(
+                    isAdmin || hasRole(["ROLE_QUẢN ĐỐC SỬA CHỮA", "ROLE_TỔ TRƯỞNG"])) && (
+                        <>
+                            <Nav.Link as={Link} to="/work-orders">
+                                <FaWrench />
+                                Phiếu công tác
+                            </Nav.Link>
+                            <Nav.Link as={Link} to="/work-orders/repair-orders">
+                                <FaWrench />
+                                Yêu cầu sửa chữa
+                            </Nav.Link>
+                        </>
                 )}
             </Nav>
 
