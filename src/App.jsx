@@ -45,6 +45,8 @@ import RequestManagement from "./pages/repair_order/RequestManagement.jsx";
 import { ROLE } from "./utils/roleUtils.js";
 import WarehouseRelease from "./pages/Materials/WarehouseRelease.jsx";
 import Export from "./pages/Materials/Export.jsx";
+import WorkOrderList from "./pages/work_order/WorkOrderList.jsx";
+import RepairOrderForWorkOrderList from "./pages/work_order/RepairOrderForWorkOrderList.jsx";
 
 function App() {
     return (
@@ -434,6 +436,35 @@ function App() {
                                 allowedRoles={[ROLE.ADMIN, ROLE.SHIFT_LEADER, ROLE.SHIFT_LEADER_ALT]}
                             >
                                 <RequestManagement />
+                            </RoleProtectedRoute>
+                        }
+                    />
+                    {/* Work Order */}
+                    <Route
+                        path="/work-orders"
+                        element={
+                            <RoleProtectedRoute
+                                allowedRoles={[
+                                    ROLE.ADMIN,
+                                    ROLE.MAINTENANCE_MANAGER,
+                                    ROLE.TEAM_LEADER
+                                ]}
+                            >
+                                <WorkOrderList/>
+                            </RoleProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/work-orders/repair-orders"
+                        element={
+                            <RoleProtectedRoute
+                                allowedRoles={[
+                                    ROLE.ADMIN,
+                                    ROLE.MAINTENANCE_MANAGER,
+                                    ROLE.TEAM_LEADER
+                                ]}
+                            >
+                                <RepairOrderForWorkOrderList/>
                             </RoleProtectedRoute>
                         }
                     />
