@@ -64,7 +64,7 @@ export default function WarehousePendingList() {
                                         {/* Khi bấm, nhảy sang trang Export.jsx kèm ID của WorkOrder để thủ kho xử lý */}
                                         <Button
                                             variant="outline-primary" size="sm"
-                                            onClick={() => navigate(`/export/${order.id}`)}
+                                            onClick={() => navigate(`/material-export/release/${order.id}`)}
                                         >
                                             <FaEye className="me-1"/> Xử lý xuất kho
                                         </Button>
