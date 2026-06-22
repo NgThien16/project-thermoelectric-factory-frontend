@@ -30,6 +30,7 @@ import {
 } from "../../service/repair_order/requestService.js";
 
 import { toast } from "react-toastify";
+import Pagination from "react-bootstrap/Pagination";
 
 const RequestManagement = () => {
 
@@ -60,7 +61,7 @@ const RequestManagement = () => {
         id: null,
         title: "",
         description: "",
-        status: "PENDING",
+        status: "CHO_DUYET",
         equipmentId: ""
     });
 
@@ -123,11 +124,27 @@ const RequestManagement = () => {
         loadEquipments();
     };
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
 
-        setPage(0);
+        try {
 
-        loadData();
+            const res = await getRepairOrders(
+                keyword,
+                0
+            );
+
+            setPage(0);
+
+            setRequests(res.content || []);
+
+            setTotalPages(res.totalPages || 0);
+
+        } catch {
+
+            toast.error(
+                "Không tải được dữ liệu"
+            );
+        }
     };
 
     const openCreateModal = () => {
@@ -138,7 +155,7 @@ const RequestManagement = () => {
             id: null,
             title: "",
             description: "",
-            status: "PENDING",
+            status: "CHO_DUYET",
             equipmentId: ""
         });
 
@@ -217,69 +234,63 @@ const RequestManagement = () => {
         }
     };
 
-    const handleDelete = async (
-        id
-    ) => {
+    const handleDelete = async (id) => {
 
-        if (
-            !window.confirm(
-                "Bạn chắc chắn muốn xóa?"
-            )
-        ) return;
+        const ok = window.confirm(
+            "⚠️ Bạn có chắc muốn xóa yêu cầu sửa chữa này?\n\nSau khi xóa sẽ không thể khôi phục."
+        );
+
+        if (!ok) return;
 
         try {
 
             await deleteRepairOrder(id);
 
             toast.success(
-                "Đã xóa"
+                "🗑️ Xóa yêu cầu sửa chữa thành công!",
+                {
+                    autoClose: 2000
+                }
             );
 
             loadData();
 
-        } catch {
+        } catch (e) {
+
+            console.log(e);
 
             toast.error(
-                "Xóa thất bại"
+                "❌ Không thể xóa.\nYêu cầu này đã được lập Work Order hoặc đang được sử dụng.",
+                {
+                    autoClose: 3500
+                }
             );
         }
     };
+    const getStatusBadge = (status) => {
+        switch (status) {
+            case "CHO_DUYET":
+                return <Badge bg="warning">Chờ duyệt</Badge>;
 
-    const getStatusBadge =
-        (status) => {
+            case "DA_DUYET":
+                return <Badge bg="info">Đã duyệt</Badge>;
 
-            switch (status) {
+            case "DANG_THUC_HIEN":
+                return <Badge bg="primary">Đang thực hiện</Badge>;
 
-                case "PENDING":
-                    return (
-                        <Badge bg="warning">
-                            Chờ xử lý
-                        </Badge>
-                    );
+            case "DA_HOAN_THANH":
+                return <Badge bg="success">Hoàn thành</Badge>;
 
-                case "PROCESSING":
-                    return (
-                        <Badge bg="primary">
-                            Đang xử lý
-                        </Badge>
-                    );
+            case "KHONG_DUYET":
+                return <Badge bg="danger">Từ chối</Badge>;
 
-                case "COMPLETED":
-                    return (
-                        <Badge bg="success">
-                            Hoàn thành
-                        </Badge>
-                    );
-
-                default:
-                    return (
-                        <Badge bg="secondary">
-                            {status}
-                        </Badge>
-                    );
-            }
-        };
-
+            default:
+                return <Badge bg="dark">{status}</Badge>;
+        }
+    };
+    const canEditOrDelete = (status) => {
+        return status === "CHO_DUYET";
+    };
     return (
 
         <div className="p-4">
@@ -353,8 +364,7 @@ const RequestManagement = () => {
                         <thead>
 
                         <tr>
-
-                            <th>ID</th>
+                            <th>STT</th>
 
                             <th>Tiêu đề</th>
 
@@ -372,12 +382,11 @@ const RequestManagement = () => {
 
                         <tbody>
 
-                        {requests.map(
-                            (r) => (
+                        {requests.map((r, index) => (
 
-                                <tr key={r.id}>
+                            <tr key={r.id}>
 
-                                    <td>{r.id}</td>
+                                <td>{page * 3 + index + 1}</td>
 
                                     <td>{r.title}</td>
 
@@ -407,11 +416,13 @@ const RequestManagement = () => {
                                             size="sm"
                                             variant="outline-primary"
                                             className="me-2"
-                                            onClick={() =>
-                                                openEditModal(
-                                                    r
-                                                )
+                                            disabled={!canEditOrDelete(r.status)}
+                                            title={
+                                                !canEditOrDelete(r.status)
+                                                    ? "Yêu cầu đã được xử lý, không thể chỉnh sửa"
+                                                    : ""
                                             }
+                                            onClick={() => openEditModal(r)}
                                         >
                                             <FaEdit />
                                         </Button>
@@ -419,11 +430,13 @@ const RequestManagement = () => {
                                         <Button
                                             size="sm"
                                             variant="outline-danger"
-                                            onClick={() =>
-                                                handleDelete(
-                                                    r.id
-                                                )
+                                            disabled={!canEditOrDelete(r.status)}
+                                            title={
+                                                !canEditOrDelete(r.status)
+                                                    ? "Yêu cầu đã được xử lý, không thể xóa"
+                                                    : ""
                                             }
+                                            onClick={() => handleDelete(r.id)}
                                         >
                                             <FaTrash />
                                         </Button>
@@ -437,7 +450,35 @@ const RequestManagement = () => {
                         </tbody>
 
                     </Table>
+                    <div className="d-flex justify-content-center mt-3">
 
+                        <Pagination>
+
+                            <Pagination.Prev
+                                disabled={page === 0}
+                                onClick={() => setPage(page - 1)}
+                            />
+
+                            {[...Array(totalPages).keys()].map((p) => (
+
+                                <Pagination.Item
+                                    key={p}
+                                    active={p === page}
+                                    onClick={() => setPage(p)}
+                                >
+                                    {p + 1}
+                                </Pagination.Item>
+
+                            ))}
+
+                            <Pagination.Next
+                                disabled={page >= totalPages - 1}
+                                onClick={() => setPage(page + 1)}
+                            />
+
+                        </Pagination>
+
+                    </div>
                 </Card.Body>
 
             </Card>

@@ -2,12 +2,13 @@ import {
     Navbar,
     Container,
     Nav,
-    Dropdown
+    Dropdown,
 } from "react-bootstrap";
 
 import {
     FaUserCircle,
-    FaBell
+    FaSignOutAlt,
+    FaSignInAlt
 } from "react-icons/fa";
 
 import useAuth from "../../context/useAuth";
@@ -22,8 +23,13 @@ const TopNavbar = () => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
+
         logout();
-        toast.success("Đăng xuất thành công");
+
+        toast.success(
+            "Đăng xuất thành công"
+        );
+
         navigate("/");
     };
     const [notificationCount, setNotificationCount] = useState(0);
@@ -109,7 +115,7 @@ const TopNavbar = () => {
                         <Dropdown.Toggle
                             variant="light"
                             id="dropdown-user"
-                            className="d-flex align-items-center border-0 bg-transparent"
+                            className="border-0 bg-transparent shadow-none d-flex align-items-center"
                         >
                             <FaUserCircle size={24} className="me-2" />
                             <span>{user?.username || "Khách"}</span>
@@ -129,6 +135,7 @@ const TopNavbar = () => {
                                     <Dropdown.Item onClick={handleLogout}>
                                         Đăng xuất
                                     </Dropdown.Item>
+
                                 </>
                             )}
                         </Dropdown.Menu>
@@ -136,6 +143,7 @@ const TopNavbar = () => {
 
                 </Nav>
             </Container>
+
         </Navbar>
     );
 };

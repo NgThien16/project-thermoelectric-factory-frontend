@@ -19,7 +19,7 @@ const SystemEquipment = () => {
     return (
         <div className="p-4">
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <h3 className="fw-bold">Hệ thống thiết bị</h3>
+                <h3 className="fw-bold">Hệ thống toàn thiết bị</h3>
                 <Link
                     to={"/system-equipments/add"}
                     className="btn btn-success d-flex align-items-center gap-2"
