@@ -64,6 +64,32 @@ const RequestManagement = () => {
         status: "CHO_DUYET",
         equipmentId: ""
     });
+    const [showMessageModal, setShowMessageModal] = useState(false);
+
+    const [messageData, setMessageData] = useState({
+        title: "",
+        message: "",
+        type: "success"
+    });
+    const [showDeleteModal, setShowDeleteModal] =
+        useState(false);
+
+    const [deleteId, setDeleteId] =
+        useState(null);
+    const showMessage = (
+        title,
+        message,
+        type = "success"
+    ) => {
+
+        setMessageData({
+            title,
+            message,
+            type
+        });
+
+        setShowMessageModal(true);
+    };
 
     const loadData = async () => {
 
@@ -204,22 +230,18 @@ const RequestManagement = () => {
                     form.id,
                     payload
                 );
-
-                toast.success(
-                    "Cập nhật thành công"
+                showMessage(
+                    "Thành công",
+                    "Cập nhật yêu cầu sửa chữa thành công",
+                    "success"
                 );
 
             } else {
 
-                await createRepairOrder(
-                    payload
-                );
+                await createRepairOrder(payload);
 
-                toast.success(
-                    "Tạo yêu cầu thành công"
-                );
+                toast.success("Tạo yêu cầu sửa chữa thành công");
             }
-
             setShowModal(false);
 
             loadData();
@@ -227,44 +249,35 @@ const RequestManagement = () => {
         } catch (e) {
 
             console.log(e);
-
-            toast.error(
-                "Có lỗi xảy ra"
+            showMessage(
+                "Lỗi",
+                e.response?.data || "Có lỗi xảy ra",
+                "danger"
             );
         }
     };
 
-    const handleDelete = async (id) => {
-
-        const ok = window.confirm(
-            "⚠️ Bạn có chắc muốn xóa yêu cầu sửa chữa này?\n\nSau khi xóa sẽ không thể khôi phục."
-        );
-
-        if (!ok) return;
+    const confirmDelete = async () => {
 
         try {
 
-            await deleteRepairOrder(id);
+            await deleteRepairOrder(deleteId);
 
-            toast.success(
-                "🗑️ Xóa yêu cầu sửa chữa thành công!",
-                {
-                    autoClose: 2000
-                }
-            );
+            toast.success("Xoá yêu cầu sửa chữa thành công");
 
             loadData();
 
         } catch (e) {
 
-            console.log(e);
-
-            toast.error(
-                "❌ Không thể xóa.\nYêu cầu này đã được lập Work Order hoặc đang được sử dụng.",
-                {
-                    autoClose: 3500
-                }
+            showMessage(
+                "Lỗi",
+                "Không thể xóa yêu cầu này",
+                "danger"
             );
+
+        } finally {
+
+            setShowDeleteModal(false);
         }
     };
     const getStatusBadge = (status) => {
@@ -436,7 +449,10 @@ const RequestManagement = () => {
                                                     ? "Yêu cầu đã được xử lý, không thể xóa"
                                                     : ""
                                             }
-                                            onClick={() => handleDelete(r.id)}
+                                            onClick={() => {
+                                                setDeleteId(r.id);
+                                                setShowDeleteModal(true);
+                                            }}
                                         >
                                             <FaTrash />
                                         </Button>
@@ -658,6 +674,88 @@ const RequestManagement = () => {
                         onClick={handleSave}
                     >
                         Lưu
+                    </Button>
+
+                </Modal.Footer>
+
+            </Modal>
+            <Modal
+                show={showMessageModal}
+                onHide={() => setShowMessageModal(false)}
+                centered
+            >
+
+                <Modal.Header
+                    closeButton
+                    className={
+                        messageData.type === "success"
+                            ? "bg-success text-white"
+                            : "bg-danger text-white"
+                    }
+                >
+
+                    <Modal.Title>
+                        {messageData.title}
+                    </Modal.Title>
+
+                </Modal.Header>
+
+                <Modal.Body>
+
+                    {messageData.message}
+
+                </Modal.Body>
+
+                <Modal.Footer>
+
+                    <Button
+                        variant={
+                            messageData.type === "success"
+                                ? "success"
+                                : "danger"
+                        }
+                        onClick={() => setShowMessageModal(false)}
+                    >
+                        Đóng
+                    </Button>
+
+                </Modal.Footer>
+
+            </Modal>
+            <Modal
+                show={showDeleteModal}
+                onHide={() => setShowDeleteModal(false)}
+                centered
+            >
+
+                <Modal.Header closeButton>
+
+                    <Modal.Title>
+                        Xác nhận xóa
+                    </Modal.Title>
+
+                </Modal.Header>
+
+                <Modal.Body>
+
+                    Bạn có chắc muốn xóa yêu cầu sửa chữa này?
+
+                </Modal.Body>
+
+                <Modal.Footer>
+
+                    <Button
+                        variant="secondary"
+                        onClick={() => setShowDeleteModal(false)}
+                    >
+                        Hủy
+                    </Button>
+
+                    <Button
+                        variant="danger"
+                        onClick={confirmDelete}
+                    >
+                        Xóa
                     </Button>
 
                 </Modal.Footer>
