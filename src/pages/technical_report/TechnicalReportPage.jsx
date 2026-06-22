@@ -1,156 +1,77 @@
-import { useState, useEffect } from "react";
-import { TechnicalReportService } from "../../service/technical_report/TechnicalReportService";
+import {useState, useEffect} from "react";
 import TechnicalReportForm from "./TechnicalReportForm";
+import {TechnicalReportService} from "../../service/technical_report/TechnicalReportService";
+import {searchListEquipment} from "../../service/operations_manager/equipment/EquipmentService";
+import {toast} from "react-toastify";
+import { exportTechnicalReportPdf } from "../../pdf/TechnicalReportPdf";
 
-const TechnicalReportDetail = ({ report, onClose }) => {
+// Modal chi tiết
+const TechnicalReportDetail = ({report, equipmentList, onClose}) => {
     if (!report) return null;
 
-    const parseContent = () => {
-        try {
-            return report?.content ? JSON.parse(report.content) : {};
-        } catch {
-            return {};
-        }
-    };
+    let content = {};
+    try {
+        content = report.content ? JSON.parse(report.content) : {};
+    } catch {
+        content = {};
+    }
 
-    const formatDate = (dateValue) => {
-        if (!dateValue) return "";
-        return new Date(dateValue).toLocaleString();
-    };
-
-    // const renderReplacements = (replacements) => {
-    //     if (!replacements || replacements.length === 0) {
-    //         return <span>Không có</span>;
-    //     }
-    //
-    //     if (typeof replacements === "string") {
-    //         return <div style={{ whiteSpace: "pre-line" }}>{replacements}</div>;
-    //     }
-    //
-    //     if (Array.isArray(replacements)) {
-    //         return (
-    //             <ul className="mb-0">
-    //                 {replacements.map((item, index) => (
-    //                     <li key={index}>
-    //                         {item.name || `Vật tư ID: ${item.materialId || ""}`}
-    //                         {item.quantity ? ` - SL: ${item.quantity}` : ""}
-    //                         {item.note ? ` - ${item.note}` : ""}
-    //                     </li>
-    //                 ))}
-    //             </ul>
-    //         );
-    //     }
-    //
-    //     return <span>Không có</span>;
-    // };
-
-    const content = parseContent();
     const equipmentReports = content.equipmentReports || [];
 
     return (
-        <div
-            className="modal show"
-            style={{ display: "block", backgroundColor: "rgba(0,0,0,0.3)" }}
-        >
-            <div className="modal-dialog modal-xl">
-                <div className="modal-content p-3">
+        <div className="modal show d-block" tabIndex="-1">
+            <div className="modal-dialog modal-lg">
+                <div className="modal-content">
                     <div className="modal-header">
-                        <h5 className="modal-title">
-                            Chi tiết biên bản đánh giá kỹ thuật
-                        </h5>
-                        <button
-                            type="button"
-                            className="btn-close"
-                            onClick={onClose}
-                        ></button>
+                        <h5 className="modal-title">Chi tiết biên bản đánh giá kỹ thuật</h5>
+                        <button type="button" className="btn-close" onClick={onClose}></button>
                     </div>
-
                     <div className="modal-body">
-                        <div className="mb-3">
-                            <p className="mb-1">
-                                <strong>ID biên bản:</strong> {report.id}
-                            </p>
-                            <p className="mb-1">
-                                <strong>Work Order ID:</strong> {report.workOrder?.id}
-                            </p>
-                            <p className="mb-1">
-                                <strong>Người tạo:</strong>{" "}
-                                {report.createdBy?.username || report.createdBy?.id || "Không có dữ liệu"}
-                            </p>
-                            <p className="mb-1">
-                                <strong>Ngày tạo:</strong> {formatDate(report.createdAt)}
-                            </p>
-                        </div>
+                        <p><strong>ID biên bản:</strong> {report.id}</p>
+                        <p><strong>Work Order ID:</strong> {report.workOrder?.id}</p>
+                        <p><strong>Người tạo:</strong> {report.createdBy?.fullName || report.createdBy?.username || "Không có dữ liệu"}</p>
+                        <p><strong>Ngày tạo:</strong> {new Date(report.createdAt).toLocaleString()}</p>
+                        <p><strong>Kết luận:</strong> {content.conclusion || "Không có dữ liệu"}</p>
 
-                        <hr />
-
-                        <h5 className="mb-3">Danh sách thiết bị đánh giá</h5>
-
-                        {equipmentReports.length === 0 ? (
-                            <p>Không có dữ liệu thiết bị trong biên bản.</p>
+                        <h6>Danh sách thiết bị đánh giá</h6>
+                        {equipmentReports.length > 0 ? (
+                            equipmentReports.map((eq, idx) => {
+                                const eqObj = equipmentList.find(e => e.id === eq.equipmentId);
+                                return (
+                                    <div key={idx} className="border p-2 mb-2">
+                                        <p><strong>Thiết bị {idx + 1}</strong></p>
+                                        <p><strong>Mã code:</strong> {eqObj?.code || ""}</p>
+                                        <p><strong>Tên thiết bị:</strong> {eq.equipmentName || ""}</p>
+                                        <p><strong>Mô tả hư hỏng:</strong> {eq.damageDescription || ""}</p>
+                                        {/*<p><strong>Nguyên nhân:</strong> {eq.cause || ""}</p>*/}
+                                        <p><strong>Đánh giá kỹ thuật:</strong> {eq.assessment || ""}</p>
+                                        <p><strong>Phương án xử lý:</strong> {eq.proposedSolution || ""}</p>
+                                        {/*<p><strong>Vật tư đề xuất:</strong> {eq.replacements || "Không có"}</p>*/}
+                                        {/*<h6>Vật tư thay thế</h6>*/}
+                                        {/*{eq.replacements?.length > 0 ? (*/}
+                                        {/*    eq.replacements.map((rep, ridx) => (*/}
+                                        {/*        <div key={ridx}>*/}
+                                        {/*            <p>{rep.name} - Số lượng: {rep.quantity}</p>*/}
+                                        {/*        </div>*/}
+                                        {/*    ))*/}
+                                        {/*) : (*/}
+                                        {/*    <p>Không có vật tư thay thế</p>*/}
+                                        {/*)}*/}
+                                    </div>
+                                );
+                            })
                         ) : (
-                            equipmentReports.map((eq, index) => (
-                                <div key={index} className="border rounded p-3 mb-3">
-                                    <h6 className="mb-3">Thiết bị {index + 1}</h6>
-
-                                    <p>
-                                        <strong>ID thiết bị:</strong> {eq.equipmentId || ""}
-                                    </p>
-
-                                    <p>
-                                        <strong>Tên thiết bị:</strong> {eq.equipmentName || ""}
-                                    </p>
-
-                                    <p>
-                                        <strong>Mô tả hư hỏng:</strong>
-                                    </p>
-                                    <div className="border rounded p-2 mb-2 bg-light">
-                                        {eq.damageDescription || "Không có"}
-                                    </div>
-
-                                    {/*<p>*/}
-                                    {/*    <strong>Nguyên nhân:</strong>*/}
-                                    {/*</p>*/}
-                                    {/*<div className="border rounded p-2 mb-2 bg-light">*/}
-                                    {/*    {eq.cause || "Không có"}*/}
-                                    {/*</div>*/}
-
-                                    <p>
-                                        <strong>Đánh giá kỹ thuật:</strong>
-                                    </p>
-                                    <div className="border rounded p-2 mb-2 bg-light">
-                                        {eq.assessment || "Không có"}
-                                    </div>
-
-                                    <p>
-                                        <strong>Phương án xử lý:</strong>
-                                    </p>
-                                    <div className="border rounded p-2 mb-2 bg-light">
-                                        {eq.proposedSolution || "Không có"}
-                                    </div>
-
-                                    {/*<p>*/}
-                                    {/*    <strong>Vật tư đề xuất:</strong>*/}
-                                    {/*</p>*/}
-                                    {/*<div className="border rounded p-2 bg-light">*/}
-                                    {/*    {renderReplacements(eq.replacements)}*/}
-                                    {/*</div>*/}
-                                </div>
-                            ))
+                            <p>Không có thiết bị nào</p>
                         )}
-
-                        <hr />
-
-                        <h5>Kết luận</h5>
-                        <div className="border rounded p-3 bg-light">
-                            {content.conclusion || "Không có kết luận"}
-                        </div>
                     </div>
-
+                    <button
+                        className="btn btn-primary"
+                        onClick={() => exportTechnicalReportPdf(report)}
+                    >
+                        Xuất PDF
+                    </button>
                     <div className="modal-footer">
-                        <button className="btn btn-secondary" onClick={onClose}>
-                            Đóng
-                        </button>
+                        <button className="btn btn-secondary" onClick={onClose}>Đóng</button>
                     </div>
                 </div>
             </div>
@@ -164,26 +85,55 @@ const TechnicalReportPage = () => {
     const [size] = useState(5);
     const [totalPages, setTotalPages] = useState(0);
     const [keyword, setKeyword] = useState("");
+    const [deviceKeyword, setDeviceKeyword] = useState("");
+    const [workOrderId, setWorkOrderId] = useState("");
     const [selectedReport, setSelectedReport] = useState(null);
     const [showForm, setShowForm] = useState(false);
-
     const [detailReport, setDetailReport] = useState(null);
     const [showDetail, setShowDetail] = useState(false);
+    const [equipmentList, setEquipmentList] = useState([]);
+
 
     const fetchReports = async () => {
-        const data = await TechnicalReportService.searchReports(keyword, null, page, size);
-        setReports(data.content || []);
-        setTotalPages(data.totalPages || 0);
+        try {
+            const data = await TechnicalReportService.searchReports(keyword, workOrderId ? Number(workOrderId) : null, page, size);
+            // Lọc theo tên thiết bị trong JSON content
+            const filtered = (data.content || []).filter(r => {
+                const content = r.content ? JSON.parse(r.content) : {};
+                return content.equipmentReports?.some(eq =>
+                    eq.equipmentName.toLowerCase().includes(deviceKeyword.toLowerCase())
+                );
+            });
+            setReports(filtered);
+            setTotalPages(data.totalPages);
+        } catch {
+            toast.error("Lỗi tải danh sách biên bản!");
+        }
+    };
+
+    const fetchEquipments = async () => {
+        try {
+            const data = await searchListEquipment("", "", "", "", "", 0);
+            setEquipmentList(data.data || []);
+        } catch {
+            toast.error("Lỗi tải danh sách thiết bị!");
+        }
     };
 
     useEffect(() => {
         fetchReports();
-    }, [page, keyword]);
+        fetchEquipments();
+    }, [page, keyword, deviceKeyword, workOrderId]);
 
     const handleDelete = async (id) => {
         if (window.confirm("Bạn có chắc muốn xóa biên bản này?")) {
-            await TechnicalReportService.delete(id);
-            fetchReports();
+            try {
+                await TechnicalReportService.delete(id);
+                fetchReports();
+                toast.success("Xóa biên bản thành công!");
+            } catch {
+                toast.error("Không thể xóa biên bản!");
+            }
         }
     };
 
@@ -206,77 +156,81 @@ const TechnicalReportPage = () => {
         <div>
             <h3>Danh sách Biên bản đánh giá kỹ thuật</h3>
 
-            <div className="mb-2">
-                <input
-                    type="text"
-                    placeholder="Tìm kiếm..."
-                    value={keyword}
-                    onChange={(e) => setKeyword(e.target.value)}
-                />
-
-                <button onClick={handleAdd} className="btn btn-primary ml-2">
-                    Thêm mới
-                </button>
+            <div className="d-flex justify-content-between align-items-center mb-2">
+                <div className="d-flex">
+                    <input
+                        type="text"
+                        placeholder="Tên thiết bị"
+                        value={deviceKeyword}
+                        onChange={(e) => setDeviceKeyword(e.target.value)}
+                        className="form-control"
+                    />
+                    <button onClick={fetchReports} className="btn btn-primary me-2">Tìm kiếm</button>
+                    <button onClick={() => {
+                        setDeviceKeyword("");
+                        setWorkOrderId("");
+                        fetchReports();
+                    }} className="btn btn-secondary">Quay lại
+                    </button>
+                </div>
+                <button onClick={handleAdd} className="btn btn-success">Thêm mới</button>
             </div>
 
             <table className="table table-bordered">
                 <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>STT</th>
                     <th>WorkOrder</th>
+                    <th>Mã code</th>
+                    <th>Tên thiết bị</th>
                     <th>Ngày tạo</th>
                     <th>Hành động</th>
                 </tr>
                 </thead>
-
                 <tbody>
-                {reports.map((r) => (
-                    <tr key={r.id}>
-                        <td>{r.id}</td>
-                        <td>{r.workOrder?.id}</td>
-                        <td>{new Date(r.createdAt).toLocaleString()}</td>
-                        <td>
-                            <button
-                                className="btn btn-sm btn-primary"
-                                onClick={() => handleViewDetail(r)}
-                            >
-                                Chi tiết
-                            </button>{" "}
+                {reports.map((r, i) => {
+                    const content = r.content ? JSON.parse(r.content) : {};
+                    const firstEq = content.equipmentReports?.[0] || {};
+                    const eqObj = equipmentList.find(eq => eq.id === firstEq?.equipmentId);
 
-                            <button
-                                className="btn btn-sm btn-info"
-                                onClick={() => handleEdit(r)}
-                            >
-                                Sửa
-                            </button>{" "}
-
-                            <button
-                                className="btn btn-sm btn-danger"
-                                onClick={() => handleDelete(r.id)}
-                            >
-                                Xóa
-                            </button>
-                        </td>
-                    </tr>
-                ))}
+                    return (
+                        <tr key={r.id}>
+                            <td>{page * size + i + 1}</td>
+                            <td>{r.workOrder?.id}</td>
+                            <td>{eqObj?.code || ""}</td>
+                            <td>{firstEq?.equipmentName || ""}</td>
+                            <td>{new Date(r.createdAt).toLocaleString()}</td>
+                            <td>
+                                <button className="btn btn-sm btn-primary" onClick={() => handleViewDetail(r)}>Chi
+                                    tiết
+                                </button>
+                                {" "}
+                                <button className="btn btn-sm btn-info" onClick={() => handleEdit(r)}>Sửa</button>
+                                {" "}
+                                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(r.id)}>Xóa
+                                </button>
+                            </td>
+                        </tr>
+                    );
+                })}
                 </tbody>
             </table>
 
-            <div>
+            <div className="d-flex justify-content-center mt-3">
                 <button
                     disabled={page <= 0}
-                    onClick={() => setPage(page - 1)}
-                    className="btn btn-secondary"
+                    onClick={() => setPage(prev => Math.max(prev - 1, 0))}
+                    className="btn btn-secondary mx-2"
                 >
                     Trang trước
                 </button>
-
-                <span className="mx-2">{page + 1} / {totalPages}</span>
-
+                <span className="align-self-center mx-2">
+        Trang {page + 1} / {totalPages}
+    </span>
                 <button
                     disabled={page + 1 >= totalPages}
-                    onClick={() => setPage(page + 1)}
-                    className="btn btn-secondary"
+                    onClick={() => setPage(prev => prev + 1)}
+                    className="btn btn-secondary mx-2"
                 >
                     Trang sau
                 </button>
@@ -290,12 +244,14 @@ const TechnicalReportPage = () => {
                         setShowForm(false);
                         fetchReports();
                     }}
+                    equipmentList={equipmentList}
                 />
             )}
 
             {showDetail && (
                 <TechnicalReportDetail
                     report={detailReport}
+                    equipmentList={equipmentList}
                     onClose={() => {
                         setShowDetail(false);
                         setDetailReport(null);

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { TechnicalReportService } from "../../service/technical_report/TechnicalReportService";
 import useAuth from "../../context/useAuth";
+import { toast } from "react-toastify";
 
 const TechnicalReportForm = ({ report, onClose, onSave }) => {
     const { user: currentUser } = useAuth();
@@ -42,24 +43,24 @@ const TechnicalReportForm = ({ report, onClose, onSave }) => {
         setEquipmentReports(newList);
     };
 
-    const handleAddReplacement = (eqIndex) => {
-        const newList = [...equipmentReports];
-        newList[eqIndex].replacements.push({ materialId: "", name: "", quantity: 1 });
-        setEquipmentReports(newList);
-    };
-
-    const handleReplacementChange = (eqIndex, repIndex, field, value) => {
-        const newList = [...equipmentReports];
-        newList[eqIndex].replacements[repIndex][field] =
-            field === "quantity" ? Number(value) : value;
-        setEquipmentReports(newList);
-    };
-
-    const handleRemoveReplacement = (eqIndex, repIndex) => {
-        const newList = [...equipmentReports];
-        newList[eqIndex].replacements.splice(repIndex, 1);
-        setEquipmentReports(newList);
-    };
+    // const handleAddReplacement = (eqIndex) => {
+    //     const newList = [...equipmentReports];
+    //     newList[eqIndex].replacements.push({ materialId: "", name: "", quantity: 1 });
+    //     setEquipmentReports(newList);
+    // };
+    //
+    // const handleReplacementChange = (eqIndex, repIndex, field, value) => {
+    //     const newList = [...equipmentReports];
+    //     newList[eqIndex].replacements[repIndex][field] =
+    //         field === "quantity" ? Number(value) : value;
+    //     setEquipmentReports(newList);
+    // };
+    //
+    // const handleRemoveReplacement = (eqIndex, repIndex) => {
+    //     const newList = [...equipmentReports];
+    //     newList[eqIndex].replacements.splice(repIndex, 1);
+    //     setEquipmentReports(newList);
+    // };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -91,14 +92,16 @@ const TechnicalReportForm = ({ report, onClose, onSave }) => {
         try {
             if (report) {
                 await TechnicalReportService.update(report.id, dto);
+                toast.success("Cập nhật biên bản thành công!");
             } else {
                 await TechnicalReportService.create(dto);
+                toast.success("Tạo mới biên bản thành công!");
             }
             onSave();
         } catch (error) {
             console.error("Lỗi khi lưu biên bản:", error);
             console.error("Backend trả về:", error.response?.data);
-            alert("Lưu biên bản thất bại! Xem console để biết chi tiết.");
+            toast.error("Lưu biên bản thất bại! Xem console để biết chi tiết.");
         }
     };
 
@@ -165,14 +168,14 @@ const TechnicalReportForm = ({ report, onClose, onSave }) => {
                                         handleEquipmentChange(eqIndex, "damageDescription", e.target.value)
                                     }
                                 />
-                                <textarea
-                                    placeholder="Nguyên nhân"
-                                    className="form-control mb-2"
-                                    value={eq.cause}
-                                    onChange={(e) =>
-                                        handleEquipmentChange(eqIndex, "cause", e.target.value)
-                                    }
-                                />
+                                {/*<textarea*/}
+                                {/*    placeholder="Nguyên nhân"*/}
+                                {/*    className="form-control mb-2"*/}
+                                {/*    value={eq.cause}*/}
+                                {/*    onChange={(e) =>*/}
+                                {/*        handleEquipmentChange(eqIndex, "cause", e.target.value)*/}
+                                {/*    }*/}
+                                {/*/>*/}
                                 <textarea
                                     placeholder="Đánh giá kỹ thuật"
                                     className="form-control mb-2"

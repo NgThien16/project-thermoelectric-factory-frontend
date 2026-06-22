@@ -19,8 +19,4 @@ export const TechnicalReportService = {
                 }
             })
             .then((res) => res.data)
-    // searchReports: (keyword = "", workOrderId = null, page = 0, size = 5) =>
-    //     axiosInstance.get('/technical-reports/search', {
-    //         params: { keyword, workOrderId, page, size }
-    //     }).then(res => res.data)
 };

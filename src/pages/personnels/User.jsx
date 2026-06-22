@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {Formik, Form, Field} from "formik";
-import {Button, Card, Table, Modal} from "react-bootstrap";
+import {Button, Card, Table, Modal, Dropdown} from "react-bootstrap";
 import {FaEdit, FaPlus, FaTrash, FaSearch} from "react-icons/fa";
 import {toast} from "react-toastify";
 
@@ -128,6 +128,9 @@ export default function UserPage() {
             toast.error(err.response?.data?.message || "Không thể xóa user!");
         }
     };
+
+    // const checkUserHasRole = (user, roleId) =>
+    //     user.roles?.some(r => Number(r.id) === Number(roleId));
 
     const handleAssignRole = async (userId, roleId) => {
         if (!userId || !roleId) {
@@ -278,48 +281,35 @@ export default function UserPage() {
                                     <td>{user.username}</td>
                                     <td>{user.employeeName || "Chưa có nhân viên"}</td>
                                     <td>
-                                        <div className="d-flex flex-wrap">
-                                            {roles.length === 0 ? (
-                                                <span>Chưa có role</span>
-                                            ) : (
-                                                roles.map(role => {
-                                                    const hasRole = user.roles?.some(ur => Number(ur.id) === Number(role.id));
-
+                                        <Dropdown>
+                                            <Dropdown.Toggle variant="secondary" size="sm">
+                                                Quyền
+                                            </Dropdown.Toggle>
+                                            <Dropdown.Menu>
+                                                {roles.map(role => {
+                                                    const hasRole = user.roles.some(r => r.id === role.id);
                                                     return (
-                                                        <div
+                                                        <Dropdown.Item
                                                             key={role.id}
-                                                            className="d-flex align-items-center me-2 mb-1"
+                                                            className="d-flex justify-content-between align-items-center"
                                                         >
-                                                            <span className="me-1">
-                                                                {role.name}
-                                                            </span>
-
-                                                            {hasRole ? (
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="warning"
-                                                                    onClick={() =>
-                                                                        handleRemoveRole(user.id, role.id)
-                                                                    }
-                                                                >
-                                                                    Gỡ
-                                                                </Button>
-                                                            ) : (
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="success"
-                                                                    onClick={() =>
-                                                                        handleAssignRole(user.id, role.id)
-                                                                    }
-                                                                >
-                                                                    Gán
-                                                                </Button>
-                                                            )}
-                                                        </div>
+                                                            {role.name} ({hasRole ? "Gỡ" : "Gán"})
+                                                            <Button
+                                                                size="sm"
+                                                                variant={hasRole ? "warning" : "success"} // Gỡ màu vàng, Gán màu xanh
+                                                                onClick={() =>
+                                                                    hasRole
+                                                                        ? handleRemoveRole(user.id, role.id)
+                                                                        : handleAssignRole(user.id, role.id)
+                                                                }
+                                                            >
+                                                                {hasRole ? "Gỡ" : "Gán"}
+                                                            </Button>
+                                                        </Dropdown.Item>
                                                     );
-                                                })
-                                            )}
-                                        </div>
+                                                })}
+                                            </Dropdown.Menu>
+                                        </Dropdown>
                                     </td>
 
                                     <td>
