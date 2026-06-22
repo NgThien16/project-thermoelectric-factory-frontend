@@ -203,6 +203,20 @@ const Sidebar = () => {
                         </Nav.Link>
                     </>
                 )}
+                {/* ================= PHIẾU CÔNG TÁC ================= */}
+                {(
+                    isAdmin || hasRole(["ROLE_QUẢN ĐỐC SỬA CHỮA", "ROLE_TỔ TRƯỞNG"])) && (
+                        <>
+                            <Nav.Link as={Link} to="/work-orders">
+                                <FaWrench />
+                                Phiếu công tác
+                            </Nav.Link>
+                            <Nav.Link as={Link} to="/work-orders/repair-orders">
+                                <FaWrench />
+                                Yêu cầu sửa chữa
+                            </Nav.Link>
+                        </>
+                )}
             </Nav>
 
         </div>
