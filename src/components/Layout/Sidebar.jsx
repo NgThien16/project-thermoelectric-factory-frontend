@@ -226,6 +226,16 @@ const Sidebar = () => {
 
                             </div>
                         )}
+                        <Nav.Link
+                            as={Link}
+                            to="/material-export/release"
+                            active={
+                                location.pathname === "/material-export/release"
+                            }
+                        >
+                            <FaClipboardList />
+                            Cấp Vật Tư
+                        </Nav.Link>
                     </>
                 )}
 
@@ -286,6 +296,16 @@ const Sidebar = () => {
                             <Nav.Link as={Link} to="/work-orders/repair-orders">
                                 <FaWrench />
                                 Yêu cầu sửa chữa
+                            </Nav.Link>
+                            <Nav.Link
+                                as={Link}
+                                to="/material-export/supply-slip"
+                                active={
+                                    location.pathname === "material-export/supply-slip"
+                                }
+                            >
+                                <FaClipboardList />
+                                Duyệt Cấp Vật Tư
                             </Nav.Link>
                         </>
                 )}

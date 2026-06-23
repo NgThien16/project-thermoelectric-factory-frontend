@@ -47,6 +47,7 @@ import WarehouseRelease from "./pages/Materials/WarehouseRelease.jsx";
 import Export from "./pages/Materials/Export.jsx";
 import WorkOrderList from "./pages/work_order/WorkOrderList.jsx";
 import RepairOrderForWorkOrderList from "./pages/work_order/RepairOrderForWorkOrderList.jsx";
+import ManagerPendingList from "./pages/Materials/ManagerPendingList.jsx";
 
 import WarehouseList from "./pages/Materials/WarehouseList.jsx";
 
@@ -401,10 +402,41 @@ function App() {
                         <ReplacementImport />
                     </RoleProtectedRoute>}/>
                     {/*Quản đốc*/}
-                    <Route path="/material-export/supply-slip/:requestId" element={<Export/>} />
-
-                    <Route path="/material-export/release/:requestId" element={<WarehouseRelease/>} />
-                    <Route path="/material-export/release" element={<WarehouseList/>} />
+                    <Route path="/material-export/supply-slip/:requestId" element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.MAINTENANCE_MANAGER,
+                            ROLE.TEAM_LEADER
+                        ]}
+                    >
+                        <Export />
+                    </RoleProtectedRoute>}/>
+                    <Route path="/material-export/supply-slip" element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.MAINTENANCE_MANAGER,
+                            ROLE.TEAM_LEADER
+                        ]}
+                    >
+                        <ManagerPendingList />
+                    </RoleProtectedRoute>}/>
+                    {/*Thủ kho*/}
+                    <Route path="/material-export/release/:requestId" element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.MATERIAL
+                        ]}
+                    >
+                        <WarehouseRelease />
+                    </RoleProtectedRoute>}/>
+                    <Route path="/material-export/release" element={<RoleProtectedRoute
+                        allowedRoles={[
+                            ROLE.ADMIN,
+                            ROLE.MATERIAL
+                        ]}
+                    >
+                        <WarehouseList/>
+                    </RoleProtectedRoute>}/>
 
                     {/*CCDC */}
                     <Route path={'/tool'} element={<RoleProtectedRoute

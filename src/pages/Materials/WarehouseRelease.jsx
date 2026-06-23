@@ -129,7 +129,6 @@ export default function WarehouseRelease() {
             const releasedCount = approvedConsumableIds.length + approvedReplacementIds.length;
             toast.success(`🚀 Đã xuất kho ${releasedCount} mặt hàng! Hệ thống đã trừ tồn kho.`);
 
-            // 🆕 Reload lại tại chỗ thay vì navigate đi — để thủ kho thấy phần còn lại
             await loadRequestedMaterials();
             await loadWorkOrderDetails(requestId);
         } catch (error) {
@@ -158,7 +157,7 @@ export default function WarehouseRelease() {
                     <h4 className="mb-0 fw-bold">
                         <FaBoxes className="me-2 text-warning"/> Thủ kho
                     </h4>
-                    <Button as={Link} to="/warehouse-dashboard" variant="outline-light" size="sm" className="fw-semibold">
+                    <Button as={Link} to="/material-export/release" variant="outline-light" size="sm" className="fw-semibold">
                         <FaArrowLeft className="me-2"/> Quay lại danh sách phiếu
                     </Button>
                 </Card.Header>

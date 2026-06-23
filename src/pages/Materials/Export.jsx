@@ -192,6 +192,7 @@ export default function Export() {
     const handleFinalExport = async () => {
         if (tempItems.length === 0) return toast.error("Danh sách chờ cấp đang trống!");
 
+        // Cấu trúc dữ liệu gửi lên Backend
         const finalPayload = {
             workOrderId: parseInt(requestId),
             consumables: tempItems
@@ -202,12 +203,31 @@ export default function Export() {
                 .map(item => ({ materialId: item.materialId, quantity: item.quantity }))
         };
 
-        const isSuccess = await exportMaterialsToWorkOrder(finalPayload);
-        if (isSuccess !== false) {
-            toast.success("🚀 Đã gửi yêu cầu cấp phát vật tư thành công!");
-            navigate("/repair-requests");
-        } else {
-            toast.error("Cấp phát thất bại, vui lòng kiểm tra lại hệ thống.");
+        // In thử payload ra console trước khi gửi để bạn tự kiểm tra xem cấu trúc chuẩn chưa
+        console.log("Dữ liệu chuẩn bị gửi lên Backend (Payload):", finalPayload);
+
+        try {
+            // Bọc lệnh gọi API vào block try để kiểm soát lỗi
+            const isSuccess = await exportMaterialsToWorkOrder(finalPayload);
+            if (isSuccess !== false) {
+                toast.success("🚀 Đã gửi yêu cầu cấp phát vật tư thành công!");
+                navigate("/material-export/supply-slip");
+            } else {
+                toast.error("Cấp phát thất bại, vui lòng kiểm tra lại hệ thống.");
+            }
+        } catch (error) {
+            console.error("Lỗi khi gọi API cấp phát vật tư:", error);
+
+            // Đoạn này sẽ in chi tiết "tại sao lỗi" từ Spring Boot trả về
+            if (error.response && error.response.data) {
+                console.log("👉 CHI TIẾT LỖI TỪ BACKEND TRẢ VỀ:", error.response.data);
+
+                // Nếu backend có trả về chuỗi thông báo lỗi cụ thể (ví dụ: error.response.data.message)
+                const serverMessage = error.response.data.message || error.response.data;
+                toast.error(`Lỗi từ hệ thống: ${JSON.stringify(serverMessage)}`);
+            } else {
+                toast.error("Không thể kết nối đến máy chủ hoặc dữ liệu không hợp lệ (400)!");
+            }
         }
     };
 

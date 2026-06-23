@@ -56,6 +56,7 @@ export const exportMaterialsToWorkOrder = async (payload) => {
         return false;
     }
 };
+
 export const getWorkOrdersForExport = async (status = "", search = "") => {
     try {
         // Gửi kèm params nếu Backend có hỗ trợ lọc ở phía Server,
@@ -68,4 +69,10 @@ export const getWorkOrdersForExport = async (status = "", search = "") => {
         console.error("Lỗi khi lấy danh sách phiếu sửa chữa từ hệ thống:", error);
         return [];
     }
+};
+export const getRequestList = async () => {
+    const res = await axiosInstance.get(
+        "/material-export/request-list"
+    );
+    return res.data;
 };
