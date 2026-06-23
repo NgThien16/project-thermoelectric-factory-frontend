@@ -117,8 +117,6 @@ const WorkOrderList = () => {
 
     const renderStatusBadge = (status, statusDisplay) => {
         switch (status) {
-            case "MOI_TAO":
-                return <Badge bg="secondary">{statusDisplay}</Badge>;
             case "DA_PHAN_CONG":
                 return <Badge bg="info">{statusDisplay}</Badge>;
             case "DANG_THUC_HIEN":
@@ -133,7 +131,6 @@ const WorkOrderList = () => {
     };
 
     const WORK_ORDER_STATUS = [
-        { value: "MOI_TAO", label: "Mới tạo" },
         { value: "DA_PHAN_CONG", label: "Đã phân công" },
         { value: "DANG_THUC_HIEN", label: "Đang thực hiện" },
         { value: "CHO_VAT_TU", label: "Chờ vật tư" },
