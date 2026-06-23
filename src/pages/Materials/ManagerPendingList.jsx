@@ -45,7 +45,7 @@ export default function ManagerPendingList() {
                             <thead className="table-secondary">
                             <tr>
                                 <th>STT</th>
-                                <th>Mã Phiếu Sửa Chữa</th>
+                                <th>Mã Phiếu Công Tác</th>
                                 <th>Trạng Thái Vật Tư</th>
                                 <th>Thao Tác</th>
                             </tr>
@@ -54,7 +54,7 @@ export default function ManagerPendingList() {
                             {requestOrders.map((order, index) => (
                                 <tr key={order.id}>
                                     <td>{index + 1}</td>
-                                    <td className="fw-bold text-info">#{order.id}</td>
+                                    <td className="fw-bold text-info">#{order.code}</td>
                                     <td>
                                         <Badge bg="info" className="text-white">
                                             {order.materialStatus || "CHO_DUYET"}
