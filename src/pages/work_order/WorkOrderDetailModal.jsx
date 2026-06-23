@@ -9,7 +9,8 @@ import UpdateAssignmentModal from "./UpdateAssignmentModal";
 
 const formatDate = (d) => d ? new Date(d).toLocaleString("vi-VN") : "—";
 
-const WorkOrderDetailModal = ({ show, onHide, workOrderId, onAssignmentUpdated }) => {
+// Thêm prop hideAssignment
+const WorkOrderDetailModal = ({ show, onHide, workOrderId, onAssignmentUpdated, extraFooter, hideAssignment }) => {
 
     const printRef = useRef(null);
 
@@ -354,15 +355,19 @@ const WorkOrderDetailModal = ({ show, onHide, workOrderId, onAssignmentUpdated }
 
                 <Modal.Footer>
                     <Button variant="outline-secondary" onClick={onHide}>
-                        Đóng
+                        {"Đóng"}
                     </Button>
-                    <Button
-                        variant="warning"
-                        onClick={() => setShowUpdateModal(true)}
-                        disabled={!detail}
-                    >
-                        <FaUserEdit className="me-2" /> Cập nhật phân công
-                    </Button>
+                    {extraFooter && detail && extraFooter(detail)}
+                    {!hideAssignment && (
+                        <Button
+                            variant="warning"
+                            onClick={() => setShowUpdateModal(true)}
+                            disabled={!detail}
+                        >
+                            <FaUserEdit className="me-2" />
+                            {" Cập nhật phân công"}
+                        </Button>
+                    )}
                     <Button
                         variant="danger"
                         onClick={handleExportPdf}

@@ -1,105 +1,127 @@
 import {
-    Navbar,
-    Container,
-    Nav,
-    Dropdown,
+    Navbar, Container, Nav, Dropdown,
 } from "react-bootstrap";
-
-import {
-    FaUserCircle, FaBell
-} from "react-icons/fa";
-
+import { FaUserCircle, FaBell } from "react-icons/fa";
 import useAuth from "../../context/useAuth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import { getWorkOrderNotification } from "../../service/work_order/NotificationService";
+// Import thêm hàm API mới của bạn ở đây
+import {
+    getWorkOrderNotification,
+    getPendingMaterialCount,
+    getRequestMaterialCount
+} from "../../service/work_order/NotificationService";
 
 const TopNavbar = () => {
-
     const { user, logout } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = () => {
-
         logout();
-
-        toast.success(
-            "Đăng xuất thành công"
-        );
-
+        toast.success("Đăng xuất thành công");
         navigate("/");
     };
-    const [notificationCount, setNotificationCount] = useState(0);
 
-    const canSeeNotification =
-        user?.roles?.some(role =>
-            [
-                "ROLE_ADMIN",
-                "ROLE_QUẢN ĐỐC SỬA CHỮA",
-                "ROLE_TỔ TRƯỞNG"
-            ].includes(role)
-        );
+    // Tách thành các state riêng biệt để dễ quản lý từng loại thông báo
+    const [workOrderCount, setWorkOrderCount] = useState(0);
+    const [requestMaterialCount, setRequestMaterialCount] = useState(0);
+    const [pendingMaterialCount, setPendingMaterialCount] = useState(0);
+
+    const canSeeManagerNotification = user?.roles?.some(role =>
+        ["ROLE_ADMIN", "ROLE_QUẢN ĐỐC SỬA CHỮA", "ROLE_TỔ TRƯỞNG"].includes(role)
+    );
+
+    const canSeeWarehouseNotification = user?.roles?.some(role =>
+        ["ROLE_THỦ KHO VẬT TƯ"].includes(role)
+    );
+
+    // Tính tổng số lượng thông báo hiển thị trên Badge quả chuông
+    const totalNotificationCount = canSeeManagerNotification
+        ? (workOrderCount + requestMaterialCount)
+        : canSeeWarehouseNotification
+            ? pendingMaterialCount
+            : 0;
 
     useEffect(() => {
-        if (!user || !canSeeNotification) {
-            return;
-        }
+        if (!user) return;
+
         const loadNotification = async () => {
             try {
-                const res = await getWorkOrderNotification();
-                setNotificationCount(res.count || 0);
+                if (canSeeManagerNotification) {
+                    // Gọi đồng thời cả 2 API của Quản đốc bằng Promise.all để tối ưu hiệu năng
+                    const [workOrderRes, materialRes] = await Promise.all([
+                        getWorkOrderNotification(),
+                        getRequestMaterialCount()
+                    ]);
+
+                    setWorkOrderCount(workOrderRes?.count || 0);
+                    // Kiểm tra nếu API trả về Object { count: X } hoặc trả về trực tiếp số X
+                    setRequestMaterialCount(materialRes?.count ?? materialRes ?? 0);
+                } else if (canSeeWarehouseNotification) {
+                    const count = await getPendingMaterialCount();
+                    setPendingMaterialCount(count?.count ?? count ?? 0);
+                }
             } catch (e) {
                 console.error("Lỗi tải thông báo:", e);
             }
         };
+
         loadNotification();
         const interval = setInterval(loadNotification, 30000);
         return () => clearInterval(interval);
-    }, [user, canSeeNotification]);
-
-    const handleNotificationClick = () => {
-        navigate("/work-orders/repair-orders");
-    };
+    }, [user, canSeeManagerNotification, canSeeWarehouseNotification]);
 
     return (
         <Navbar expand="lg" className="top-navbar px-3">
             <Container fluid>
-
                 <Navbar.Brand className="fw-bold">
                     Hệ thống hỗ trợ quản lý thiết bị, vật tư,
                     công cụ dụng cụ và bảo trì trong nhà máy.
                 </Navbar.Brand>
 
                 <Nav className="ms-auto align-items-center">
-                    {canSeeNotification && (
+                    {(canSeeManagerNotification || canSeeWarehouseNotification) && (
                         <Dropdown align="end" className="me-3">
                             <Dropdown.Toggle
                                 as={Nav.Link}
                                 className="position-relative p-0"
                                 id="dropdown-notification"
                             >
-                                <FaBell size={20} className={notificationCount > 0 ? "text-warning" : ""} />
-                                {notificationCount > 0 && (
-                                    <span className="
-                                    position-absolute
-                                    top-0
-                                    start-100
-                                    translate-middle
-                                    badge
-                                    rounded-pill
-                                    bg-danger">
-                                    {notificationCount}
-                                </span>
+                                <FaBell size={20} className={totalNotificationCount > 0 ? "text-warning" : ""} />
+                                {totalNotificationCount > 0 && (
+                                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        {totalNotificationCount}
+                                    </span>
                                 )}
                             </Dropdown.Toggle>
 
-                            <Dropdown.Menu style={{ minWidth: "320px" }}>
+                            <Dropdown.Menu style={{ minWidth: "340px" }}>
                                 <Dropdown.Header>Thông báo</Dropdown.Header>
-                                {notificationCount > 0 ? (
-                                    <Dropdown.Item onClick={handleNotificationClick}>
-                                        Có <b>{notificationCount}</b> yêu cầu sửa chữa cần được tạo Phiếu Công Tác !!
-                                    </Dropdown.Item>
+
+                                {totalNotificationCount > 0 ? (
+                                    <>
+                                        {/* THÔNG BÁO 1 CỦA QUẢN ĐỐC: Yêu cầu sửa chữa */}
+                                        {canSeeManagerNotification && workOrderCount > 0 && (
+                                            <Dropdown.Item onClick={() => navigate("/work-orders/repair-orders")}>
+                                                Có <b>{workOrderCount}</b> yêu cầu sửa chữa cần được tạo Phiếu Công Tác !!
+                                            </Dropdown.Item>
+                                        )}
+
+                                        {/* THÔNG BÁO 2 CỦA QUẢN ĐỐC: Yêu cầu vật tư mới */}
+                                        {canSeeManagerNotification && requestMaterialCount > 0 && (
+                                            <Dropdown.Item onClick={() => navigate("/material-export/supply-slip")}>
+                                                Có <b>{requestMaterialCount}</b> yêu cầu cấp phát vật tư mới cần xử lý !!
+                                            </Dropdown.Item>
+                                        )}
+
+                                        {/* THÔNG BÁO CỦA THỦ KHO */}
+                                        {canSeeWarehouseNotification && pendingMaterialCount > 0 && (
+                                            <Dropdown.Item onClick={() => navigate("/material-export/release")}>
+                                                Có <b>{pendingMaterialCount}</b> phiếu vật tư đang chờ cấp phát !!
+                                            </Dropdown.Item>
+                                        )}
+                                    </>
                                 ) : (
                                     <Dropdown.Item disabled className="text-muted">
                                         Không có thông báo nào gần đây !!
@@ -109,6 +131,7 @@ const TopNavbar = () => {
                         </Dropdown>
                     )}
 
+                    {/* Phần user dropdown giữ nguyên */}
                     <Dropdown align="end">
                         <Dropdown.Toggle
                             variant="light"
@@ -118,22 +141,14 @@ const TopNavbar = () => {
                             <FaUserCircle size={24} className="me-2" />
                             <span>{user?.username || "Khách"}</span>
                         </Dropdown.Toggle>
-
                         <Dropdown.Menu>
                             {!user ? (
-                                <Dropdown.Item href="/login">
-                                    Đăng nhập
-                                </Dropdown.Item>
+                                <Dropdown.Item href="/login">Đăng nhập</Dropdown.Item>
                             ) : (
                                 <>
-                                    <Dropdown.Item disabled>
-                                        {user.username}
-                                    </Dropdown.Item>
+                                    <Dropdown.Item disabled>{user.username}</Dropdown.Item>
                                     <Dropdown.Divider />
-                                    <Dropdown.Item onClick={handleLogout}>
-                                        Đăng xuất
-                                    </Dropdown.Item>
-
+                                    <Dropdown.Item onClick={handleLogout}>Đăng xuất</Dropdown.Item>
                                 </>
                             )}
                         </Dropdown.Menu>
