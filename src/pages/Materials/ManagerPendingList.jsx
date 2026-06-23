@@ -1,8 +1,14 @@
+// ✅ Đưa ra ngoài component
+const MATERIAL_STATUS_LABEL = {
+    CHUA_YEU_CAU_CAP_PHAT: "Chưa Yêu Cầu Cấp Phát",
+    CHO_CAP_PHAT: "Chờ Cấp Phát",
+    DA_CAP_PHAT: "Đã Cấp Phát",
+};
+
 import { useEffect, useState } from "react";
 import { Table, Button, Badge, Card, Spinner } from "react-bootstrap";
 import { FaEye, FaClipboardList } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-
 import {getRequestList} from "../../service/materials_manager/ExportMaterialService.js";
 
 export default function ManagerPendingList() {
@@ -16,8 +22,8 @@ export default function ManagerPendingList() {
 
     const fetchPendingRequests = async () => {
         try {
-            // 🚀 Gọi qua hàm Service chuẩn hóa thay vì gọi trực tiếp axios
             const data = await getRequestList();
+            console.log("materialStatus sample:", data[0]?.materialStatus);
             setRequestOrders(data);
         } catch (error) {
             console.error("Lỗi giao diện khi tải danh sách của quản đốc:", error);
@@ -57,11 +63,10 @@ export default function ManagerPendingList() {
                                     <td className="fw-bold text-info">#{order.id}</td>
                                     <td>
                                         <Badge bg="info" className="text-white">
-                                            {order.materialStatus || "CHO_DUYET"}
+                                            {MATERIAL_STATUS_LABEL[order.materialStatus] || order.materialStatus}
                                         </Badge>
                                     </td>
                                     <td>
-                                        {/* Điều hướng sang trang duyệt của quản đốc */}
                                         <Button
                                             variant="outline-info" size="sm"
                                             onClick={() => navigate(`/material-export/supply-slip/${order.id}`)}
