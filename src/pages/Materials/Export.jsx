@@ -267,7 +267,7 @@ export default function Export() {
             <Card className="shadow border-0 mb-4">
                 <Card.Header className="bg-primary text-white d-flex justify-content-between align-items-center py-3">
                     <h4 className="mb-0 fw-bold">Quản đốc sửa chữa</h4>
-                    <Button as={Link} to="/repair-requests" variant="light">
+                    <Button as={Link} to="/material-export/supply-slip" variant="light">
                         <FaArrowLeft className="me-2" /> Quay lại danh sách
                     </Button>
                 </Card.Header>
