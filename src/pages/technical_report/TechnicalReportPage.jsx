@@ -28,7 +28,8 @@ const TechnicalReportDetail = ({report, equipmentList, onClose}) => {
                     </div>
                     <div className="modal-body">
                         <p><strong>ID biên bản:</strong> {report.id}</p>
-                        <p><strong>Work Order ID:</strong> {report.workOrder?.id}</p>
+                        {/*<p><strong>Work Order ID:</strong> {report.workOrder?.id}</p>*/}
+                        <p><b>Phiếu công tác:</b> {report.workOrder?.code}</p>
                         <p><strong>Người tạo:</strong> {report.createdBy?.fullName || report.createdBy?.username || "Không có dữ liệu"}</p>
                         <p><strong>Ngày tạo:</strong> {new Date(report.createdAt).toLocaleString()}</p>
                         <p><strong>Kết luận:</strong> {content.conclusion || "Không có dữ liệu"}</p>
@@ -96,7 +97,13 @@ const TechnicalReportPage = () => {
 
     const fetchReports = async () => {
         try {
-            const data = await TechnicalReportService.searchReports(keyword, workOrderId ? Number(workOrderId) : null, page, size);
+            // const data = await TechnicalReportService.searchReports(keyword, workOrderId ? Number(workOrderId) : null, page, size);
+            const data = await TechnicalReportService.searchReports(
+                keyword,
+                null,
+                page,
+                size
+            );
             // Lọc theo tên thiết bị trong JSON content
             const filtered = (data.content || []).filter(r => {
                 const content = r.content ? JSON.parse(r.content) : {};
@@ -120,10 +127,14 @@ const TechnicalReportPage = () => {
         }
     };
 
+    // useEffect(() => {
+    //     fetchReports();
+    //     fetchEquipments();
+    // }, [page, keyword, deviceKeyword, workOrderId]);
     useEffect(() => {
         fetchReports();
         fetchEquipments();
-    }, [page, keyword, deviceKeyword, workOrderId]);
+    }, [page, keyword, deviceKeyword]);
 
     const handleDelete = async (id) => {
         if (window.confirm("Bạn có chắc muốn xóa biên bản này?")) {
@@ -168,7 +179,7 @@ const TechnicalReportPage = () => {
                     <button onClick={fetchReports} className="btn btn-primary me-2">Tìm kiếm</button>
                     <button onClick={() => {
                         setDeviceKeyword("");
-                        setWorkOrderId("");
+                        // setWorkOrderId("");
                         fetchReports();
                     }} className="btn btn-secondary">Quay lại
                     </button>
@@ -180,8 +191,8 @@ const TechnicalReportPage = () => {
                 <thead>
                 <tr>
                     <th>STT</th>
-                    <th>WorkOrder</th>
-                    <th>Mã code</th>
+                    <th>Phiếu công tác</th>
+                    <th>Mã thiết bị</th>
                     <th>Tên thiết bị</th>
                     <th>Ngày tạo</th>
                     <th>Hành động</th>
@@ -196,7 +207,8 @@ const TechnicalReportPage = () => {
                     return (
                         <tr key={r.id}>
                             <td>{page * size + i + 1}</td>
-                            <td>{r.workOrder?.id}</td>
+                            {/*<td>{r.workOrder?.id}</td>*/}
+                            <td>{r.workOrder?.code}</td>
                             <td>{eqObj?.code || ""}</td>
                             <td>{firstEq?.equipmentName || ""}</td>
                             <td>{new Date(r.createdAt).toLocaleString()}</td>

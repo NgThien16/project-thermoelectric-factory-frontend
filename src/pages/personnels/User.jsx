@@ -23,7 +23,7 @@ export default function UserPage() {
     const [showModal, setShowModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
-    const pageSize = 3;
+    const pageSize = 5;
 
     const getData = (res) => {
         return res?.data !== undefined ? res.data : res;
@@ -281,11 +281,34 @@ export default function UserPage() {
                                     <td>{user.username}</td>
                                     <td>{user.employeeName || "Chưa có nhân viên"}</td>
                                     <td>
-                                        <Dropdown>
+                                        <Dropdown
+                                            container="body"
+                                            autoClose="outside"
+                                            popperConfig={{
+                                                strategy: "fixed",
+                                                modifiers: [
+                                                    {
+                                                        name: "preventOverflow",
+                                                        options: {
+                                                            boundary: "document",
+                                                            rootBoundary: "document",
+                                                            altAxis: true,
+                                                            tether: false
+                                                        }
+                                                    },
+                                                    {
+                                                        name: "flip",
+                                                        options: {
+                                                            fallbackPlacements: ["top", "bottom"]
+                                                        }
+                                                    }
+                                                ]
+                                            }}
+                                        >
                                             <Dropdown.Toggle variant="secondary" size="sm">
                                                 Quyền
                                             </Dropdown.Toggle>
-                                            <Dropdown.Menu>
+                                            <Dropdown.Menu style={{ zIndex: 9999, maxHeight: "300px", overflowY: "auto" }}>
                                                 {roles.map(role => {
                                                     const hasRole = user.roles.some(r => r.id === role.id);
                                                     return (

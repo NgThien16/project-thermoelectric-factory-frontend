@@ -6,9 +6,7 @@ import {
 } from "react-bootstrap";
 
 import {
-    FaUserCircle,
-    FaSignOutAlt,
-    FaSignInAlt
+    FaUserCircle, FaBell
 } from "react-icons/fa";
 
 import useAuth from "../../context/useAuth";

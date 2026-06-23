@@ -289,6 +289,16 @@ const Sidebar = () => {
                             </Nav.Link>
                         </>
                 )}
+                {/* ================= Lịch sử sửa chữa ================= */}
+                {(
+                    isAdmin || hasRole(["ROLE_QUẢN ĐỐC SỬA CHỮA", "ROLE_TỔ TRƯỞNG"])) && (
+                        <>
+                            <Nav.Link as={Link} to="/maintenance-logs">
+                                <FaWrench />
+                                Lịch sử sửa chữa
+                            </Nav.Link>
+                        </>
+                )}
             </Nav>
 
         </div>
