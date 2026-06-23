@@ -442,7 +442,7 @@ const RequestManagement = () => {
                 onAssignmentUpdated={loadData}
                 hideAssignment={true}
                 extraFooter={(detail) => {
-                    return detail?.status === "Hoàn thành"
+                    return detail?.status === "HOAN_THANH"
                         && selectedRepairOrderStatus !== "DA_HOAN_THANH"
                         && (
                             <Button

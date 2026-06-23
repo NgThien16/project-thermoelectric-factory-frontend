@@ -70,7 +70,7 @@ const EquipmentTypeList = () => {
                 total={types.length}
                 currentPage={page + 1}
                 totalPages={totalPages || 1}
-                totalLabel="Tổng loại thiết bị"
+                totalLabel="Loại thiết bị"
             />
 
             <Card className="border-0 shadow-sm mb-4">

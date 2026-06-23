@@ -85,7 +85,7 @@ const Equipment = () => {
                 total={equipmentList.length}
                 currentPage={page + 1}
                 totalPages={total || 1}
-                totalLabel="Tổng thiết bị"
+                totalLabel="Số thiết bị hiện tại"
             />
 
             <Card className="border-0 shadow-sm mb-4">
