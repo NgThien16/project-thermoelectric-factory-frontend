@@ -4,17 +4,12 @@ import { FaArrowLeft, FaPlus, FaSave, FaTrash, FaFileAlt, FaSearch } from "react
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-// 1. Import API xuất kho gộp tổng hợp
 import { exportMaterialsToWorkOrder } from "../../service/materials_manager/ExportMaterialService.js";
-
-// 2. Import API Vật tư tiêu hao và đổi tên bằng 'as' để tránh trùng lặp
 import { getAllMaterialsForDropdown as getConsumablesFromApi } from "../../service/materials_manager/consumable/ConsumableCategoryService.js";
-
-// 3. Import API Phụ tùng thay thế và đổi tên bằng 'as'
 import { getAllMaterialsForDropdown as getReplacementsFromApi } from "../../service/materials_manager/replacement/ReplacementCategoryService.js";
-
-// Import hoặc cấu hình axiosInstance dùng chung
 import axiosInstance from "../../api/axiosInstance.js";
+
+import { TechnicalReportService } from "../../service/technical_report/TechnicalReportService.js";
 
 export default function Export() {
     const navigate = useNavigate();
@@ -28,7 +23,6 @@ export default function Export() {
     const [repairRequest, setRepairRequest] = useState(null);
     const [loadingRequest, setLoadingRequest] = useState(true);
 
-    // Quản lý thông tin phiếu để lấy trạng thái materialStatus độc lập
     const [workOrderData, setWorkOrderData] = useState(null);
 
     const [formInput, setFormInput] = useState({
@@ -38,45 +32,91 @@ export default function Export() {
         quantity: ""
     });
 
-    // KHÓA GIAO DIỆN: Nếu trạng thái không phải "NOT_REQUESTED" thì bật chế độ Read-Only
-    const isReadOnly = workOrderData && workOrderData.materialStatus && workOrderData.materialStatus !== "NOT_REQUESTED";
+    // Trạng thái ReadOnly đóng băng màn hình nếu đã xuất kho thành công
+    const isReadOnly = workOrderData?.materialStatus === "DA_CAP_PHAT";
 
     useEffect(() => {
-        if (requestId) {
+        if (requestId && requestId !== "undefined" && requestId !== "null" && !isNaN(requestId)) {
             loadWorkOrderDetails(requestId);
-            loadMockTechnicalReport(requestId);
+            loadRealTechnicalReport(requestId);
         }
         loadAllMaterialsFromDatabase();
     }, [requestId]);
 
+    // Tự động load lại danh sách vật tư cũ lên bảng nếu trạng thái là CHO_CAP_PHAT
     const loadWorkOrderDetails = async (id) => {
         try {
             const response = await axiosInstance.get(`/material-export/work-order/${id}`);
             if (response && response.data) {
                 setWorkOrderData(response.data);
+
+                // Nếu đang ở trạng thái CHO_CAP_PHAT -> Quản đốc chỉnh sửa dữ liệu cũ
+                if (response.data.materialStatus === "CHO_CAP_PHAT") {
+                    const [consRes, repRes] = await Promise.all([
+                        axiosInstance.get(`/material-export/work-order-consumables/work-order/${id}`),
+                        axiosInstance.get(`/material-export/work-order-replacements/work-order/${id}`)
+                    ]);
+
+                    const loadedItems = [];
+                    // Sử dụng Optional Chaining (?.) để phòng tránh dữ liệu lỗi/null từ API danh mục
+                    if (consRes.data && Array.isArray(consRes.data)) {
+                        consRes.data.forEach(item => {
+                            if (item.material) {
+                                loadedItems.push({
+                                    uniqueKey: `CONSUMABLE_${item.material.id}`,
+                                    materialId: item.material.id,
+                                    materialCode: item.material.code,
+                                    materialName: item.material.name,
+                                    type: "CONSUMABLE",
+                                    typeName: "Tiêu hao",
+                                    quantity: item.quantity
+                                });
+                            }
+                        });
+                    }
+                    if (repRes.data && Array.isArray(repRes.data)) {
+                        repRes.data.forEach(item => {
+                            if (item.material) {
+                                loadedItems.push({
+                                    uniqueKey: `REPLACEMENT_${item.material.id}`,
+                                    materialId: item.material.id,
+                                    materialCode: item.material.code,
+                                    materialName: item.material.name,
+                                    type: "REPLACEMENT",
+                                    typeName: "Thay thế",
+                                    quantity: item.quantity
+                                });
+                            }
+                        });
+                    }
+                    setTempItems(loadedItems);
+                }
             }
         } catch (error) {
             console.error("Lỗi khi tải trạng thái phiếu từ API:", error);
-            setWorkOrderData({ materialStatus: "NOT_REQUESTED" });
+            setWorkOrderData({ materialStatus: "CHUA_YEU_CAU_CAP_PHAT" });
         }
     };
 
-    const loadMockTechnicalReport = (id) => {
+    const loadRealTechnicalReport = async (id) => {
         setLoadingRequest(true);
-        setTimeout(() => {
+        try {
+            const response = await TechnicalReportService.getByWorkOrder(id);
+            if (response && response.data && response.data.length > 0) {
+                setRepairRequest(response.data[0]);
+            } else {
+                setRepairRequest({
+                    content: "Chưa có biên bản đánh giá kỹ thuật cho phiếu sửa chữa này."
+                });
+            }
+        } catch (error) {
+            console.error("Lỗi khi tải biên bản kỹ thuật thực tế:", error);
             setRepairRequest({
-                workOrderId: id,
-                content: `[BIÊN BẢN ĐÁNH GIÁ KỸ THUẬT PHIẾU SỬA CHỮA #${id}]
-                
-⚠️ TÌNH TRẠNG: Thiết bị băng tải khu A bị kẹt trục chính do thiếu dầu bôi trơn và mòn vòng bi.
-
-🛠️ YÊU CẦU VẬT TƯ SỬA CHỮA:
-- 05 Lít dầu máy bôi trơn công nghiệp.
-- 02 Cuộn băng keo cách điện.
-- 02 Vòng bi SKF-6204 thay thế mới.`
+                content: "Không thể kết nối đến máy chủ để tải biên bản đánh giá kỹ thuật."
             });
+        } finally {
             setLoadingRequest(false);
-        }, 400);
+        }
     };
 
     const loadAllMaterialsFromDatabase = async () => {
@@ -88,7 +128,7 @@ export default function Export() {
             setReplacementsList(Array.isArray(replacementData) ? replacementData : []);
         } catch (error) {
             console.error("Lỗi tải danh mục vật tư:", error);
-            toast.error("Không thể tải danh sách vật tư từ hệ thống!");
+            // Không kích hoạt toast lỗi làm phiền người dùng khi token hoặc quyền hạn bị 403 cục bộ
         }
     };
 
@@ -152,6 +192,7 @@ export default function Export() {
     const handleFinalExport = async () => {
         if (tempItems.length === 0) return toast.error("Danh sách chờ cấp đang trống!");
 
+        // Cấu trúc dữ liệu gửi lên Backend
         const finalPayload = {
             workOrderId: parseInt(requestId),
             consumables: tempItems
@@ -162,13 +203,63 @@ export default function Export() {
                 .map(item => ({ materialId: item.materialId, quantity: item.quantity }))
         };
 
-        const isSuccess = await exportMaterialsToWorkOrder(finalPayload);
-        if (isSuccess !== false) {
-            toast.success("🚀 Đã gửi yêu cầu cấp phát vật tư thành công!");
-            navigate("/repair-requests");
-        } else {
-            toast.error("Cấp phát thất bại, vui lòng kiểm tra lại hệ thống.");
+        // In thử payload ra console trước khi gửi để bạn tự kiểm tra xem cấu trúc chuẩn chưa
+        console.log("Dữ liệu chuẩn bị gửi lên Backend (Payload):", finalPayload);
+
+        try {
+            // Bọc lệnh gọi API vào block try để kiểm soát lỗi
+            const isSuccess = await exportMaterialsToWorkOrder(finalPayload);
+            if (isSuccess !== false) {
+                toast.success("🚀 Đã gửi yêu cầu cấp phát vật tư thành công!");
+                navigate("/material-export/supply-slip");
+            } else {
+                toast.error("Cấp phát thất bại, vui lòng kiểm tra lại hệ thống.");
+            }
+        } catch (error) {
+            console.error("Lỗi khi gọi API cấp phát vật tư:", error);
+
+            // Đoạn này sẽ in chi tiết "tại sao lỗi" từ Spring Boot trả về
+            if (error.response && error.response.data) {
+                console.log("👉 CHI TIẾT LỖI TỪ BACKEND TRẢ VỀ:", error.response.data);
+
+                // Nếu backend có trả về chuỗi thông báo lỗi cụ thể (ví dụ: error.response.data.message)
+                const serverMessage = error.response.data.message || error.response.data;
+                toast.error(`Lỗi từ hệ thống: ${JSON.stringify(serverMessage)}`);
+            } else {
+                toast.error("Không thể kết nối đến máy chủ hoặc dữ liệu không hợp lệ (400)!");
+            }
         }
+    };
+
+    // 🛡️ PHÒNG VỆ AN TOÀN: Hàm hiển thị nội dung biên bản phòng chống crash JSON hoàn hảo
+    const renderReportContent = () => {
+        if (!repairRequest || !repairRequest.content) {
+            return "Không có dữ liệu biên bản kỹ thuật.";
+        }
+
+        const contentStr = repairRequest.content.trim();
+
+        // Chỉ tiến hành kiểm tra JSON nếu ký tự bắt đầu thực sự là dấu ngoặc nhọn đặc trưng của JSON Object
+        if (contentStr.startsWith("{")) {
+            try {
+                const parsedData = JSON.parse(contentStr);
+                let formattedText = `[BIÊN BẢN ĐÁNH GIÁ KỸ THUẬT PHIẾU #${parsedData.workOrderId || requestId}]\n\n`;
+
+                if (parsedData.equipmentReports && Array.isArray(parsedData.equipmentReports)) {
+                    formattedText += `🛠️ DANH SÁCH THIẾT BỊ KHẢO SÁT CHI TIẾT:\n`;
+                    parsedData.equipmentReports.forEach((eq, idx) => {
+                        formattedText += `${idx + 1}. ${eq.equipmentName || "Tên thiết bị trống"} (Mã ID: ${eq.equipmentId})\n`;
+                        if (eq.description) formattedText += `   - Hiện trạng khảo sát: ${eq.description}\n`;
+                    });
+                    return formattedText;
+                }
+            } catch (e) {
+                console.warn("Nội dung có ký tự giống JSON nhưng parse thất bại, chuyển sang hiển thị văn bản thường.");
+            }
+        }
+
+        // Trả về văn bản thuần nếu không lọt vào block JSON hoặc parse lỗi
+        return repairRequest.content;
     };
 
     return (
@@ -181,6 +272,12 @@ export default function Export() {
                     </Button>
                 </Card.Header>
             </Card>
+
+            {workOrderData?.materialStatus === "CHO_CAP_PHAT" && (
+                <div className="alert alert-warning border-0 shadow-sm fw-bold mb-4">
+                    📝 Phiếu sửa chữa này đang ở trạng thái <span className="text-danger">CHỜ CẤP PHÁT</span>. Hệ thống đã nạp lại danh sách vật tư cũ, bạn có thể chỉnh sửa và bấm cập nhật lại!
+                </div>
+            )}
 
             <Row className="g-4">
                 <Col lg={4} md={5}>
@@ -198,7 +295,7 @@ export default function Export() {
                                 </div>
                             ) : (
                                 <div className="p-3 bg-white border rounded flex-grow-1 text-muted" style={{ minHeight: "380px", whiteSpace: "pre-line", fontSize: "0.95rem" }}>
-                                    {repairRequest?.content}
+                                    {renderReportContent()}
                                 </div>
                             )}
                         </Card.Body>
@@ -319,10 +416,10 @@ export default function Export() {
                             {isReadOnly ? (
                                 <div className="d-flex justify-content-end mt-4">
                                     <div className="alert alert-info border-0 shadow-sm fw-bold px-5 py-3 text-center w-100 mb-0">
-                                        🔒 Danh sách yêu cầu cấp phát này đã được gửi lên Kho (Chế độ xem lại).
+                                        🔒 Danh sách yêu cầu cấp phát này đã được hoàn tất xuất kho thực tế (Chế độ xem lại).
                                         <br />
-                                        <span className="text-warning fs-6 fw-semibold">
-                                            Trạng thái vật tư hiện tại: {workOrderData?.materialStatus === "RELEASED" ? "ĐÃ XUẤT KHO" : "CHỜ THỦ KHO DUYỆT"}
+                                        <span className="text-success fs-6 fw-semibold">
+                                            Trạng thái vật tư hiện tại: ĐÃ CẤP PHÁT (DA_CAP_PHAT)
                                         </span>
                                     </div>
                                 </div>
@@ -330,7 +427,7 @@ export default function Export() {
                                 tempItems.length > 0 && (
                                     <div className="d-flex justify-content-end mt-4">
                                         <Button variant="success" size="lg" className="px-5 fw-bold shadow-sm" onClick={handleFinalExport}>
-                                            <FaSave className="me-2" /> Xác nhận cấp vật tư
+                                            <FaSave className="me-2" /> {workOrderData?.materialStatus === "CHO_CAP_PHAT" ? "Cập nhật yêu cầu cấp" : "Xác nhận cấp vật tư"}
                                         </Button>
                                     </div>
                                 )

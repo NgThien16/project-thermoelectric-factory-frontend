@@ -56,3 +56,23 @@ export const exportMaterialsToWorkOrder = async (payload) => {
         return false;
     }
 };
+
+export const getWorkOrdersForExport = async (status = "", search = "") => {
+    try {
+        // Gửi kèm params nếu Backend có hỗ trợ lọc ở phía Server,
+        // nếu Backend trả hết thì Frontend của mình đã có logic tự .filter() rất an toàn.
+        const response = await axiosInstance.get("/material-export/work-orders", {
+            params: { status, search }
+        });
+        return response.data || [];
+    } catch (error) {
+        console.error("Lỗi khi lấy danh sách phiếu sửa chữa từ hệ thống:", error);
+        return [];
+    }
+};
+export const getRequestList = async () => {
+    const res = await axiosInstance.get(
+        "/material-export/request-list"
+    );
+    return res.data;
+};

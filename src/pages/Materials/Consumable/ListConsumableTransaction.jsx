@@ -37,6 +37,9 @@ export default function ConsumableList() {
 
     const [name, setName] = useState("");
 
+    const [totalElements, setTotalElements] = useState(0);
+
+
     useEffect(() => {
 
         loadData();
@@ -52,8 +55,8 @@ export default function ConsumableList() {
         );
 
         setMaterials(data.content);
-
         setTotalPages(data.totalPages);
+        setTotalElements(data.totalElements);
     };
 
     const handleSearch = async (e) => {
@@ -150,7 +153,7 @@ export default function ConsumableList() {
                                     </small>
 
                                     <h3 className="fw-bold text-primary mb-0">
-                                        {materials.length}
+                                        {totalElements}
                                     </h3>
                                 </Card.Body>
                             </Card>

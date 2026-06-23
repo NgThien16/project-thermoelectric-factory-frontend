@@ -29,6 +29,7 @@ const ListConsumable = () => {
     const [materialPage, setMaterialPage] = useState({
         content: [],
         totalPages: 0,
+        totalElements: 0,
         number: 0
     });
 
@@ -55,7 +56,7 @@ const ListConsumable = () => {
         if (data) {
             setMaterialPage(data);
         } else {
-            setMaterialPage({ content: [], totalPages: 0, number: 0 });
+            setMaterialPage({ content: [], totalPages: 0,totalElements: 0, number: 0 });
         }
     }
 
@@ -143,7 +144,8 @@ const ListConsumable = () => {
                             </small>
 
                             <h3 className="fw-bold text-primary mb-0">
-                                {materialPage.content.length}
+                                {/*đang bị hiển thị sai vì phân trang tôi muốn hiển tổng */}
+                                {materialPage.totalElements || 0}
                             </h3>
                         </Card.Body>
                     </Card>

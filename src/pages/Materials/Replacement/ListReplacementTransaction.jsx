@@ -35,6 +35,8 @@ export default function ListReplacementTransaction() {
 
     const [name, setName] = useState("");
 
+    const [totalElements, setTotalElements] = useState(0);
+
     useEffect(() => {
 
         loadData();
@@ -53,6 +55,7 @@ export default function ListReplacementTransaction() {
             if (data && data.content) {
                 setMaterials(data.content);
                 setTotalPages(data.totalPages);
+                setTotalElements(data.totalElements);
             } else {
                 setMaterials([]);
                 setTotalPages(0);
