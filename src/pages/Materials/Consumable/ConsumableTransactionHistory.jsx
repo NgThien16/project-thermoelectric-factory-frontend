@@ -7,7 +7,7 @@ import {
     Col,
     Form,
     Pagination,
-    Row
+    Row, Table
 } from "react-bootstrap";
 
 import {
@@ -21,7 +21,7 @@ import {
     getHistory
 } from "../../../service/materials_manager/consumable/ConsumableTransactionService.js";
 import {Link} from "react-router-dom";
-
+import "../../../styles/ConsumableTransactionHistory.css"
 export default function ConsumableTransactionHistory() {
 
     const [transactions, setTransactions] = useState([]);
@@ -69,7 +69,11 @@ export default function ConsumableTransactionHistory() {
             <Card className="shadow border-0">
 
                 <Card.Header
-                    className="bg-dark text-white"
+                    className="text-white border-0"
+                    style={{
+                        background:
+                            "linear-gradient(135deg,#0d6efd,#20c997)"
+                    }}
                 >
 
                     <div className="d-flex align-items-center">
@@ -83,12 +87,54 @@ export default function ConsumableTransactionHistory() {
                     </div>
 
                 </Card.Header>
+                <Row className="g-3 mb-4">
+                    <Col md={3}>
+                        <Card className="border-0 shadow-sm">
+                            <Card.Body>
+                                <small className="text-muted">Tổng giao dịch</small>
+                                <h3 className="fw-bold mb-0">{transactions.length}</h3>
+                            </Card.Body>
+                        </Card>
+                    </Col>
 
+                    <Col md={3}>
+                        <Card className="border-0 shadow-sm">
+                            <Card.Body>
+                                <small className="text-muted">Nhập kho</small>
+                                <h3 className="text-success fw-bold mb-0">
+                                    {transactions.filter(t => t.type === "IMPORT").length}
+                                </h3>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+
+                    <Col md={3}>
+                        <Card className="border-0 shadow-sm">
+                            <Card.Body>
+                                <small className="text-muted">Xuất kho</small>
+                                <h3 className="text-danger fw-bold mb-0">
+                                    {transactions.filter(t => t.type === "EXPORT").length}
+                                </h3>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+
+                    <Col md={3}>
+                        <Card className="border-0 shadow-sm">
+                            <Card.Body>
+                                <small className="text-muted">Trang hiện tại</small>
+                                <h3 className="text-primary fw-bold mb-0">
+                                    {page + 1}
+                                </h3>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
                 <Card.Body>
 
                     <Form onSubmit={handleSearch}>
 
-                        <Row className="mb-4 g-2">
+                        <Row className="mb-4 g-3">
 
                             <Col md={4}>
 
@@ -167,109 +213,89 @@ export default function ConsumableTransactionHistory() {
                     {
                         (transactions || []).length > 0 ? (
 
-                            transactions.map((item) => (
+                            <Table
+                                hover
+                                responsive
+                                bordered
+                                className="align-middle"
+                            >
+                                <thead className="table-light">
+                                <tr>
+                                    <th>Mã VT</th>
+                                    <th>Tên vật tư</th>
+                                    <th>Loại</th>
+                                    <th>Số lượng</th>
+                                    <th>Người tạo</th>
+                                    <th>Thời gian</th>
+                                </tr>
+                                </thead>
 
-                                <Card
-                                    key={item.id}
-                                    className="mb-3 border-0 shadow-sm"
-                                >
+                                <tbody>
 
-                                    <Card.Body>
+                                {transactions.map(item => (
 
-                                        <div
-                                            className="d-flex justify-content-between align-items-center"
-                                        >
+                                    <tr key={item.id}>
 
-                                            <div>
+                                        <td>
+                                            <Badge bg="secondary">
+                                                {item.materialCode}
+                                            </Badge>
+                                        </td>
 
-                                                <div
-                                                    className="fw-bold fs-5"
-                                                >
+                                        <td className="fw-semibold">
+                                            {item.materialName}
+                                        </td>
 
-                                                    [{item.materialCode}] {item.materialName}
+                                        <td>
+                                            {
+                                                item.type === "IMPORT" ? (
+                                                    <Badge bg="success">
+                                                        <FaArrowDown className="me-1"/>
+                                                        Nhập kho
+                                                    </Badge>
+                                                ) : (
+                                                    <Badge bg="danger">
+                                                        <FaArrowUp className="me-1"/>
+                                                        Xuất kho
+                                                    </Badge>
+                                                )
+                                            }
+                                        </td>
 
-                                                </div>
+                                        <td className="fw-bold">
+                                            {item.quantity}
+                                        </td>
 
-                                                <div className="text-muted mt-1">
+                                        <td>
+                                            {item.username}
+                                        </td>
 
-                                                    Người tạo:
-                                                    <span className="fw-semibold ms-1">
-                                                        {item.username}
-                                                    </span>
+                                        <td>
+                                            {new Date(item.createdAt)
+                                                .toLocaleString("vi-VN")}
+                                        </td>
 
-                                                </div>
+                                    </tr>
 
-                                                <div className="text-muted">
+                                ))}
 
-                                                    Thời gian:
-                                                    <span className="ms-1">
-                                                        {
-                                                            new Date(item.createdAt).toLocaleString(
-                                                                "vi-VN",
-                                                                {
-                                                                    day: "2-digit",
-                                                                    month: "2-digit",
-                                                                    year: "numeric",
-                                                                    hour: "2-digit",
-                                                                    minute: "2-digit"
-                                                                }
-                                                            )
-                                                        }
-                                                    </span>
+                                </tbody>
 
-                                                </div>
-
-                                            </div>
-
-                                            <div className="text-end">
-
-                                                {
-                                                    item.type === "IMPORT" ? (
-
-                                                        <Badge
-                                                            bg="success"
-                                                            className="p-2 fs-6"
-                                                        >
-
-                                                            <FaArrowDown className="me-2"/>
-
-                                                            Nhập +{item.quantity}
-
-                                                        </Badge>
-
-                                                    ) : (
-
-                                                        <Badge
-                                                            bg="danger"
-                                                            className="p-2 fs-6"
-                                                        >
-
-                                                            <FaArrowUp className="me-2"/>
-
-                                                            Xuất -{item.quantity}
-
-                                                        </Badge>
-
-                                                    )
-                                                }
-
-                                            </div>
-
-                                        </div>
-
-                                    </Card.Body>
-
-                                </Card>
-
-                            ))
+                            </Table>
 
                         ) : (
 
-                            <div
-                                className="text-center text-muted py-5"
-                            >
+                            <div className="text-center py-5">
 
-                                Không có lịch sử giao dịch
+                                <h1>📦</h1>
+
+                                <h5 className="text-muted">
+                                    Chưa có lịch sử giao dịch
+                                </h5>
+
+                                <small className="text-secondary">
+                                    Dữ liệu sẽ xuất hiện khi có phát sinh nhập/xuất vật tư
+                                </small>
 
                             </div>
 

@@ -203,24 +203,29 @@ const TechnicalReportPage = () => {
     };
 
     return (
-        <div>
+        <div className="p-4">
             <h3>Danh sách Biên bản đánh giá kỹ thuật</h3>
 
-            <div className="mb-2">
+            <div className="card border-0 shadow-sm mb-4">
+                <div className="card-body d-flex gap-2">
                 <input
+                    className="form-control"
                     type="text"
                     placeholder="Tìm kiếm..."
                     value={keyword}
                     onChange={(e) => setKeyword(e.target.value)}
                 />
 
-                <button onClick={handleAdd} className="btn btn-primary ml-2">
+                <button onClick={handleAdd} className="btn btn-primary">
                     Thêm mới
                 </button>
+                </div>
             </div>
 
-            <table className="table table-bordered">
-                <thead>
+            <div className="card border-0 shadow-sm">
+                <div className="card-body p-0">
+            <table className="table table-hover table-bordered mb-0 align-middle">
+                <thead className="table-light">
                 <tr>
                     <th>ID</th>
                     <th>WorkOrder</th>
@@ -261,25 +266,29 @@ const TechnicalReportPage = () => {
                 ))}
                 </tbody>
             </table>
+                </div>
+            </div>
 
-            <div>
+            <div className="d-flex justify-content-center mt-4">
+                <div className="pagination-box d-flex align-items-center gap-3">
                 <button
                     disabled={page <= 0}
                     onClick={() => setPage(page - 1)}
-                    className="btn btn-secondary"
+                    className="btn btn-outline-primary btn-sm"
                 >
                     Trang trước
                 </button>
 
-                <span className="mx-2">{page + 1} / {totalPages}</span>
+                <span className="fw-semibold">{page + 1} / {totalPages || 1}</span>
 
                 <button
                     disabled={page + 1 >= totalPages}
                     onClick={() => setPage(page + 1)}
-                    className="btn btn-secondary"
+                    className="btn btn-outline-primary btn-sm"
                 >
                     Trang sau
                 </button>
+                </div>
             </div>
 
             {showForm && (

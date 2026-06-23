@@ -23,6 +23,7 @@ import {Link} from "react-router-dom";
 import {
     getInventory
 } from "../../../service/materials_manager/consumable/ConsumableTransactionService.js";
+import"../../../styles/ListConsumableTransaction.css";
 
 export default function ConsumableList() {
 
@@ -35,6 +36,9 @@ export default function ConsumableList() {
     const [code, setCode] = useState("");
 
     const [name, setName] = useState("");
+
+    const [totalElements, setTotalElements] = useState(0);
+
 
     useEffect(() => {
 
@@ -51,8 +55,8 @@ export default function ConsumableList() {
         );
 
         setMaterials(data.content);
-
         setTotalPages(data.totalPages);
+        setTotalElements(data.totalElements);
     };
 
     const handleSearch = async (e) => {
@@ -93,7 +97,11 @@ export default function ConsumableList() {
             <Card className="shadow border-0">
 
                 <Card.Header
-                    className="bg-primary text-white d-flex justify-content-between align-items-center"
+                    className="text-white d-flex justify-content-between align-items-center"
+                    style={{
+                        background:
+                            "linear-gradient(135deg,#0d6efd,#20c997)"
+                    }}
                 >
 
                     <div>
@@ -135,14 +143,109 @@ export default function ConsumableList() {
                 </Card.Header>
 
                 <Card.Body>
+                    <Row className="g-3 mb-4">
 
+                        <Col md={3}>
+                            <Card className="border-0 shadow-sm">
+                                <Card.Body>
+                                    <small className="text-muted">
+                                        Tổng vật tư
+                                    </small>
+
+                                    <h3 className="fw-bold text-primary mb-0">
+                                        {totalElements}
+                                    </h3>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+
+                        <Col md={3}>
+                            <Card className="border-0 shadow-sm">
+                                <Card.Body>
+                                    <small className="text-muted">
+                                        Còn hàng
+                                    </small>
+
+                                    <h3 className="fw-bold text-success mb-0">
+                                        {
+                                            materials.filter(
+                                                item => item.quantity > 10
+                                            ).length
+                                        }
+                                    </h3>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+
+                        <Col md={3}>
+                            <Card className="border-0 shadow-sm">
+                                <Card.Body>
+                                    <small className="text-muted">
+                                        Sắp hết
+                                    </small>
+
+                                    <h3 className="fw-bold text-warning mb-0">
+                                        {
+                                            materials.filter(
+                                                item =>
+                                                    item.quantity > 0 &&
+                                                    item.quantity <= 10
+                                            ).length
+                                        }
+                                    </h3>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+
+                        <Col md={3}>
+                            <Card className="border-0 shadow-sm">
+                                <Card.Body>
+                                    <small className="text-muted">
+                                        Hết hàng
+                                    </small>
+
+                                    <h3 className="fw-bold text-danger mb-0">
+                                        {
+                                            materials.filter(
+                                                item => item.quantity === 0
+                                            ).length
+                                        }
+                                    </h3>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+                            <Card className="mb-4 border-0 bg-light">
+
+                                <Card.Body>
+
+                                    <h5 className="mb-0">
+
+                                        Tổng số lượng tồn kho:
+
+                                        {
+                                            materials.reduce(
+                                                (sum,item)=>
+                                                    sum + item.quantity,
+                                                0
+                                            )
+                                        }
+
+                                    </h5>
+
+                                </Card.Body>
+
+                            </Card>
+
+
+                    </Row>
                     <Form onSubmit={handleSearch}>
 
-                        <Row className="mb-4 g-2">
+                        <Row className="mb-4 g-3">
 
                             <Col md={4}>
 
                                 <Form.Control
+                                    className="shadow-sm"
                                     type="text"
                                     placeholder="Tìm mã vật tư..."
                                     value={code}
@@ -154,6 +257,7 @@ export default function ConsumableList() {
                             <Col md={4}>
 
                                 <Form.Control
+                                    className="shadow-sm"
                                     type="text"
                                     placeholder="Tìm tên vật tư..."
                                     value={name}
@@ -203,7 +307,7 @@ export default function ConsumableList() {
                         className="align-middle text-center"
                     >
 
-                        <thead className="table-dark">
+                        <thead className="table-primary">
 
                         <tr>
 
@@ -244,11 +348,19 @@ export default function ConsumableList() {
                                         </td>
 
                                         <td>
-
-                                            <span className="fw-bold">
+                                            <Badge
+                                                bg={
+                                                    item.quantity > 10
+                                                        ? "success"
+                                                        : item.quantity > 0
+                                                            ? "warning"
+                                                            : "danger"
+                                                }
+                                                pill
+                                                className="px-3 py-2"
+                                            >
                                                 {item.quantity}
-                                            </span>
-
+                                            </Badge>
                                         </td>
 
                                         <td>
@@ -256,19 +368,27 @@ export default function ConsumableList() {
                                             {
                                                 item.quantity > 10 ? (
 
-                                                    <Badge bg="success">
+                                                    <Badge
+                                                        bg="success"
+                                                        pill
+                                                        className="px-3 py-2"
+                                                    >
                                                         Còn hàng
                                                     </Badge>
 
                                                 ) : item.quantity > 0 ? (
 
-                                                    <Badge bg="warning">
+                                                    <Badge bg="warning"
+                                                           pill
+                                                           className="px-3 py-2">
                                                         Sắp hết
                                                     </Badge>
 
                                                 ) : (
 
-                                                    <Badge bg="danger">
+                                                    <Badge bg="danger"
+                                                           pill
+                                                           className="px-3 py-2">
                                                         Hết hàng
                                                     </Badge>
 
@@ -291,7 +411,15 @@ export default function ConsumableList() {
                                         className="text-center text-muted py-4"
                                     >
 
-                                        Không có dữ liệu
+                                        <div className="py-4">
+
+                                            <h1>📦</h1>
+
+                                            <h5 className="text-muted">
+                                                Chưa có vật tư
+                                            </h5>
+
+                                        </div>
 
                                     </td>
 

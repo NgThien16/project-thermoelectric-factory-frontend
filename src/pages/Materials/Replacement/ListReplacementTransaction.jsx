@@ -35,6 +35,8 @@ export default function ListReplacementTransaction() {
 
     const [name, setName] = useState("");
 
+    const [totalElements, setTotalElements] = useState(0);
+
     useEffect(() => {
 
         loadData();
@@ -53,6 +55,7 @@ export default function ListReplacementTransaction() {
             if (data && data.content) {
                 setMaterials(data.content);
                 setTotalPages(data.totalPages);
+                setTotalElements(data.totalElements);
             } else {
                 setMaterials([]);
                 setTotalPages(0);
@@ -113,7 +116,11 @@ export default function ListReplacementTransaction() {
             <Card className="shadow border-0">
 
                 <Card.Header
-                    className="bg-success text-white d-flex justify-content-between align-items-center"
+                    className="text-white d-flex justify-content-between align-items-center"
+                    style={{
+                        background:
+                            "linear-gradient(135deg,#0d6efd,#20c997)"
+                    }}
                 >
 
                     <div>
@@ -158,13 +165,88 @@ export default function ListReplacementTransaction() {
 
                 <Card.Body>
 
+                    <Row className="g-3 mb-4">
+
+                        <Col md={3}>
+                            <Card className="page-stat-card border-0 shadow-sm position-relative">
+                                <Card.Body>
+                                    <small className="text-muted">
+                                        Tổng vật tư
+                                    </small>
+
+                                    <h3 className="fw-bold text-primary mb-0">
+                                        {materials.length}
+                                    </h3>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+
+                        <Col md={3}>
+                            <Card className="page-stat-card border-0 shadow-sm position-relative">
+                                <Card.Body>
+                                    <small className="text-muted">
+                                        Còn hàng
+                                    </small>
+
+                                    <h3 className="fw-bold text-success mb-0">
+                                        {
+                                            materials.filter(
+                                                item => item.quantity > 10
+                                            ).length
+                                        }
+                                    </h3>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+
+                        <Col md={3}>
+                            <Card className="page-stat-card border-0 shadow-sm position-relative">
+                                <Card.Body>
+                                    <small className="text-muted">
+                                        Sắp hết
+                                    </small>
+
+                                    <h3 className="fw-bold text-warning mb-0">
+                                        {
+                                            materials.filter(
+                                                item =>
+                                                    item.quantity > 0 &&
+                                                    item.quantity <= 10
+                                            ).length
+                                        }
+                                    </h3>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+
+                        <Col md={3}>
+                            <Card className="page-stat-card border-0 shadow-sm position-relative">
+                                <Card.Body>
+                                    <small className="text-muted">
+                                        Hết hàng
+                                    </small>
+
+                                    <h3 className="fw-bold text-danger mb-0">
+                                        {
+                                            materials.filter(
+                                                item => item.quantity === 0
+                                            ).length
+                                        }
+                                    </h3>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+
+                    </Row>
+
                     <Form onSubmit={handleSearch}>
 
-                        <Row className="mb-4 g-2">
+                        <Row className="mb-4 g-3">
 
                             <Col md={4}>
 
                                 <Form.Control
+                                    className="shadow-sm"
                                     type="text"
                                     placeholder="Tìm mã thiết bị..."
                                     value={code}
@@ -176,6 +258,7 @@ export default function ListReplacementTransaction() {
                             <Col md={4}>
 
                                 <Form.Control
+                                    className="shadow-sm"
                                     type="text"
                                     placeholder="Tìm tên thiết bị..."
                                     value={name}
@@ -218,6 +301,28 @@ export default function ListReplacementTransaction() {
 
                     </Form>
 
+                    <Card className="mb-4 border-0 bg-light">
+
+                        <Card.Body>
+
+                            <h5 className="mb-0">
+
+                                Tổng số lượng tồn kho:
+
+                                {
+                                    materials.reduce(
+                                        (sum, item) =>
+                                            sum + item.quantity,
+                                        0
+                                    )
+                                }
+
+                            </h5>
+
+                        </Card.Body>
+
+                    </Card>
+
                     <Table
                         bordered
                         hover
@@ -225,7 +330,7 @@ export default function ListReplacementTransaction() {
                         className="align-middle text-center"
                     >
 
-                        <thead className="table-dark">
+                        <thead className="table-primary">
 
                         <tr>
 
@@ -266,9 +371,19 @@ export default function ListReplacementTransaction() {
 
                                         <td>
 
-                                            <span className="fw-bold">
+                                            <Badge
+                                                bg={
+                                                    item.quantity > 10
+                                                        ? "success"
+                                                        : item.quantity > 0
+                                                            ? "warning"
+                                                            : "danger"
+                                                }
+                                                pill
+                                                className="px-3 py-2"
+                                            >
                                                 {item.quantity}
-                                            </span>
+                                            </Badge>
 
                                         </td>
 
@@ -277,19 +392,31 @@ export default function ListReplacementTransaction() {
                                             {
                                                 item.quantity > 10 ? ( // Đồ thay thế thường có mức cảnh báo thấp hơn đồ tiêu hao
 
-                                                    <Badge bg="success">
+                                                    <Badge
+                                                        bg="success"
+                                                        pill
+                                                        className="px-3 py-2"
+                                                    >
                                                         Còn hàng
                                                     </Badge>
 
                                                 ) : item.quantity > 0 ? (
 
-                                                    <Badge bg="warning">
+                                                    <Badge
+                                                        bg="warning"
+                                                        pill
+                                                        className="px-3 py-2"
+                                                    >
                                                         Sắp hết
                                                     </Badge>
 
                                                 ) : (
 
-                                                    <Badge bg="danger">
+                                                    <Badge
+                                                        bg="danger"
+                                                        pill
+                                                        className="px-3 py-2"
+                                                    >
                                                         Hết hàng
                                                     </Badge>
 

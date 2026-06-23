@@ -12,7 +12,6 @@ import {
 import {Link} from "react-router-dom";
 import {
     FaEdit,
-    FaPlus,
     FaSearch,
     FaTrash
 } from "react-icons/fa";
@@ -23,12 +22,14 @@ import {
 } from "../../../../service/materials_manager/consumable/ConsumableCategoryService.js";
 
 import {toast} from "react-toastify";
+import "../../../../styles/ListConsumable.css";
 
 const ListConsumable = () => {
 
     const [materialPage, setMaterialPage] = useState({
         content: [],
         totalPages: 0,
+        totalElements: 0,
         number: 0
     });
 
@@ -55,7 +56,7 @@ const ListConsumable = () => {
         if (data) {
             setMaterialPage(data);
         } else {
-            setMaterialPage({ content: [], totalPages: 0, number: 0 });
+            setMaterialPage({ content: [], totalPages: 0,totalElements: 0, number: 0 });
         }
     }
 
@@ -133,9 +134,60 @@ const ListConsumable = () => {
         <div className="container py-4">
 
             {/* Header */}
+            <Row className="list-summary-row g-3 mb-4">
 
-            <div className="d-flex justify-content-between align-items-center mb-4">
+                <Col md={4}>
+                    <Card className="list-summary-card">
+                        <Card.Body>
+                            <small className="text-muted">
+                                Tổng danh mục
+                            </small>
 
+                            <h3 className="fw-bold text-primary mb-0">
+                                {/*đang bị hiển thị sai vì phân trang tôi muốn hiển tổng */}
+                                {materialPage.totalElements || 0}
+                            </h3>
+                        </Card.Body>
+                    </Card>
+                </Col>
+
+                <Col md={4}>
+                    <Card className="list-summary-card">
+                        <Card.Body>
+                            <small className="text-muted">
+                                Trang hiện tại
+                            </small>
+
+                            <h3 className="fw-bold text-success mb-0">
+                                {page + 1}
+                            </h3>
+                        </Card.Body>
+                    </Card>
+                </Col>
+
+                <Col md={4}>
+                    <Card className="list-summary-card">
+                        <Card.Body>
+                            <small className="text-muted">
+                                Tổng số trang
+                            </small>
+
+                            <h3 className="fw-bold text-warning mb-0">
+                                {materialPage.totalPages}
+                            </h3>
+                        </Card.Body>
+                    </Card>
+                </Col>
+
+            </Row>
+            <Card
+                className="border-0 shadow-sm mb-4 text-white"
+                style={{
+                    background:
+                        "linear-gradient(135deg,#198754,#20c997)"
+                }}
+            >
+                <Card.Body className="d-flex justify-content-between align-items-center">
                 <div>
 
                     <h2 className="fw-bold mb-1">
@@ -150,12 +202,11 @@ const ListConsumable = () => {
 
                 <Link
                     to={"/consumable-materials/add"}
-                    className="btn btn-success d-flex align-items-center gap-2 shadow-sm"
-                >
+                    className="btn btn-light fw-bold d-flex align-items-center gap-2 shadow">
                     Thêm mới
                 </Link>
-
-            </div>
+                </Card.Body>
+            </Card>
 
             {/* Search */}
 
@@ -249,6 +300,7 @@ const ListConsumable = () => {
                         <thead className="table-light">
 
                         <tr>
+                            <th width="80">STT</th>
                             <th className="ps-4">Mã vật tư</th>
                             <th>Tên vật tư</th>
                             <th>Đơn vị</th>
@@ -259,28 +311,31 @@ const ListConsumable = () => {
                         </thead>
 
                         <tbody>
-
-                        {materialPage.content?.map((m) => (
+                        {materialPage.content?.map((m, index) => (
 
                             <tr key={m.id}>
-
-                                <td className="ps-4 fw-semibold">
-                                    {m.code}
+                                <td>
+                                    {page * 5 + index + 1}
+                                </td>
+                                <td className="ps-4">
+                                <span className="badgebg-primary">{m.code}</span>
                                 </td>
 
                                 <td className="text-decoration-none fw-semibold text-primary">
-                                        {m.name}
+                                    {m.name}
                                 </td>
 
                                 <td>{m.unit}</td>
-
-                                <td>{m.description}</td>
-
+                                <td style={{ maxWidth: "250px"}}>
+                                    <div className="text-truncate" title={m.description}>
+                                        {m.description || "-"}
+                                    </div>
+                                </td>
                                 <td className="text-center">
-
                                     <Link
                                         to={`/consumable-materials/edit/${m.id}`}
                                         className="btn btn-outline-primary btn-sm me-2"
+                                        title="Chỉnh sửa"
                                     >
                                         <FaEdit/>
                                     </Link>
@@ -297,7 +352,6 @@ const ListConsumable = () => {
 
                             </tr>
                         ))}
-
                         {materialPage.content?.length === 0 && (
 
                             <tr>
@@ -306,7 +360,15 @@ const ListConsumable = () => {
                                     colSpan={5}
                                     className="text-center py-5 text-muted"
                                 >
-                                    Không có dữ liệu !!!
+                                    <div className="py-4">
+
+                                        <h1>📦</h1>
+
+                                        <h5 className="text-muted">
+                                            Chưa có danh mục vật tư
+                                        </h5>
+
+                                    </div>
                                 </td>
 
                             </tr>
@@ -359,8 +421,7 @@ const ListConsumable = () => {
                 centered
             >
 
-                <Modal.Header closeButton>
-
+                <Modal.Header closeButton className="bg-danger text-white">
                     <Modal.Title>
                         Xác nhận xóa
                     </Modal.Title>
@@ -390,6 +451,7 @@ const ListConsumable = () => {
                     <Button
                         variant="danger"
                         onClick={handleDelete}
+                        title="Xóa"
                     >
                         Xóa
                     </Button>

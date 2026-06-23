@@ -8,6 +8,7 @@ import {getListSystem} from "../../../service/operations_manager/system/SystemSe
 import {getListType} from "../../../service/operations_manager/equipment/EquipmentTypeService.js";
 import DeleteEquipment from "./DeleteEquipment.jsx";
 import {FaDeleteLeft} from "react-icons/fa6";
+import ListSummaryCards from "../../../components/UI/ListSummaryCards.jsx";
 
 const Equipment = () => {
     const [equipmentList,setEquipmentList] = useState([]);
@@ -79,6 +80,13 @@ const Equipment = () => {
                     <FaPlus /> Thêm mới thiết bị
                 </Link>
             </div>
+
+            <ListSummaryCards
+                total={equipmentList.length}
+                currentPage={page + 1}
+                totalPages={total || 1}
+                totalLabel="Tổng thiết bị"
+            />
 
             <Card className="border-0 shadow-sm mb-4">
                 <Card.Body>

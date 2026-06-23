@@ -1,0 +1,17 @@
+.main-content .table tbody tr {
+    transition: all .2s ease;
+}
+
+.main-content .table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.main-content .page-stat-card,
+.main-content .dashboard-card {
+    transition: all .2s ease;
+}
+
+.main-content .page-stat-card:hover,
+.main-content .dashboard-card:hover {
+    transform: translateY(-2px);
+}

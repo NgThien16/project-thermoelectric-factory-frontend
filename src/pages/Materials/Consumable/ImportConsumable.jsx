@@ -87,16 +87,12 @@ export default function ConsumableImport() {
     const handleAddItem = () => {
 
         if (!form.materialId) {
-
             toast.error("Vui lòng chọn vật tư");
-
             return;
         }
 
         if (!form.quantity || form.quantity <= 0) {
-
             toast.error("Số lượng phải lớn hơn 0");
-
             return;
         }
 
@@ -104,17 +100,39 @@ export default function ConsumableImport() {
             item => item.id === parseInt(form.materialId)
         );
 
-        const newItem = {
-            materialId: selectedMaterial.id,
-            materialCode: selectedMaterial.code,
-            materialName: selectedMaterial.name,
-            quantity: parseInt(form.quantity)
-        };
+        const existed = tempItems.find(
+            item => item.materialId === selectedMaterial.id
+        );
 
-        setTempItems([
-            ...tempItems,
-            newItem
-        ]);
+        if (existed) {
+
+            setTempItems(
+                tempItems.map(item =>
+                    item.materialId === selectedMaterial.id
+                        ? {
+                            ...item,
+                            quantity:
+                                item.quantity +
+                                parseInt(form.quantity)
+                        }
+                        : item
+                )
+            );
+
+        } else {
+
+            const newItem = {
+                materialId: selectedMaterial.id,
+                materialCode: selectedMaterial.code,
+                materialName: selectedMaterial.name,
+                quantity: parseInt(form.quantity)
+            };
+
+            setTempItems([
+                ...tempItems,
+                newItem
+            ]);
+        }
 
         setForm({
             materialId: "",
@@ -123,7 +141,6 @@ export default function ConsumableImport() {
 
         toast.success("Đã thêm vào danh sách");
     };
-
     const handleRemove = (index) => {
 
         const updated = [...tempItems];
@@ -134,7 +151,13 @@ export default function ConsumableImport() {
     };
 
     const handleImport = async () => {
-
+        if (
+            !window.confirm(
+                "Bạn có chắc chắn muốn nhập kho?"
+            )
+        ) {
+            return;
+        }
         if (tempItems.length === 0) {
 
             toast.error("Danh sách nhập đang trống");
@@ -202,7 +225,11 @@ export default function ConsumableImport() {
             <Card className="shadow border-0">
 
                 <Card.Header
-                    className="bg-success text-white d-flex justify-content-between align-items-center"
+                    className="text-white d-flex justify-content-between align-items-center"
+                    style={{
+                        background:
+                            "linear-gradient(135deg,#198754,#20c997)"
+                    }}
                 >
 
                     <div>
@@ -229,7 +256,57 @@ export default function ConsumableImport() {
                 </Card.Header>
 
                 <Card.Body>
+                    <Row className="g-3 mb-4">
 
+                        <Col md={4}>
+                            <Card className="border-0 shadow-sm">
+                                <Card.Body>
+                                    <small className="text-muted">
+                                        Vật tư chờ nhập
+                                    </small>
+
+                                    <h3 className="fw-bold text-primary mb-0">
+                                        {tempItems.length}
+                                    </h3>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+
+                        <Col md={4}>
+                            <Card className="border-0 shadow-sm">
+                                <Card.Body>
+                                    <small className="text-muted">
+                                        Tổng số lượng
+                                    </small>
+
+                                    <h3 className="fw-bold text-success mb-0">
+                                        {
+                                            tempItems.reduce(
+                                                (sum, item) =>
+                                                    sum + item.quantity,
+                                                0
+                                            )
+                                        }
+                                    </h3>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+
+                        <Col md={4}>
+                            <Card className="border-0 shadow-sm">
+                                <Card.Body>
+                                    <small className="text-muted">
+                                        Danh mục vật tư
+                                    </small>
+
+                                    <h3 className="fw-bold text-warning mb-0">
+                                        {materials.length}
+                                    </h3>
+                                </Card.Body>
+                            </Card>
+                        </Col>
+
+                    </Row>
                     {/* FORM NHẬP */}
 
                     <Card className="mb-4 border-0 shadow-sm">
@@ -387,9 +464,16 @@ export default function ConsumableImport() {
                                                 </td>
 
                                                 <td>
-                                                    {item.quantity}
-                                                </td>
 
+                                                    <Badge
+                                                        bg="success"
+                                                        pill
+                                                        className="px-3 py-2"
+                                                    >
+                                                        {item.quantity}
+                                                    </Badge>
+
+                                                </td>
                                                 <td>
 
                                                     <Button
@@ -429,14 +513,35 @@ export default function ConsumableImport() {
                                 </tbody>
 
                             </Table>
+                            {
+                                tempItems.length > 0 && (
 
+                                    <div
+                                        className="d-flex justify-content-end fw-bold fs-5 mb-3"
+                                    >
+
+                                        Tổng số lượng:
+                                        {
+                                            tempItems.reduce(
+                                                (sum, item) =>
+                                                    sum + item.quantity,
+                                                0
+                                            )
+                                        }
+
+                                    </div>
+
+                                )
+                            }
                             {
                                 tempItems.length > 0 && (
 
                                     <div className="d-flex justify-content-end mt-3">
 
                                         <Button
+                                            size="lg"
                                             variant="success"
+                                            className="shadow px-4"
                                             onClick={handleImport}
                                         >
 
@@ -466,7 +571,10 @@ export default function ConsumableImport() {
                 centered
                 size="lg"
             >
-                <Modal.Header closeButton>
+                <Modal.Header
+                    closeButton
+                    className="bg-success text-white"
+                >
                     <Modal.Title className="fw-bold text-success">Thêm nhanh danh mục vật tư</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
