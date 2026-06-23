@@ -200,14 +200,10 @@ const RequestManagement = () => {
         switch (status) {
             case "CHO_DUYET":
                 return <Badge bg="warning">Chờ duyệt</Badge>;
-            case "DA_DUYET":
-                return <Badge bg="info">Đã duyệt</Badge>;
             case "DANG_THUC_HIEN":
                 return <Badge bg="primary">Đang thực hiện</Badge>;
             case "DA_HOAN_THANH":
                 return <Badge bg="success">Hoàn thành</Badge>;
-            case "KHONG_DUYET":
-                return <Badge bg="danger">Từ chối</Badge>;
             default:
                 return <Badge bg="dark">{status}</Badge>;
         }
@@ -299,7 +295,7 @@ const RequestManagement = () => {
                                         className="ms-2"
                                         disabled={!["DANG_THUC_HIEN", "DA_HOAN_THANH"].includes(r.status)}
                                         title={
-                                            !["DANG_THUC_HIEN", "CHO_NGHIEM_THU", "DA_HOAN_THANH"].includes(r.status)
+                                            !["DANG_THUC_HIEN", "DA_HOAN_THANH"].includes(r.status)
                                                 ? "Chưa có phiếu công tác"
                                                 : "Xem chi tiết phiếu công tác"
                                         }
