@@ -7,8 +7,6 @@ import {
 
 import {
     FaUserCircle,
-    FaSignOutAlt,
-    FaSignInAlt
 } from "react-icons/fa";
 
 import useAuth from "../../context/useAuth";
@@ -16,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { getWorkOrderNotification } from "../../service/work_order/NotificationService";
+import{FaBell} from "react-icons/fa";
 
 const TopNavbar = () => {
 
