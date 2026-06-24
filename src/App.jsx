@@ -47,8 +47,8 @@ import WarehouseRelease from "./pages/Materials/WarehouseRelease.jsx";
 import Export from "./pages/Materials/Export.jsx";
 import WorkOrderList from "./pages/work_order/WorkOrderList.jsx";
 import RepairOrderForWorkOrderList from "./pages/work_order/RepairOrderForWorkOrderList.jsx";
+import MaintenanceLogPage from "./pages/maintenance_log/MaintenanceLogPage.jsx";
 import ManagerPendingList from "./pages/Materials/ManagerPendingList.jsx";
-
 import WarehouseList from "./pages/Materials/WarehouseList.jsx";
 
 function App() {
@@ -500,6 +500,22 @@ function App() {
                                 ]}
                             >
                                 <RepairOrderForWorkOrderList/>
+                            </RoleProtectedRoute>
+                        }
+                    />
+
+                    {/* MaintenanceLog */}
+                    <Route
+                        path="/maintenance-logs"
+                        element={
+                            <RoleProtectedRoute
+                                allowedRoles={[
+                                    ROLE.ADMIN,
+                                    ROLE.MAINTENANCE_MANAGER,
+                                    ROLE.TEAM_LEADER
+                                ]}
+                            >
+                                <MaintenanceLogPage/>
                             </RoleProtectedRoute>
                         }
                     />

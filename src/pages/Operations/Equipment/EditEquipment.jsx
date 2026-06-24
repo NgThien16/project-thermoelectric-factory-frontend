@@ -69,20 +69,24 @@ const EditEquipment = () => {
             toast.error("Chỉnh sửa thất bại");
         }
     };
+    const EQUIPMENT_STATUS = [
+        { value: "DANG_VAN_HANH", label: "Đang vận hành" },
+        { value: "DANG_SUA_CHUA", label: "Đang sửa chữa" },
+        { value: "DANG_DONG", label: "Đang đóng" }
+    ];
 
     if (equipment==null) {
         return <h3>Loading...</h3>;
     }
     const validation = Yup.object(
         {
-            name:Yup.string().required("Không được bỏ trống")
-                .matches(/^[\p{Lu}][\p{L}]+(\s[\p{L}]+)*$/u,"Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt"),
-            code:Yup.string().required("Mã không được bỏ trống")
-                .matches(/^KKS-[0-9]{4}$/,"Định dạng mã: KKS-XXXX với X là các số từ 0 đến 9"),
-            systemId:Yup.number().required("Không được bỏ trống"),
-            typeId:Yup.number().required("Không được bỏ trống"),
-            status:Yup.string().required("Không được bỏ trống")
-                .matches(/^[\p{Lu}][\p{L}]+(\s[\p{L}]+)*$/u,"Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt")
+            name: Yup.string().required("Không được bỏ trống")
+                .matches(/^[\p{Lu}][\p{L}]+(\s[\p{L}]+)*$/u, "Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt"),
+            code: Yup.string().required("Mã không được bỏ trống")
+                .matches(/^KKS-[0-9]{4}$/, "Định dạng mã: KKS-XXXX với X là các số từ 0 đến 9"),
+            systemId: Yup.number().required("Không được bỏ trống"),
+            typeId: Yup.number().required("Không được bỏ trống"),
+            status: Yup.string().required("Không được bỏ trống")
         }
     );
 
@@ -354,10 +358,14 @@ const EditEquipment = () => {
                                         Trạng thái
                                     </label>
 
-                                    <Field
-                                        name="status"
-                                        className="form-control"
-                                    />
+                                    <Field as="select" name="status" className="form-control">
+                                        <option value="">-- Trạng thái --</option>
+                                        {EQUIPMENT_STATUS.map(item => (
+                                            <option key={item.value} value={item.value}>
+                                                {item.label}
+                                            </option>
+                                        ))}
+                                    </Field>
 
                                     <ErrorMessage
                                         name="status"

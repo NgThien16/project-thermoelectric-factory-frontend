@@ -8,7 +8,10 @@ export const TechnicalReportService = {
     delete: (id) => axiosInstance.delete(`/technical-reports/${id}`),
     getByWorkOrder: (workOrderId) =>
         axiosInstance.get(`/technical-reports/work-order/${workOrderId}`),
-    searchReports: (keyword = "", workOrderId = "", page = 0, size = 5) =>
+
+    getWorkOrders: () =>
+        axiosInstance.get("/technical-reports/work-orders"),
+    searchReports: (keyword = "", workOrderId = "", page = 0, size = 20) =>
         axiosInstance
             .get("/technical-reports/search", {
                 params: {
@@ -19,8 +22,4 @@ export const TechnicalReportService = {
                 }
             })
             .then((res) => res.data)
-    // searchReports: (keyword = "", workOrderId = null, page = 0, size = 5) =>
-    //     axiosInstance.get('/technical-reports/search', {
-    //         params: { keyword, workOrderId, page, size }
-    //     }).then(res => res.data)
 };

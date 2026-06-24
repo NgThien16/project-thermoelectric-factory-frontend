@@ -1,17 +1,25 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { TechnicalReportService } from "../../service/technical_report/TechnicalReportService";
 import useAuth from "../../context/useAuth";
+import { toast } from "react-toastify";
 
 const TechnicalReportForm = ({ report, onClose, onSave }) => {
     const { user: currentUser } = useAuth();
-
-    const [workOrderId, setWorkOrderId] = useState(report?.workOrder?.id || "");
+    // const [workOrderId, setWorkOrderId] = useState(report?.workOrder?.id || "");
+    const [workOrders, setWorkOrders] = useState([]);
+    const [workOrderCode, setWorkOrderCode] = useState(report?.workOrder?.code || "");
     const [conclusion, setConclusion] = useState(
         report?.content ? JSON.parse(report.content).conclusion : ""
     );
     const [equipmentReports, setEquipmentReports] = useState(
         report?.content ? JSON.parse(report.content).equipmentReports : []
     );
+    //them
+    useEffect(() => {
+        TechnicalReportService.getWorkOrders()
+            .then(res => setWorkOrders(res.data))
+            .catch(err => console.log(err));
+    }, []);
 
     const handleAddEquipment = () => {
         setEquipmentReports([
@@ -42,30 +50,30 @@ const TechnicalReportForm = ({ report, onClose, onSave }) => {
         setEquipmentReports(newList);
     };
 
-    const handleAddReplacement = (eqIndex) => {
-        const newList = [...equipmentReports];
-        newList[eqIndex].replacements.push({ materialId: "", name: "", quantity: 1 });
-        setEquipmentReports(newList);
-    };
-
-    const handleReplacementChange = (eqIndex, repIndex, field, value) => {
-        const newList = [...equipmentReports];
-        newList[eqIndex].replacements[repIndex][field] =
-            field === "quantity" ? Number(value) : value;
-        setEquipmentReports(newList);
-    };
-
-    const handleRemoveReplacement = (eqIndex, repIndex) => {
-        const newList = [...equipmentReports];
-        newList[eqIndex].replacements.splice(repIndex, 1);
-        setEquipmentReports(newList);
-    };
+    // const handleAddReplacement = (eqIndex) => {
+    //     const newList = [...equipmentReports];
+    //     newList[eqIndex].replacements.push({ materialId: "", name: "", quantity: 1 });
+    //     setEquipmentReports(newList);
+    // };
+    //
+    // const handleReplacementChange = (eqIndex, repIndex, field, value) => {
+    //     const newList = [...equipmentReports];
+    //     newList[eqIndex].replacements[repIndex][field] =
+    //         field === "quantity" ? Number(value) : value;
+    //     setEquipmentReports(newList);
+    // };
+    //
+    // const handleRemoveReplacement = (eqIndex, repIndex) => {
+    //     const newList = [...equipmentReports];
+    //     newList[eqIndex].replacements.splice(repIndex, 1);
+    //     setEquipmentReports(newList);
+    // };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!workOrderId) {
-            alert("Vui lòng nhập Work Order ID");
+        if (!workOrderCode) {
+            alert("Vui lòng nhập mã phiếu công tác");
             return;
         }
         if (!equipmentReports || equipmentReports.length === 0) {
@@ -74,7 +82,8 @@ const TechnicalReportForm = ({ report, onClose, onSave }) => {
         }
 
         const dto = {
-            workOrderId: Number(workOrderId),
+            // workOrderId: Number(workOrderId),
+            workOrderCode: workOrderCode,
             createdBy: currentUser?.id,
             conclusion: conclusion || "",
             equipmentReports: equipmentReports.map((eq) => ({
@@ -91,14 +100,16 @@ const TechnicalReportForm = ({ report, onClose, onSave }) => {
         try {
             if (report) {
                 await TechnicalReportService.update(report.id, dto);
+                toast.success("Cập nhật biên bản thành công!");
             } else {
                 await TechnicalReportService.create(dto);
+                toast.success("Tạo mới biên bản thành công!");
             }
             onSave();
         } catch (error) {
             console.error("Lỗi khi lưu biên bản:", error);
             console.error("Backend trả về:", error.response?.data);
-            alert("Lưu biên bản thất bại! Xem console để biết chi tiết.");
+            toast.error("Lưu biên bản thất bại! Xem console để biết chi tiết.");
         }
     };
 
@@ -114,15 +125,31 @@ const TechnicalReportForm = ({ report, onClose, onSave }) => {
                         <button type="button" className="btn-close" onClick={onClose}></button>
                     </div>
                     <form onSubmit={handleSubmit}>
-                        <div className="form-group mb-3">
-                            <label>Work Order ID</label>
-                            <input
-                                type="number"
+                        {/*<div className="form-group mb-3">*/}
+                        {/*    <label>Work Order ID</label>*/}
+                        {/*    <input*/}
+                        {/*        type="number"*/}
+                        {/*        className="form-control"*/}
+                        {/*        value={workOrderId}*/}
+                        {/*        onChange={(e) => setWorkOrderId(e.target.value)}*/}
+                        {/*        required*/}
+                        {/*    />*/}
+                        {/*</div>*/}
+                        <div className="mb-3">
+                            <label>Mã phiếu công tác</label>
+                            <select
                                 className="form-control"
-                                value={workOrderId}
-                                onChange={(e) => setWorkOrderId(e.target.value)}
+                                value={workOrderCode}
+                                onChange={(e) => setWorkOrderCode(e.target.value)}
                                 required
-                            />
+                            >
+                                <option value="">-- Chọn phiếu công tác --</option>
+                                {workOrders.map((wo) => (
+                                    <option key={wo.id} value={wo.code}>
+                                        {wo.code}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
 
                         {equipmentReports.map((eq, eqIndex) => (
@@ -165,14 +192,14 @@ const TechnicalReportForm = ({ report, onClose, onSave }) => {
                                         handleEquipmentChange(eqIndex, "damageDescription", e.target.value)
                                     }
                                 />
-                                <textarea
-                                    placeholder="Nguyên nhân"
-                                    className="form-control mb-2"
-                                    value={eq.cause}
-                                    onChange={(e) =>
-                                        handleEquipmentChange(eqIndex, "cause", e.target.value)
-                                    }
-                                />
+                                {/*<textarea*/}
+                                {/*    placeholder="Nguyên nhân"*/}
+                                {/*    className="form-control mb-2"*/}
+                                {/*    value={eq.cause}*/}
+                                {/*    onChange={(e) =>*/}
+                                {/*        handleEquipmentChange(eqIndex, "cause", e.target.value)*/}
+                                {/*    }*/}
+                                {/*/>*/}
                                 <textarea
                                     placeholder="Đánh giá kỹ thuật"
                                     className="form-control mb-2"

@@ -34,6 +34,7 @@
 
 .main-content .card-body {
     padding: 1.25rem;
+    overflow: visible;
 }
 
 .main-content > .p-4 > .d-flex:first-child,
@@ -376,4 +377,7 @@
     .main-content div.d-flex.mb-3 .btn {
         width: 100%;
     }
+
+
+
 }
