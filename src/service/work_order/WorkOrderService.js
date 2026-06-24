@@ -19,6 +19,7 @@ export const searchWorkOrders = async (
     );
     return res.data;
 };
+
 export const createWorkOrder = async (data) => {
         const res = await axiosInstance.post("/work-orders", data);
         return res.data;

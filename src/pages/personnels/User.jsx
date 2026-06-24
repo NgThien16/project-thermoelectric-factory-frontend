@@ -13,7 +13,6 @@ export default function UserPage() {
     const [users, setUsers] = useState([]);
     const [employees, setEmployees] = useState([]);
     const [roles, setRoles] = useState([]);
-
     const [inputValue, setInputValue] = useState("");
     const [keyword, setKeyword] = useState("");
     const [page, setPage] = useState(0);

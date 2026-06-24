@@ -19,6 +19,7 @@ import {
 import useAuth from "../context/useAuth";
 import {getDashboard} from "../service/getDashboard.js";
 import "../styles/Dashboard.css";
+import {ROLE} from "../utils/roleUtils.js";
 
 export default function Dashboard() {
     const [stats, setStats] = useState({
@@ -86,6 +87,26 @@ export default function Dashboard() {
                 "Quản lý nhân viên và tài khoản."
         }
     ];
+    const ROLE_DISPLAY_MAP = {
+        [ROLE.ADMIN]: "Admin",
+        [ROLE.HR]: "Nhân sự",
+        [ROLE.OPERATION]: "Quản đốc vận hành",
+        [ROLE.MAINTENANCE_MANAGER]: "Quản đốc sửa chữa",
+        [ROLE.TEAM_LEADER]: "Tổ trưởng",
+        [ROLE.MATERIAL]: "Thủ kho vật tư",
+        [ROLE.TOOL]: "Thủ kho CCDC",
+        [ROLE.SHIFT_LEADER]: "Trưởng ca",
+        [ROLE.SHIFT_LEADER_ALT]: "Trưởng kíp"
+    };
+
+    const getDisplayRole = (user) => {
+        if (!user || !Array.isArray(user.roles) || user.roles.length === 0) {
+            return user?.username || "";
+        }
+
+        const rawRole = user.roles[0];
+        return ROLE_DISPLAY_MAP[rawRole] || rawRole.replace(/^ROLE_/, "");
+    };
 
     return (
         <div className="container-fluid">
@@ -134,7 +155,7 @@ export default function Dashboard() {
                 <Alert variant="success">
                     Xin chào{" "}
                     <strong className="text-danger">
-                        {user.username}
+                        {getDisplayRole(user)}
                     </strong>
                     , chúc bạn một ngày làm việc hiệu quả.
                 </Alert>
@@ -254,19 +275,19 @@ export default function Dashboard() {
 
                     <ul>
                         <li>
-                            Quản lý thiết bị theo hệ thống.
+                            Quản lý nhân sự và phân quyền.
                         </li>
                         <li>
-                            Theo dõi quy trình:
-                            Repair Order → Work Order →
-                            Technical Report →
-                            Maintenance Log.
+                            Quản lý thiết bị theo hệ thống.
                         </li>
                         <li>
                             Quản lý kho vật tư và CCDC.
                         </li>
                         <li>
-                            Quản lý nhân sự và phân quyền.
+                            Theo dõi quy trình:
+                            Tạo yêu cầu sửa chữa → Tạo phiếu công tác →
+                            Biên bản đánh giá kĩ thuật →
+                            Lịch sử sửa chữa
                         </li>
                     </ul>
 

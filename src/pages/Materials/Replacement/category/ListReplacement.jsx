@@ -33,6 +33,7 @@ const ListReplacement = () => {
     const [materialPage, setMaterialPage] = useState({
         content: [],
         totalPages: 0,
+        totalElements:0,
         number: 0
     });
 
@@ -162,7 +163,7 @@ const ListReplacement = () => {
             </div>
 
             <ListSummaryCards
-                total={materialPage.content?.length || 0}
+                total={materialPage.totalElements || 0}
                 currentPage={page + 1}
                 totalPages={materialPage.totalPages || 1}
             />

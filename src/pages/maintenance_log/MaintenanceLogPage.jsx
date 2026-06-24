@@ -82,7 +82,7 @@ export default function MaintenanceLogPage() {
                     disabled={page === 0}
                     onClick={() => fetchData(page - 1, equipmentName)}
                 >
-                    Prev
+                    Trước
                 </button>
 
                 <span> Page {page + 1} / {totalPages} </span>
@@ -91,7 +91,7 @@ export default function MaintenanceLogPage() {
                     disabled={page + 1 >= totalPages}
                     onClick={() => fetchData(page + 1, equipmentName)}
                 >
-                    Next
+                    Sau
                 </button>
             </div>
 
