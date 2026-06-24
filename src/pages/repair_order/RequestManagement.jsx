@@ -44,7 +44,7 @@ const RequestManagement = () => {
     });
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteId, setDeleteId] = useState(null);
-    const [allEquipments, setAllEquipments] = useState([]);// FIX: lưu toàn bộ để filter client-side
+    const [allEquipments, setAllEquipments] = useState([]);
     const [showWorkOrderModal, setShowWorkOrderModal] = useState(false);
     const [selectedWorkOrderId, setSelectedWorkOrderId] = useState(null);
     const [showCloseConfirmModal, setShowCloseConfirmModal] = useState(false);
@@ -69,7 +69,7 @@ const RequestManagement = () => {
     const loadEquipments = async () => {
         try {
             const res = await showList();
-            setAllEquipments(res || []); // FIX: lưu toàn bộ list
+            setAllEquipments(res || []);
             setEquipments(res || []);
         } catch (e) {
             console.log(e);
@@ -78,13 +78,12 @@ const RequestManagement = () => {
 
     useEffect(() => {
         loadData();
-    }, [page]); // keyword không ở đây vì search thủ công qua nút
+    }, [page]);
 
     useEffect(() => {
         loadEquipments();
-    }, []); // chỉ load 1 lần
+    }, []);
 
-    // FIX: filter client-side thay vì gọi API lại không có param
     const handleSearchEquipment = () => {
         if (!equipmentKeyword.trim()) {
             setEquipments(allEquipments);
@@ -118,7 +117,7 @@ const RequestManagement = () => {
             equipmentId: ""
         });
         setEquipmentKeyword("");
-        setEquipments(allEquipments); // FIX: reset filter khi mở modal
+        setEquipments(allEquipments);
         setShowModal(true);
     };
 
@@ -132,7 +131,7 @@ const RequestManagement = () => {
             equipmentId: request.equipment?.id
         });
         setEquipmentKeyword("");
-        setEquipments(allEquipments); // FIX: reset filter khi mở modal
+        setEquipments(allEquipments);
         setShowModal(true);
     };
 
@@ -171,8 +170,8 @@ const RequestManagement = () => {
             setShowDeleteModal(false);
         }
     };
+
     const handleViewWorkOrder = async (repairOrderId, repairOrderStatus) => {
-        console.log("repairOrderStatus:", repairOrderStatus); // kiểm tra
         try {
             const data = await getWorkOrderByRepairOrder(repairOrderId);
             setSelectedWorkOrderId(data.id);
@@ -229,7 +228,7 @@ const RequestManagement = () => {
                                 placeholder="Tìm kiếm..."
                                 value={keyword}
                                 onChange={(e) => setKeyword(e.target.value)}
-                                onKeyDown={(e) => e.key === "Enter" && handleSearch()} // FIX: hỗ trợ Enter
+                                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                             />
                         </Col>
                         <Col md={2}>
@@ -359,7 +358,7 @@ const RequestManagement = () => {
                                         placeholder="Tên thiết bị..."
                                         value={equipmentKeyword}
                                         onChange={(e) => setEquipmentKeyword(e.target.value)}
-                                        onKeyDown={(e) => e.key === "Enter" && handleSearchEquipment()} // FIX: hỗ trợ Enter
+                                        onKeyDown={(e) => e.key === "Enter" && handleSearchEquipment()}
                                     />
                                     <Button onClick={handleSearchEquipment}>Lọc</Button>
                                 </div>
@@ -430,6 +429,7 @@ const RequestManagement = () => {
                     <Button variant="danger" onClick={confirmDelete}>{"Xóa"}</Button>
                 </Modal.Footer>
             </Modal>
+
             {/* Modal chi tiết phiếu công tác */}
             <WorkOrderDetailModal
                 show={showWorkOrderModal}
@@ -438,7 +438,8 @@ const RequestManagement = () => {
                 onAssignmentUpdated={loadData}
                 hideAssignment={true}
                 extraFooter={(detail) => {
-                    return detail?.status === "HOAN_THANH"
+                    // FIX: detail.status trả về displayName ("Hoàn thành"), không phải tên enum thô ("HOAN_THANH")
+                    return detail?.status === "Hoàn thành"
                         && selectedRepairOrderStatus !== "DA_HOAN_THANH"
                         && (
                             <Button
