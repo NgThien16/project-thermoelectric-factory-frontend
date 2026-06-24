@@ -1,16 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MaintenanceLogService } from "../../service/maintenance_log/maintenanceLogService";
 
 export default function MaintenanceLogForm({ onClose, onSuccess }) {
 
+    const [workOrders, setWorkOrders] = useState([]);
+
     const [workOrderId, setWorkOrderId] = useState("");
-    const [equipmentId, setEquipmentId] = useState("");
     const [description, setDescription] = useState("");
 
+    useEffect(() => {
+        MaintenanceLogService.getWorkOrders()
+            .then(res => setWorkOrders(res.data.content || res.data));
+    }, []);
+
     const handleSubmit = async () => {
+
         await MaintenanceLogService.create({
             workOrderId,
-            equipmentId,
             description
         });
 
@@ -29,17 +35,18 @@ export default function MaintenanceLogForm({ onClose, onSuccess }) {
 
             <h3>Tạo Maintenance Log</h3>
 
-            // đổi lại formik và gọi 2 api
-            <input
-                placeholder="WorkOrder ID"
-                onChange={(e) => setWorkOrderId(e.target.value)}
-            />
+            {/* WORK ORDER DROPDOWN */}
+            <select onChange={(e) => setWorkOrderId(e.target.value)}>
+                <option>-- Chọn WorkOrder --</option>
 
-            <input
-                placeholder="Equipment ID"
-                onChange={(e) => setEquipmentId(e.target.value)}
-            />
+                {workOrders.map(wo => (
+                    <option key={wo.id} value={wo.id}>
+                        {wo.code}
+                    </option>
+                ))}
+            </select>
 
+            {/* DESCRIPTION */}
             <textarea
                 placeholder="Mô tả"
                 onChange={(e) => setDescription(e.target.value)}
