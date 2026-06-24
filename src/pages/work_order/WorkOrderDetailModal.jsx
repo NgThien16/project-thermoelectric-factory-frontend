@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Modal, Button, Table, Spinner } from "react-bootstrap";
 import { FaFilePdf, FaUserEdit } from "react-icons/fa";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import { getWorkOrderDetail } from "../../service/work_order/WorkOrderService";
 import { getRoleLabel } from "../../utils/workOrderRoles";
+import { exportWorkOrderPdf } from "../../pdf/WorkOrderPdf";
 import UpdateAssignmentModal from "./UpdateAssignmentModal";
 
 const formatDate = (d) => d ? new Date(d).toLocaleString("vi-VN") : "—";
@@ -44,124 +43,7 @@ const WorkOrderDetailModal = ({ show, onHide, workOrderId, onAssignmentUpdated, 
         if (!detail) return;
         setExporting(true);
         try {
-            const doc = new jsPDF("p", "mm", "a4");
-            const pageWidth = doc.internal.pageSize.getWidth();
-            let y = 15;
-
-            doc.setFontSize(16);
-            doc.setFont(undefined, "bold");
-            doc.text("PHIEU CONG TAC", pageWidth / 2, y, { align: "center" });
-            y += 10;
-
-            doc.setFontSize(10);
-            doc.setFont(undefined, "normal");
-
-            const infoLines = [
-                [`Ma phieu: ${detail.code || ""}`, `Trang thai: ${detail.status || ""}`],
-                [`Trang thai VT: ${detail.materialStatus || ""}`, `Bat dau: ${formatDate(detail.startDate)}`],
-                [`Ket thuc: ${formatDate(detail.endDate)}`, ""]
-            ];
-            infoLines.forEach(row => {
-                doc.text(row[0], 14, y);
-                doc.text(row[1], pageWidth / 2 + 5, y);
-                y += 6;
-            });
-
-            y += 4;
-            doc.setFont(undefined, "bold");
-            doc.text("I. THONG TIN NGUOI LAP", 14, y);
-            doc.setFont(undefined, "normal");
-            y += 6;
-            doc.text(`Nguoi lap: ${detail.createdBy || ""}`, 14, y); y += 6;
-            doc.text(`Phong ban: ${detail.createdDepartment || ""}`, 14, y); y += 6;
-            doc.text(`Chuc vu: ${detail.createdPosition || ""}`, 14, y); y += 8;
-
-            doc.setFont(undefined, "bold");
-            doc.text("II. YEU CAU SUA CHUA", 14, y);
-            doc.setFont(undefined, "normal");
-            y += 6;
-            doc.text(`Tieu de: ${detail.repairTitle || ""}`, 14, y); y += 6;
-
-            const descLines = doc.splitTextToSize(`Mo ta: ${detail.repairDescription || ""}`, pageWidth - 28);
-            doc.text(descLines, 14, y);
-            y += descLines.length * 6 + 4;
-
-            doc.setFont(undefined, "bold");
-            doc.text("III. THONG TIN THIET BI", 14, y);
-            doc.setFont(undefined, "normal");
-            y += 6;
-            doc.text(`Ten thiet bi: ${detail.equipmentName || ""}`, 14, y); y += 6;
-            doc.text(`Ma thiet bi: ${detail.equipmentCode || ""}`, 14, y); y += 6;
-            doc.text(`He thong: ${detail.systemName || ""}`, 14, y); y += 8;
-
-            doc.setFont(undefined, "bold");
-            doc.text("IV. PHAN CONG NHAN SU", 14, y);
-            y += 4;
-
-            autoTable(doc, {
-                startY: y,
-                head: [["STT", "Ho ten", "Vai tro"]],
-                body: (detail.assignments || []).map((a, i) => [
-                    i + 1,
-                    a.employeeName || "",
-                    getRoleLabel(a.role)
-                ]),
-                theme: "grid",
-                styles: { fontSize: 9 },
-                headStyles: { fillColor: [230, 230, 230], textColor: 0 },
-                margin: { left: 14, right: 14 }
-            });
-            y = doc.lastAutoTable.finalY + 8;
-
-            doc.setFont(undefined, "bold");
-            doc.text("V. VAT TU TIEU HAO", 14, y);
-            y += 4;
-
-            autoTable(doc, {
-                startY: y,
-                head: [["STT", "Ma VT", "Ten vat tu", "DVT", "SL"]],
-                body: (detail.consumables || []).map((c, i) => [
-                    i + 1, c.code || "", c.name || "", c.unit || "", c.quantity ?? ""
-                ]),
-                theme: "grid",
-                styles: { fontSize: 9 },
-                headStyles: { fillColor: [230, 230, 230], textColor: 0 },
-                margin: { left: 14, right: 14 }
-            });
-            y = doc.lastAutoTable.finalY + 8;
-
-            doc.setFont(undefined, "bold");
-            doc.text("VI. PHU TUNG THAY THE", 14, y);
-            y += 4;
-
-            autoTable(doc, {
-                startY: y,
-                head: [["STT", "Ma PT", "Ten phu tung", "DVT", "SL"]],
-                body: (detail.replacements || []).map((r, i) => [
-                    i + 1, r.code || "", r.name || "", r.unit || "", r.quantity ?? ""
-                ]),
-                theme: "grid",
-                styles: { fontSize: 9 },
-                headStyles: { fillColor: [230, 230, 230], textColor: 0 },
-                margin: { left: 14, right: 14 }
-            });
-            y = doc.lastAutoTable.finalY + 20;
-
-            if (y > doc.internal.pageSize.getHeight() - 30) {
-                doc.addPage();
-                y = 20;
-            }
-
-            doc.setFont(undefined, "italic");
-            doc.text("Nguoi lap phieu", pageWidth - 60, y);
-            y += 6;
-            doc.setFont(undefined, "normal");
-            doc.text("(Ky va ghi ro ho ten)", pageWidth - 60, y);
-            y += 14;
-            doc.setFont(undefined, "bold");
-            doc.text(detail.createdBy || "", pageWidth - 60, y);
-
-            doc.save(`PhieuCongTac_${detail.code || workOrderId}.pdf`);
+            exportWorkOrderPdf(detail, workOrderId);
         } catch (e) {
             console.log(e);
         } finally {

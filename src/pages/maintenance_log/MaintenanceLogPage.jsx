@@ -86,7 +86,7 @@ export default function MaintenanceLogPage() {
                     disabled={page === 0}
                     onClick={() => setPage(page - 1)}
                 >
-                    Prev
+                    Trước
                 </button>
 
                 <span> Page {page + 1} / {totalPages} </span>
@@ -95,7 +95,7 @@ export default function MaintenanceLogPage() {
                     disabled={page + 1 >= totalPages}
                     onClick={() => setPage(page + 1)}
                 >
-                    Next
+                    Sau
                 </button>
             </div>
 
