@@ -2,7 +2,7 @@ import { useState,useEffect } from "react";
 import { TechnicalReportService } from "../../service/technical_report/TechnicalReportService";
 import useAuth from "../../context/useAuth";
 import { toast } from "react-toastify";
-import { searchListEquipment } from "../../service/operations_manager/equipment/EquipmentService";
+import { showList } from "../../service/operations_manager/equipment/EquipmentService";
 
 const TechnicalReportForm = ({ report, onClose, onSave }) => {
     const { user: currentUser } = useAuth();
@@ -73,21 +73,10 @@ const TechnicalReportForm = ({ report, onClose, onSave }) => {
             })
             .catch((err) => console.log(err));
 
-        searchListEquipment("", "", "", "", "", 0)
-            .then((res) => {
-                const data = res.data;
-
-                if (Array.isArray(data)) {
-                    setEquipments(data);
-                } else if (Array.isArray(data.content)) {
-                    setEquipments(data.content);
-                } else if (Array.isArray(data.data)) {
-                    setEquipments(data.data);
-                } else {
-                    setEquipments([]);
-                }
-            })
-            .catch(console.log);
+        const fetEquipment = async() => {
+            setEquipments(await showList());
+        }
+        fetEquipment();
     }, []);
 
     const handleAddEquipment = () => {

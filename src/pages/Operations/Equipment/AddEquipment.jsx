@@ -22,7 +22,6 @@ const AddEquipment = () => {
         code: "",
         systemId: "",
         typeId: "",
-        status: "",
         parameters: []
     };
 
@@ -77,14 +76,7 @@ const AddEquipment = () => {
             .required("Không được bỏ trống"),
 
         typeId: Yup.string()
-            .required("Không được bỏ trống"),
-
-        status: Yup.string()
             .required("Không được bỏ trống")
-            .matches(
-                /^[\p{Lu}][\p{L}]+(\s[\p{L}]+)*$/u,
-                "Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt"
-            )
 
     });
 
@@ -344,25 +336,6 @@ const AddEquipment = () => {
 
                                     )
                                 }
-
-                                <div className="mb-3">
-
-                                    <label className="form-label">
-                                        Trạng thái
-                                    </label>
-
-                                    <Field
-                                        name="status"
-                                        className="form-control"
-                                    />
-
-                                    <ErrorMessage
-                                        name="status"
-                                        component="small"
-                                        className="text-danger"
-                                    />
-
-                                </div>
 
                                 <div className="d-flex gap-2 mt-4">
 

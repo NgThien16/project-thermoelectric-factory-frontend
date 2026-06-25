@@ -39,13 +39,13 @@ export default function ConsumableImport() {
     const [materials, setMaterials] = useState([]);
 
     const [tempItems, setTempItems] = useState([]);
-    const [showImportConfirmModal, setShowImportConfirmModal] = useState(false);
 
     const [form, setForm] = useState({
         materialId: "",
         quantity: ""
     });
     const [showAddMaterialModal, setShowAddMaterialModal] = useState(false);
+    const [showImportConfirmModal, setShowImportConfirmModal] = useState(false);
 
     useEffect(() => {
 
@@ -150,7 +150,6 @@ export default function ConsumableImport() {
 
         setTempItems(updated);
     };
-
     const handleImport = () => {
         if (tempItems.length === 0) {
             toast.error("Danh sách nhập đang trống");
@@ -158,6 +157,7 @@ export default function ConsumableImport() {
         }
         setShowImportConfirmModal(true);
     };
+
     const confirmImport = async () => {
         try {
             for (const item of tempItems) {
@@ -530,11 +530,8 @@ export default function ConsumableImport() {
                                             className="shadow px-4"
                                             onClick={handleImport}
                                         >
-
                                             <FaSave className="me-2"/>
-
                                             Nhập kho
-
                                         </Button>
 
                                     </div>
@@ -607,24 +604,26 @@ export default function ConsumableImport() {
                     </Formik>
                 </Modal.Body>
             </Modal>
+
+            {/* === MODAL XÁC NHẬN NHẬP KHO === */}
             <Modal
                 show={showImportConfirmModal}
                 onHide={() => setShowImportConfirmModal(false)}
                 centered
             >
                 <Modal.Header closeButton className="bg-success text-white">
-                    <Modal.Title>{"Xác nhận nhập kho"}</Modal.Title>
+                    <Modal.Title>Xác nhận nhập kho</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>{"Bạn có chắc chắn muốn nhập kho"} <b>{tempItems.length}</b> {"loại vật tư với tổng số lượng"} <b>{tempItems.reduce((sum, item) => sum + item.quantity, 0)}</b> {"không?"}</p>
+                    Bạn có chắc chắn muốn nhập <b>{tempItems.length}</b> vật tư
+                    với tổng số lượng <b>{tempItems.reduce((sum, item) => sum + item.quantity, 0)}</b> vào kho?
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowImportConfirmModal(false)}>
-                        {"Hủy"}
+                        Hủy
                     </Button>
                     <Button variant="success" onClick={confirmImport}>
-                        <FaSave className="me-2" />
-                        {"Xác nhận nhập kho"}
+                        Xác nhận
                     </Button>
                 </Modal.Footer>
             </Modal>
