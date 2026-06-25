@@ -33,8 +33,3 @@ export const updateWorkOrderAssignments = async (id, data) => {
     const res = await axiosInstance.put(`/work-orders/${id}/assignments`, data);
     return res.data;
 };
-
-export const completeWorkOrder = async (id) => {
-    const res = await axiosInstance.put(`/work-orders/${id}/complete`);
-    return res.data;
-};

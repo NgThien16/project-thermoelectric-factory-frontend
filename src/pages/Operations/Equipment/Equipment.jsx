@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {searchListEquipment} from "../../../service/operations_manager/equipment/EquipmentService.js";
 import {Field, Form, Formik} from "formik";
-import {Button, Table, Card, Row, Col} from "react-bootstrap";
+import {Button, Table, Card, Row, Col, Badge} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import {FaSearch, FaPlus, FaEdit, FaArrowLeft} from 'react-icons/fa';
 import {getListSystem} from "../../../service/operations_manager/system/SystemService.js";
@@ -72,6 +72,24 @@ const Equipment = () => {
         });
         setPage(0);
     }
+
+    const renderStatusBadge = (status, statusDisplay) => {
+        switch (status) {
+            case "DANG_VAN_HANH":
+                return <Badge bg="info">{statusDisplay}</Badge>;
+            case "DANG_SUA_CHUA":
+                return <Badge bg="primary">{statusDisplay}</Badge>;
+            case "DANG_DONG":
+                return <Badge bg="warning">{statusDisplay}</Badge>;
+            default:
+                return <Badge bg="dark">{statusDisplay}</Badge>;
+        }
+    };
+    const EQUIPMENT_STATUS = [
+        { value: "DANG_VAN_HANH", label: "Đang vận hành" },
+        { value: "DANG_SUA_CHUA", label: "Đang sửa chữa" },
+        { value: "DANG_DONG", label: "Đang đóng" }
+    ];
     return (
         <div className="p-4">
             <div className="d-flex justify-content-between align-items-center mb-4">
@@ -85,7 +103,7 @@ const Equipment = () => {
                 total={equipmentList.length}
                 currentPage={page + 1}
                 totalPages={total || 1}
-                totalLabel="Tổng thiết bị"
+                totalLabel="Thiết bị"
             />
 
             <Card className="border-0 shadow-sm mb-4">
@@ -116,7 +134,14 @@ const Equipment = () => {
                                     </Field>
                                 </Col>
                                 <Col md={2}>
-                                    <Field name={'status'} className="form-control" placeholder={'Trạng thái...'}/>
+                                    <Field as="select" name="status" className="form-control">
+                                        <option value="">-- Trạng thái --</option>
+                                        {EQUIPMENT_STATUS.map(item => (
+                                            <option key={item.value} value={item.value}>
+                                                {item.label}
+                                            </option>
+                                        ))}
+                                    </Field>
                                 </Col>
                                 <Col md={2} className="d-flex gap-2">
                                     <Button variant="primary" type={'submit'} className="d-flex align-items-center gap-2">
@@ -152,7 +177,8 @@ const Equipment = () => {
                                     </Link>
                                 </td>
                                 <td>{e.code}</td>
-                                <td>{e.status}</td>
+
+                                <td>{renderStatusBadge(e.status, e.statusDisplay)}</td>
                                 <td>
                                     <Link to={`/equipments/edit/${e.id}`} className="btn btn-outline-primary btn-sm me-2">
                                         <FaEdit />

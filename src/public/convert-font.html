@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Convert Font</title>
+</head>
+<body>
+
+<h3>Convert Arial.ttf → Base64</h3>
+
+<input type="file" id="fileInput" />
+
+<pre id="output" style="white-space: pre-wrap;"></pre>
+
+<script>
+    document.getElementById("fileInput").addEventListener("change", function (e) {
+        const file = e.target.files[0];
+
+        const reader = new FileReader();
+
+        reader.onload = function () {
+            // data:font/ttf;base64,AAAA....
+            const base64Full = reader.result;
+
+            // cắt phần base64 thật
+            const base64 = base64Full.split(",")[1];
+
+            const output = `
+export const arialBase64 = "${base64}";
+        `;
+
+            document.getElementById("output").innerText = output;
+        };
+
+        reader.readAsDataURL(file);
+    });
+</script>
+
+</body>
+</html>
