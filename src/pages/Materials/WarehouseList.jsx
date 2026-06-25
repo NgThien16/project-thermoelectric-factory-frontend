@@ -4,6 +4,12 @@ import { FaEye, FaBoxes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance.js";
 
+const MATERIAL_STATUS_LABEL = {
+    CHUA_YEU_CAU_CAP_PHAT: "Chưa Yêu Cầu Cấp Phát",
+    CHO_CAP_PHAT: "Chờ Cấp Phát",
+    DA_CAP_PHAT: "Đã Cấp Phát",
+};
+
 export default function WarehousePendingList() {
     const [pendingOrders, setPendingOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -15,8 +21,8 @@ export default function WarehousePendingList() {
 
     const fetchPendingRequests = async () => {
         try {
-            // Gọi đúng endpoint vừa tạo ở Backend
             const response = await axiosInstance.get("/material-export/pending-list");
+            console.log("materialStatus sample:", response.data[0]?.materialStatus);
             setPendingOrders(response.data || []);
         } catch (error) {
             console.error("Lỗi tải danh sách chờ cấp phát:", error);
@@ -53,15 +59,13 @@ export default function WarehousePendingList() {
                             {pendingOrders.map((order, index) => (
                                 <tr key={order.id}>
                                     <td>{index + 1}</td>
-                                    {/* Hiển thị ID của WorkOrder */}
-                                    <td className="fw-bold text-primary">#{order.id}</td>
+                                    <td className="fw-bold text-primary">#{order.code}</td>
                                     <td>
                                         <Badge bg="warning" className="text-dark">
-                                            {order.materialStatus || "CHO_CAP_PHAT"}
+                                            {MATERIAL_STATUS_LABEL[order.materialStatus] || order.materialStatus}
                                         </Badge>
                                     </td>
                                     <td>
-                                        {/* Khi bấm, nhảy sang trang Export.jsx kèm ID của WorkOrder để thủ kho xử lý */}
                                         <Button
                                             variant="outline-primary" size="sm"
                                             onClick={() => navigate(`/material-export/release/${order.id}`)}
