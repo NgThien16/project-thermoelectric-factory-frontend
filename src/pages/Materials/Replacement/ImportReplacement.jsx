@@ -44,7 +44,7 @@ export default function ReplacementImport() {
         quantity: ""
     });
     const [showAddMaterialModal, setShowAddMaterialModal] = useState(false);
-
+    const [showImportConfirmModal, setShowImportConfirmModal] = useState(false);
     useEffect(() => {
 
         loadMaterials();
@@ -130,19 +130,17 @@ export default function ReplacementImport() {
         setTempItems(updated);
     };
 
-    const handleImport = async () => {
-
+    const handleImport = () => {
         if (tempItems.length === 0) {
-
             toast.error("Danh sách nhập đang trống");
-
             return;
         }
+        setShowImportConfirmModal(true);
+    };
 
+    const confirmImport = async () => {
         try {
-
             for (const item of tempItems) {
-
                 const payload = {
                     quantity: item.quantity,
                     type: "IMPORT",
@@ -155,14 +153,13 @@ export default function ReplacementImport() {
             }
 
             toast.success("Nhập kho thành công");
-
+            setShowImportConfirmModal(false);
             navigate("/replacement-transactions");
 
         } catch (e) {
-
             console.log(e);
-
             toast.error("Có lỗi xảy ra");
+            setShowImportConfirmModal(false);
         }
     };
     const handleCreateMaterialSuccess = async (values, { resetForm }) => {
@@ -508,6 +505,29 @@ export default function ReplacementImport() {
                         </FormikForm>
                     </Formik>
                 </Modal.Body>
+            </Modal>
+
+            {/* === MODAL XÁC NHẬN NHẬP KHO === */}
+            <Modal
+                show={showImportConfirmModal}
+                onHide={() => setShowImportConfirmModal(false)}
+                centered
+            >
+                <Modal.Header closeButton className="bg-success text-white">
+                    <Modal.Title>Xác nhận nhập kho</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Bạn có chắc chắn muốn nhập <b>{tempItems.length}</b> vật tư
+                    với tổng số lượng <b>{tempItems.reduce((sum, item) => sum + item.quantity, 0)}</b> vào kho?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowImportConfirmModal(false)}>
+                        Hủy
+                    </Button>
+                    <Button variant="success" onClick={confirmImport}>
+                        Xác nhận
+                    </Button>
+                </Modal.Footer>
             </Modal>
 
         </div>

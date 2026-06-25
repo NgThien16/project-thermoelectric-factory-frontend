@@ -4,6 +4,7 @@ import {TechnicalReportService} from "../../service/technical_report/TechnicalRe
 import {searchListEquipment} from "../../service/operations_manager/equipment/EquipmentService";
 import {toast} from "react-toastify";
 import { exportTechnicalReportPdf } from "../../pdf/TechnicalReportPdf";
+import {showList} from "../../service/work_order/WorkOrderService.js";
 
 // Modal chi tiết
 const TechnicalReportDetail = ({report, equipmentList, onClose}) => {
@@ -28,7 +29,6 @@ const TechnicalReportDetail = ({report, equipmentList, onClose}) => {
                     </div>
                     <div className="modal-body">
                         <p><strong>ID biên bản:</strong> {report.id}</p>
-                        {/*<p><strong>Work Order ID:</strong> {report.workOrder?.id}</p>*/}
                         <p><b>Phiếu công tác:</b> {report.workOrder?.code}</p>
                         <p><strong>Người tạo:</strong> {report.createdBy?.fullName || report.createdBy?.username || "Không có dữ liệu"}</p>
                         <p><strong>Ngày tạo:</strong> {new Date(report.createdAt).toLocaleString()}</p>
@@ -85,22 +85,23 @@ const TechnicalReportPage = () => {
     const [page, setPage] = useState(0);
     const [size] = useState(5);
     const [totalPages, setTotalPages] = useState(0);
-    const [keyword, setKeyword] = useState("");
     const [deviceKeyword, setDeviceKeyword] = useState("");
-    const [workOrderId, setWorkOrderId] = useState("");
     const [selectedReport, setSelectedReport] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [detailReport, setDetailReport] = useState(null);
     const [showDetail, setShowDetail] = useState(false);
     const [equipmentList, setEquipmentList] = useState([]);
+    const [workOrderList, setWorkOrderList] = useState([]);
 
+
+    const [search] = useState({
+        workOrderCode: "",
+    });
 
     const fetchReports = async () => {
         try {
-            // const data = await TechnicalReportService.searchReports(keyword, workOrderId ? Number(workOrderId) : null, page, size);
             const data = await TechnicalReportService.searchReports(
-                keyword,
-                null,
+                search.workOrderCode,
                 page,
                 size
             );
@@ -111,6 +112,7 @@ const TechnicalReportPage = () => {
                     eq.equipmentName.toLowerCase().includes(deviceKeyword.toLowerCase())
                 );
             });
+            setWorkOrderList(await showList());
             setReports(filtered);
             setTotalPages(data.totalPages);
         } catch {
@@ -134,7 +136,7 @@ const TechnicalReportPage = () => {
     useEffect(() => {
         fetchReports();
         fetchEquipments();
-    }, [page, keyword, deviceKeyword]);
+    }, [search,page, deviceKeyword]);
 
     const handleDelete = async (id) => {
         if (window.confirm("Bạn có chắc muốn xóa biên bản này?")) {
@@ -169,13 +171,17 @@ const TechnicalReportPage = () => {
 
             <div className="d-flex justify-content-between align-items-center mb-2">
                 <div className="d-flex">
-                    <input
-                        type="text"
-                        placeholder="Tên thiết bị"
-                        value={deviceKeyword}
+                    <select
+                        name={'workOrderCode'}
                         onChange={(e) => setDeviceKeyword(e.target.value)}
-                        className="form-control"
-                    />
+                        className="form-control">
+                        <option value={''}>---Mã phiếu công tác---</option>
+                        {workOrderList.map((w) =>(
+                            <option key={w.id} value={w.code}>
+                                {w.code}
+                            </option>
+                        ))}
+                    </select>
                     <button onClick={fetchReports} className="btn btn-primary me-2">Tìm kiếm</button>
                     <button onClick={() => {
                         setDeviceKeyword("");
