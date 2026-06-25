@@ -39,6 +39,7 @@ export default function ConsumableImport() {
     const [materials, setMaterials] = useState([]);
 
     const [tempItems, setTempItems] = useState([]);
+    const [showImportConfirmModal, setShowImportConfirmModal] = useState(false);
 
     const [form, setForm] = useState({
         materialId: "",
@@ -150,45 +151,30 @@ export default function ConsumableImport() {
         setTempItems(updated);
     };
 
-    const handleImport = async () => {
-        if (
-            !window.confirm(
-                "Bạn có chắc chắn muốn nhập kho?"
-            )
-        ) {
-            return;
-        }
+    const handleImport = () => {
         if (tempItems.length === 0) {
-
             toast.error("Danh sách nhập đang trống");
-
             return;
         }
-
+        setShowImportConfirmModal(true);
+    };
+    const confirmImport = async () => {
         try {
-
             for (const item of tempItems) {
-
                 const payload = {
                     quantity: item.quantity,
                     type: "IMPORT",
-                    material: {
-                        id: item.materialId
-                    }
+                    material: { id: item.materialId }
                 };
-
                 await save(payload);
             }
-
             toast.success("Nhập kho thành công");
-
+            setShowImportConfirmModal(false);
             navigate("/consumable-transactions");
-
         } catch (e) {
-
             console.log(e);
-
             toast.error("Có lỗi xảy ra");
+            setShowImportConfirmModal(false);
         }
     };
     const handleCreateMaterialSuccess = async (values, { resetForm }) => {
@@ -621,7 +607,27 @@ export default function ConsumableImport() {
                     </Formik>
                 </Modal.Body>
             </Modal>
-
+            <Modal
+                show={showImportConfirmModal}
+                onHide={() => setShowImportConfirmModal(false)}
+                centered
+            >
+                <Modal.Header closeButton className="bg-success text-white">
+                    <Modal.Title>{"Xác nhận nhập kho"}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>{"Bạn có chắc chắn muốn nhập kho"} <b>{tempItems.length}</b> {"loại vật tư với tổng số lượng"} <b>{tempItems.reduce((sum, item) => sum + item.quantity, 0)}</b> {"không?"}</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowImportConfirmModal(false)}>
+                        {"Hủy"}
+                    </Button>
+                    <Button variant="success" onClick={confirmImport}>
+                        <FaSave className="me-2" />
+                        {"Xác nhận nhập kho"}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }
