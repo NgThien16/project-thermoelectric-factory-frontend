@@ -55,7 +55,7 @@ export default function MaintenanceLogPage() {
             <table border="1" width="100%">
                 <thead>
                 <tr>
-                    <th>WorkOrder</th>
+                    <th>Phiếu CT</th>
                     <th>Thiết bị</th>
                     <th>Mã TB</th>
                     <th>Mô tả</th>
@@ -85,7 +85,7 @@ export default function MaintenanceLogPage() {
                     Trước
                 </button>
 
-                <span> Page {page + 1} / {totalPages} </span>
+                <span> {page + 1} / {totalPages} </span>
 
                 <button
                     disabled={page + 1 >= totalPages}

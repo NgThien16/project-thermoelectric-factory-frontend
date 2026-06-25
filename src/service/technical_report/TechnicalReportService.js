@@ -11,12 +11,11 @@ export const TechnicalReportService = {
 
     getWorkOrders: () =>
         axiosInstance.get("/technical-reports/work-orders"),
-    searchReports: (keyword = "", workOrderId = "", page = 0, size = 20) =>
+    searchReports: (workOrderCode = "", page = 0, size = 20) =>
         axiosInstance
             .get("/technical-reports/search", {
                 params: {
-                    keyword,
-                    workOrderId: workOrderId || null,
+                    workOrderCode: workOrderCode || null,
                     page,
                     size
                 }

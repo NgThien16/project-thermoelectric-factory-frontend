@@ -6,26 +6,87 @@ import { searchListEquipment } from "../../service/operations_manager/equipment/
 
 const TechnicalReportForm = ({ report, onClose, onSave }) => {
     const { user: currentUser } = useAuth();
-    // const [workOrderId, setWorkOrderId] = useState(report?.workOrder?.id || "");
     const [workOrders, setWorkOrders] = useState([]);
-    const [workOrderCode, setWorkOrderCode] = useState(report?.workOrder?.code || "");
+    const parseJsonSafe = (value) => {
+        try {
+            return value ? JSON.parse(value) : {};
+        } catch {
+            return {};
+        }
+    };
+
+    const getInitialEquipmentReports = (report) => {
+        const content = parseJsonSafe(report?.content);
+
+        if (Array.isArray(content.equipmentReports) && content.equipmentReports.length > 0) {
+            return content.equipmentReports;
+        }
+
+        if (report?.equipmentCode || report?.equipmentName) {
+            return [
+                {
+                    equipmentId: report.equipmentId || "",
+                    equipmentCode: report.equipmentCode || "",
+                    equipmentName: report.equipmentName || "",
+                    damageDescription: report.damageDescription || "",
+                    cause: report.cause || "",
+                    assessment: report.assessment || "",
+                    proposedSolution: report.proposedSolution || "",
+                    replacements: [],
+                },
+            ];
+        }
+
+        return [];
+    };
+
+    const reportContent = parseJsonSafe(report?.content);
+
+    const [workOrderCode, setWorkOrderCode] = useState(
+        report?.workOrderCode || report?.workOrder?.code || ""
+    );
 
     const [equipments, setEquipments] = useState([]);
 
     const [conclusion, setConclusion] = useState(
-        report?.content ? JSON.parse(report.content).conclusion : ""
+        reportContent.conclusion || report?.conclusion || ""
     );
+
     const [equipmentReports, setEquipmentReports] = useState(
-        report?.content ? JSON.parse(report.content).equipmentReports : []
+        getInitialEquipmentReports(report)
     );
     //them
     useEffect(() => {
         TechnicalReportService.getWorkOrders()
-            .then(res => setWorkOrders(res.data))
-            .catch(err => console.log(err));
+            .then((res) => {
+                const data = res.data;
+
+                if (Array.isArray(data)) {
+                    setWorkOrders(data);
+                } else if (Array.isArray(data.content)) {
+                    setWorkOrders(data.content);
+                } else if (Array.isArray(data.data)) {
+                    setWorkOrders(data.data);
+                } else {
+                    setWorkOrders([]);
+                }
+            })
+            .catch((err) => console.log(err));
 
         searchListEquipment("", "", "", "", "", 0)
-            .then(res => setEquipments(res.data?.content || res.data || []))
+            .then((res) => {
+                const data = res.data;
+
+                if (Array.isArray(data)) {
+                    setEquipments(data);
+                } else if (Array.isArray(data.content)) {
+                    setEquipments(data.content);
+                } else if (Array.isArray(data.data)) {
+                    setEquipments(data.data);
+                } else {
+                    setEquipments([]);
+                }
+            })
             .catch(console.log);
     }, []);
 
@@ -160,16 +221,6 @@ const TechnicalReportForm = ({ report, onClose, onSave }) => {
                         <button type="button" className="btn-close" onClick={onClose}></button>
                     </div>
                     <form onSubmit={handleSubmit}>
-                        {/*<div className="form-group mb-3">*/}
-                        {/*    <label>Work Order ID</label>*/}
-                        {/*    <input*/}
-                        {/*        type="number"*/}
-                        {/*        className="form-control"*/}
-                        {/*        value={workOrderId}*/}
-                        {/*        onChange={(e) => setWorkOrderId(e.target.value)}*/}
-                        {/*        required*/}
-                        {/*    />*/}
-                        {/*</div>*/}
                         <div className="mb-3">
                             <label>Mã phiếu công tác</label>
                             <select

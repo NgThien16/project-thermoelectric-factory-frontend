@@ -37,7 +37,7 @@ export default function MaintenanceLogForm({ onClose, onSuccess }) {
 
             {/* WORK ORDER DROPDOWN */}
             <select onChange={(e) => setWorkOrderId(e.target.value)}>
-                <option>-- Chọn WorkOrder --</option>
+                <option>-- Chọn phiếu CT --</option>
 
                 {workOrders.map(wo => (
                     <option key={wo.id} value={wo.id}>
@@ -53,8 +53,8 @@ export default function MaintenanceLogForm({ onClose, onSuccess }) {
             />
 
             <div>
-                <button onClick={handleSubmit}>Save</button>
-                <button onClick={onClose}>Cancel</button>
+                <button onClick={handleSubmit}>Lưu</button>
+                <button onClick={onClose}>Hủy</button>
             </div>
 
         </div>
