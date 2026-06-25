@@ -438,8 +438,7 @@ const RequestManagement = () => {
                 onAssignmentUpdated={loadData}
                 hideAssignment={true}
                 extraFooter={(detail) => {
-                    // FIX: detail.status trả về displayName ("Hoàn thành"), không phải tên enum thô ("HOAN_THANH")
-                    return detail?.status === "Hoàn thành"
+                    return detail?.status !== "Hoàn thành"
                         && selectedRepairOrderStatus !== "DA_HOAN_THANH"
                         && (
                             <Button

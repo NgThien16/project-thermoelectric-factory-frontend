@@ -137,25 +137,19 @@ export default function ReplacementImport() {
         }
         setShowImportConfirmModal(true);
     };
-
     const confirmImport = async () => {
         try {
             for (const item of tempItems) {
                 const payload = {
                     quantity: item.quantity,
                     type: "IMPORT",
-                    material: {
-                        id: item.materialId
-                    }
+                    material: { id: item.materialId }
                 };
-
                 await save(payload);
             }
-
             toast.success("Nhập kho thành công");
             setShowImportConfirmModal(false);
             navigate("/replacement-transactions");
-
         } catch (e) {
             console.log(e);
             toast.error("Có lỗi xảy ra");

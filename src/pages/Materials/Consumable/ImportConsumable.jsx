@@ -150,7 +150,7 @@ export default function ConsumableImport() {
 
         setTempItems(updated);
     };
-const handleImport = () => {
+    const handleImport = () => {
         if (tempItems.length === 0) {
             toast.error("Danh sách nhập đang trống");
             return;
@@ -164,18 +164,13 @@ const handleImport = () => {
                 const payload = {
                     quantity: item.quantity,
                     type: "IMPORT",
-                    material: {
-                        id: item.materialId
-                    }
+                    material: { id: item.materialId }
                 };
-
                 await save(payload);
             }
-
             toast.success("Nhập kho thành công");
             setShowImportConfirmModal(false);
             navigate("/consumable-transactions");
-
         } catch (e) {
             console.log(e);
             toast.error("Có lỗi xảy ra");
