@@ -59,7 +59,7 @@ export default function WarehousePendingList() {
                             {pendingOrders.map((order, index) => (
                                 <tr key={order.id}>
                                     <td>{index + 1}</td>
-                                    <td className="fw-bold text-primary">#{order.id}</td>
+                                    <td className="fw-bold text-primary">#{order.code}</td>
                                     <td>
                                         <Badge bg="warning" className="text-dark">
                                             {MATERIAL_STATUS_LABEL[order.materialStatus] || order.materialStatus}
