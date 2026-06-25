@@ -1,5 +1,15 @@
 import axiosInstance from "../../api/axiosInstance";
 
+export async function showList() {
+    try {
+        const res = await axiosInstance.get('/work-orders/list');
+        return res.data;
+    } catch (e) {
+        console.log(e);
+        return [];
+    }
+}
+
 export const searchWorkOrders = async (
     code = "",
     equipment = "",

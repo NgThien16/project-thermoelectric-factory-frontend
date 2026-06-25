@@ -14,22 +14,18 @@ export default function MaintenanceLogPage() {
     const [showForm, setShowForm] = useState(false);
 
     const fetchData = async (pageIndex = 0, name = "") => {
-        const res = await MaintenanceLogService.searchLogs({
-            page: pageIndex,
-            size: 5,
-            equipmentName: name
-        });
+        const res = await MaintenanceLogService.search(pageIndex, 5, name);
 
         setData(res.data.content);
         setTotalPages(res.data.totalPages);
+        setPage(pageIndex);
     };
 
     useEffect(() => {
-        fetchData(page, equipmentName);
-    }, [page]);
+        fetchData(0, "");
+    }, []);
 
     const handleSearch = () => {
-        setPage(0);
         fetchData(0, equipmentName);
     };
 
@@ -38,7 +34,7 @@ export default function MaintenanceLogPage() {
 
             <h2>Lịch sử bảo trì</h2>
 
-            {/* SEARCH (gộp luôn trong page) */}
+            {/* SEARCH */}
             <div style={{ marginBottom: 15 }}>
                 <input
                     placeholder="Tìm theo tên thiết bị"
@@ -51,7 +47,7 @@ export default function MaintenanceLogPage() {
                 </button>
 
                 <button onClick={() => setShowForm(true)}>
-                    + Tạo lịch sử
+                    + Tạo log
                 </button>
             </div>
 
@@ -59,7 +55,7 @@ export default function MaintenanceLogPage() {
             <table border="1" width="100%">
                 <thead>
                 <tr>
-                    <th>Mã phiếu CT</th>
+                    <th>Phiếu CT</th>
                     <th>Thiết bị</th>
                     <th>Mã TB</th>
                     <th>Mô tả</th>
@@ -84,22 +80,22 @@ export default function MaintenanceLogPage() {
             <div style={{ marginTop: 20 }}>
                 <button
                     disabled={page === 0}
-                    onClick={() => setPage(page - 1)}
+                    onClick={() => fetchData(page - 1, equipmentName)}
                 >
                     Trước
                 </button>
 
-                <span> Page {page + 1} / {totalPages} </span>
+                <span> {page + 1} / {totalPages} </span>
 
                 <button
                     disabled={page + 1 >= totalPages}
-                    onClick={() => setPage(page + 1)}
+                    onClick={() => fetchData(page + 1, equipmentName)}
                 >
                     Sau
                 </button>
             </div>
 
-            {/* FORM CREATE (GIỮ RIÊNG) */}
+            {/* FORM */}
             {showForm && (
                 <MaintenanceLogForm
                     onClose={() => setShowForm(false)}

@@ -2,23 +2,92 @@ import { useState,useEffect } from "react";
 import { TechnicalReportService } from "../../service/technical_report/TechnicalReportService";
 import useAuth from "../../context/useAuth";
 import { toast } from "react-toastify";
+import { searchListEquipment } from "../../service/operations_manager/equipment/EquipmentService";
 
 const TechnicalReportForm = ({ report, onClose, onSave }) => {
     const { user: currentUser } = useAuth();
-    // const [workOrderId, setWorkOrderId] = useState(report?.workOrder?.id || "");
     const [workOrders, setWorkOrders] = useState([]);
-    const [workOrderCode, setWorkOrderCode] = useState(report?.workOrder?.code || "");
-    const [conclusion, setConclusion] = useState(
-        report?.content ? JSON.parse(report.content).conclusion : ""
+    const parseJsonSafe = (value) => {
+        try {
+            return value ? JSON.parse(value) : {};
+        } catch {
+            return {};
+        }
+    };
+
+    const getInitialEquipmentReports = (report) => {
+        const content = parseJsonSafe(report?.content);
+
+        if (Array.isArray(content.equipmentReports) && content.equipmentReports.length > 0) {
+            return content.equipmentReports;
+        }
+
+        if (report?.equipmentCode || report?.equipmentName) {
+            return [
+                {
+                    equipmentId: report.equipmentId || "",
+                    equipmentCode: report.equipmentCode || "",
+                    equipmentName: report.equipmentName || "",
+                    damageDescription: report.damageDescription || "",
+                    cause: report.cause || "",
+                    assessment: report.assessment || "",
+                    proposedSolution: report.proposedSolution || "",
+                    replacements: [],
+                },
+            ];
+        }
+
+        return [];
+    };
+
+    const reportContent = parseJsonSafe(report?.content);
+
+    const [workOrderCode, setWorkOrderCode] = useState(
+        report?.workOrderCode || report?.workOrder?.code || ""
     );
+
+    const [equipments, setEquipments] = useState([]);
+
+    const [conclusion, setConclusion] = useState(
+        reportContent.conclusion || report?.conclusion || ""
+    );
+
     const [equipmentReports, setEquipmentReports] = useState(
-        report?.content ? JSON.parse(report.content).equipmentReports : []
+        getInitialEquipmentReports(report)
     );
     //them
     useEffect(() => {
         TechnicalReportService.getWorkOrders()
-            .then(res => setWorkOrders(res.data))
-            .catch(err => console.log(err));
+            .then((res) => {
+                const data = res.data;
+
+                if (Array.isArray(data)) {
+                    setWorkOrders(data);
+                } else if (Array.isArray(data.content)) {
+                    setWorkOrders(data.content);
+                } else if (Array.isArray(data.data)) {
+                    setWorkOrders(data.data);
+                } else {
+                    setWorkOrders([]);
+                }
+            })
+            .catch((err) => console.log(err));
+
+        searchListEquipment("", "", "", "", "", 0)
+            .then((res) => {
+                const data = res.data;
+
+                if (Array.isArray(data)) {
+                    setEquipments(data);
+                } else if (Array.isArray(data.content)) {
+                    setEquipments(data.content);
+                } else if (Array.isArray(data.data)) {
+                    setEquipments(data.data);
+                } else {
+                    setEquipments([]);
+                }
+            })
+            .catch(console.log);
     }, []);
 
     const handleAddEquipment = () => {
@@ -27,6 +96,7 @@ const TechnicalReportForm = ({ report, onClose, onSave }) => {
             {
                 equipmentId: "",
                 equipmentName: "",
+                equipmentCode: "",
                 damageDescription: "",
                 cause: "",
                 assessment: "",
@@ -38,16 +108,41 @@ const TechnicalReportForm = ({ report, onClose, onSave }) => {
         ]);
     };
 
-    const handleEquipmentChange = (eqIndex, field, value) => {
-        const newList = [...equipmentReports];
-        newList[eqIndex][field] = value;
-        setEquipmentReports(newList);
+    // const handleEquipmentChange = (eqIndex, field, value) => {
+    //     const newList = [...equipmentReports];
+    //     newList[eqIndex][field] = value;
+    //     setEquipmentReports(newList);
+    // };
+    //
+    // const handleRemoveEquipment = (eqIndex) => {
+    //     const newList = [...equipmentReports];
+    //     newList.splice(eqIndex, 1);
+    //     setEquipmentReports(newList);
+    // };
+    // CHANGE EQUIPMENT FROM DROPDOWN
+    const handleSelectEquipment = (index, equipmentId) => {
+        const selected = equipments.find(e => e.id === Number(equipmentId));
+
+        const updated = [...equipmentReports];
+
+        updated[index].equipmentId = selected?.id || "";
+        updated[index].equipmentName = selected?.name || "";
+        updated[index].equipmentCode = selected?.code || "";
+
+        setEquipmentReports(updated);
     };
 
-    const handleRemoveEquipment = (eqIndex) => {
-        const newList = [...equipmentReports];
-        newList.splice(eqIndex, 1);
-        setEquipmentReports(newList);
+    // CHANGE FIELD
+    const handleEquipmentChange = (index, field, value) => {
+        const updated = [...equipmentReports];
+        updated[index][field] = value;
+        setEquipmentReports(updated);
+    };
+
+    const handleRemoveEquipment = (index) => {
+        const updated = [...equipmentReports];
+        updated.splice(index, 1);
+        setEquipmentReports(updated);
     };
 
     // const handleAddReplacement = (eqIndex) => {
@@ -86,15 +181,16 @@ const TechnicalReportForm = ({ report, onClose, onSave }) => {
             workOrderCode: workOrderCode,
             createdBy: currentUser?.id,
             conclusion: conclusion || "",
-            equipmentReports: equipmentReports.map((eq) => ({
-                equipmentId: Number(eq.equipmentId),
-                equipmentName: eq.equipmentName || "",
-                damageDescription: eq.damageDescription || "",
-                cause: eq.cause || "",
-                assessment: eq.assessment || "",
-                proposedSolution: eq.proposedSolution || "",
-                replacements: eq.replacements || []
-            }))
+            // equipmentReports: equipmentReports.map((eq) => ({
+            //     equipmentId: Number(eq.equipmentId),
+            //     equipmentName: eq.equipmentName || "",
+            //     damageDescription: eq.damageDescription || "",
+            //     cause: eq.cause || "",
+            //     assessment: eq.assessment || "",
+            //     proposedSolution: eq.proposedSolution || "",
+            //     replacements: eq.replacements || []
+            // }))
+            equipmentReports
         };
 
         try {
@@ -125,16 +221,6 @@ const TechnicalReportForm = ({ report, onClose, onSave }) => {
                         <button type="button" className="btn-close" onClick={onClose}></button>
                     </div>
                     <form onSubmit={handleSubmit}>
-                        {/*<div className="form-group mb-3">*/}
-                        {/*    <label>Work Order ID</label>*/}
-                        {/*    <input*/}
-                        {/*        type="number"*/}
-                        {/*        className="form-control"*/}
-                        {/*        value={workOrderId}*/}
-                        {/*        onChange={(e) => setWorkOrderId(e.target.value)}*/}
-                        {/*        required*/}
-                        {/*    />*/}
-                        {/*</div>*/}
                         <div className="mb-3">
                             <label>Mã phiếu công tác</label>
                             <select
@@ -159,31 +245,48 @@ const TechnicalReportForm = ({ report, onClose, onSave }) => {
                                     <button
                                         type="button"
                                         className="btn btn-sm btn-danger"
+                                        // onClick={() => handleRemoveEquipment(eqIndex)}
                                         onClick={() => handleRemoveEquipment(eqIndex)}
                                     >
                                         Xóa
                                     </button>
                                 </div>
 
-                                <input
-                                    type="number"
-                                    placeholder="ID thiết bị"
+                                {/*<input*/}
+                                {/*    type="number"*/}
+                                {/*    placeholder="ID thiết bị"*/}
+                                {/*    className="form-control mb-2"*/}
+                                {/*    value={eq.equipmentId}*/}
+                                {/*    onChange={(e) =>*/}
+                                {/*        handleEquipmentChange(eqIndex, "equipmentId", e.target.value)*/}
+                                {/*    }*/}
+                                {/*    required*/}
+                                {/*/>*/}
+                                {/*<input*/}
+                                {/*    type="text"*/}
+                                {/*    placeholder="Tên thiết bị"*/}
+                                {/*    className="form-control mb-2"*/}
+                                {/*    value={eq.equipmentName}*/}
+                                {/*    onChange={(e) =>*/}
+                                {/*        handleEquipmentChange(eqIndex, "equipmentName", e.target.value)*/}
+                                {/*    }*/}
+                                {/*/>*/}
+
+                                {/* DROPDOWN EQUIPMENT */}
+                                <select
                                     className="form-control mb-2"
                                     value={eq.equipmentId}
                                     onChange={(e) =>
-                                        handleEquipmentChange(eqIndex, "equipmentId", e.target.value)
+                                        handleSelectEquipment(eqIndex, e.target.value)
                                     }
-                                    required
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Tên thiết bị"
-                                    className="form-control mb-2"
-                                    value={eq.equipmentName}
-                                    onChange={(e) =>
-                                        handleEquipmentChange(eqIndex, "equipmentName", e.target.value)
-                                    }
-                                />
+                                >
+                                    <option value="">-- Chọn thiết bị --</option>
+                                    {equipments.map(e => (
+                                        <option key={e.id} value={e.id}>
+                                            {e.code} - {e.name}
+                                        </option>
+                                    ))}
+                                </select>
                                 <textarea
                                     placeholder="Mô tả hư hỏng"
                                     className="form-control mb-2"
