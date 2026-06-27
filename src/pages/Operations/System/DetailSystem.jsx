@@ -20,6 +20,18 @@ const DetailSystem = () => {
         code:"",
         domain:""
     })
+    const renderStatusBadge = (status, statusDisplay) => {
+        switch (status) {
+            case "DANG_VAN_HANH":
+                return <Badge bg="info">{statusDisplay}</Badge>;
+            case "DANG_SUA_CHUA":
+                return <Badge bg="primary">{statusDisplay}</Badge>;
+            case "DANG_DONG":
+                return <Badge bg="warning">{statusDisplay}</Badge>;
+            default:
+                return <Badge bg="dark">{statusDisplay}</Badge>;
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -124,11 +136,7 @@ const DetailSystem = () => {
                                     </Link>
                                 </td>
                                 <td>{e.code}</td>
-                                <td>
-                                    <Badge bg="secondary" className="fw-normal">
-                                        {e.status}
-                                    </Badge>
-                                </td>
+                                <td>{renderStatusBadge(e.status, e.statusDisplay)}</td>
                             </tr>
                         ))}
                         {equipments.length === 0 && (
