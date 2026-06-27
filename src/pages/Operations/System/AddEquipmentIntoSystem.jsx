@@ -1,5 +1,5 @@
  import {ErrorMessage, Field, Form, Formik} from "formik";
-import {Button} from "react-bootstrap";
+import {Badge, Button} from "react-bootstrap";
 import * as Yup from "yup";
 import {toast} from "react-toastify";
 import {Link, useNavigate, useParams} from "react-router-dom";
@@ -27,7 +27,6 @@ const AddEquipmentToSystem = () => {
         name: "",
         code: "",
         typeId: "",
-        status: "",
         parameters: []
     };
 
@@ -37,9 +36,9 @@ const AddEquipmentToSystem = () => {
                 .matches(/^[\p{Lu}][\p{L}]+(\s[\p{L}]+)*$/u,"Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt"),
             code:Yup.string().required("Mã không được bỏ trống")
                 .matches(/^KKS-[0-9]{4}$/,"Định dạng mã: KKS-XXXX với X là các số từ 0 đến 9"),
-            typeId:Yup.number().required("Không được bỏ trống"),
-            status:Yup.string().required("Không được bỏ trống")
-                .matches(/^[\p{Lu}][\p{L}]+(\s[\p{L}]+)*$/u,"Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt")
+            typeId:Yup.number().required("Không được bỏ trống")
+            // status:Yup.string().required("Không được bỏ trống")
+            //     .matches(/^[\p{Lu}][\p{L}]+(\s[\p{L}]+)*$/u,"Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt")
         }
     );
 
@@ -317,24 +316,24 @@ const AddEquipmentToSystem = () => {
                                     )
                                 }
 
-                                <div className="mb-3">
+                                {/*<div className="mb-3">*/}
 
-                                    <label className="form-label">
-                                        Trạng thái
-                                    </label>
+                                {/*    <label className="form-label">*/}
+                                {/*        Trạng thái*/}
+                                {/*    </label>*/}
 
-                                    <Field
-                                        name="status"
-                                        className="form-control"
-                                    />
+                                {/*    <Field*/}
+                                {/*        name="status"*/}
+                                {/*        className="form-control"*/}
+                                {/*    />*/}
 
-                                    <ErrorMessage
-                                        name="status"
-                                        component="small"
-                                        className="text-danger"
-                                    />
+                                {/*    <ErrorMessage*/}
+                                {/*        name="status"*/}
+                                {/*        component="small"*/}
+                                {/*        className="text-danger"*/}
+                                {/*    />*/}
 
-                                </div>
+                                {/*</div>*/}
 
                                 <div className="d-flex gap-2 mt-4">
 
