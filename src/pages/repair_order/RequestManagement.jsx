@@ -33,7 +33,7 @@ const RequestManagement = () => {
         id: null,
         title: "",
         description: "",
-        status: "CHO_DUYET",
+        status: "PENDING",
         equipmentId: ""
     });
     const [showMessageModal, setShowMessageModal] = useState(false);
@@ -113,7 +113,7 @@ const RequestManagement = () => {
             id: null,
             title: "",
             description: "",
-            status: "CHO_DUYET",
+            status: "PENDING",
             equipmentId: ""
         });
         setEquipmentKeyword("");
@@ -197,18 +197,18 @@ const RequestManagement = () => {
 
     const getStatusBadge = (status) => {
         switch (status) {
-            case "CHO_DUYET":
+            case "PENDING":
                 return <Badge bg="warning">Chờ duyệt</Badge>;
-            case "DANG_THUC_HIEN":
+            case "IN_PROGRESS":
                 return <Badge bg="primary">Đang thực hiện</Badge>;
-            case "DA_HOAN_THANH":
+            case "COMPLETED":
                 return <Badge bg="success">Hoàn thành</Badge>;
             default:
                 return <Badge bg="dark">{status}</Badge>;
         }
     };
 
-    const canEditOrDelete = (status) => status === "CHO_DUYET";
+    const canEditOrDelete = (status) => status === "PENDING";
 
     return (
         <div className="p-4">
@@ -292,9 +292,9 @@ const RequestManagement = () => {
                                         size="sm"
                                         variant="outline-info"
                                         className="ms-2"
-                                        disabled={!["DANG_THUC_HIEN", "DA_HOAN_THANH"].includes(r.status)}
+                                        disabled={!["IN_PROGRESS", "COMPLETED"].includes(r.status)}
                                         title={
-                                            !["DANG_THUC_HIEN", "DA_HOAN_THANH"].includes(r.status)
+                                            !["IN_PROGRESS", "COMPLETED"].includes(r.status)
                                                 ? "Chưa có phiếu công tác"
                                                 : "Xem chi tiết phiếu công tác"
                                         }
@@ -439,7 +439,7 @@ const RequestManagement = () => {
                 hideAssignment={true}
                 extraFooter={(detail) => {
                     return detail?.status !== "Hoàn thành"
-                        && selectedRepairOrderStatus !== "DA_HOAN_THANH"
+                        && selectedRepairOrderStatus !== "COMPLETED"
                         && (
                             <Button
                                 variant="danger"

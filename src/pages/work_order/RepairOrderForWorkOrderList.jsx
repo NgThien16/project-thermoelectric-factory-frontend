@@ -83,11 +83,11 @@ const RepairOrderForWorkOrderList = () => {
 
     const renderStatus = (status) => {
         switch (status) {
-            case "CHO_DUYET":
+            case "PENDING":
                 return <Badge bg="secondary">Chờ duyệt</Badge>;
-            case "DANG_THUC_HIEN":
+            case "IN_PROGRESS":
                 return <Badge bg="primary">Đang thực hiện</Badge>;
-            case "DA_HOAN_THANH":
+            case "COMPLETED":
                 return <Badge bg="success">Đã hoàn thành</Badge>;
             default:
                 return <Badge bg="dark">{status}</Badge>;
@@ -156,9 +156,9 @@ const RepairOrderForWorkOrderList = () => {
                                         className="form-control"
                                     >
                                         <option value="">-- Trạng thái --</option>
-                                        <option value="CHO_DUYET">Chờ duyệt</option>
-                                        <option value="DANG_THUC_HIEN">Đang thực hiện</option>
-                                        <option value="DA_HOAN_THANH">Đã hoàn thành</option>
+                                        <option value="PENDING">Chờ duyệt</option>
+                                        <option value="IN_PROGRESS">Đang thực hiện</option>
+                                        <option value="COMPLETED">Đã hoàn thành</option>
                                     </Field>
                                 </Col>
                                 <Col md={2}>

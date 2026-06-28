@@ -1,8 +1,8 @@
 // ✅ Đưa ra ngoài component
 const MATERIAL_STATUS_LABEL = {
-    CHUA_YEU_CAU_CAP_PHAT: "Chưa Yêu Cầu Cấp Phát",
-    CHO_CAP_PHAT: "Chờ Cấp Phát",
-    DA_CAP_PHAT: "Đã Cấp Phát",
+    ISSUANCE_NOT_YET_REQUESTED: "Chưa Yêu Cầu Cấp Phát",
+    PENDING_ISSUANCE: "Chờ Cấp Phát",
+    ISSUED: "Đã Cấp Phát",
 };
 
 import { useEffect, useState } from "react";

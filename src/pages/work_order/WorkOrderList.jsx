@@ -117,13 +117,13 @@ const WorkOrderList = () => {
 
     const renderStatusBadge = (status, statusDisplay) => {
         switch (status) {
-            case "DA_PHAN_CONG":
+            case "ASSIGNED":
                 return <Badge bg="info">{statusDisplay}</Badge>;
-            case "DANG_THUC_HIEN":
+            case "IN_PROGRESS":
                 return <Badge bg="primary">{statusDisplay}</Badge>;
-            case "CHO_VAT_TU":
+            case "WAITING_FOR_MATERIALS":
                 return <Badge bg="warning">{statusDisplay}</Badge>;
-            case "HOAN_THANH":
+            case "COMPLETED":
                 return <Badge bg="success">{statusDisplay}</Badge>;
             default:
                 return <Badge bg="dark">{statusDisplay}</Badge>;
@@ -131,10 +131,10 @@ const WorkOrderList = () => {
     };
 
     const WORK_ORDER_STATUS = [
-        { value: "DA_PHAN_CONG", label: "Đã phân công" },
-        { value: "DANG_THUC_HIEN", label: "Đang thực hiện" },
-        { value: "CHO_VAT_TU", label: "Chờ vật tư" },
-        { value: "HOAN_THANH", label: "Hoàn thành" }
+        { value: "ASSIGNED", label: "Đã phân công" },
+        { value: "IN_PROGRESS", label: "Đang thực hiện" },
+        { value: "WAITING_FOR_MATERIALS", label: "Chờ vật tư" },
+        { value: "COMPLETED", label: "Hoàn thành" }
     ];
 
     return (
