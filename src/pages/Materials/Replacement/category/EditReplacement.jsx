@@ -53,8 +53,8 @@ const EditReplacement = () => {
         code: Yup.string()
             .required("Không được bỏ trống")
             .matches(
-                /^MAT-[0-9]{4}$/,
-                "Định dạng mã: MAT-XXXX"
+                /^REP-[0-9]{4}$/,
+                "Định dạng mã: REP-XXXX"
             ),
 
         unit: Yup.string()
