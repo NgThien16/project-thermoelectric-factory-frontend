@@ -33,7 +33,7 @@ export default function Export() {
     });
 
     // Trạng thái ReadOnly đóng băng màn hình nếu đã xuất kho thành công
-    const isReadOnly = workOrderData?.materialStatus === "DA_CAP_PHAT";
+    const isReadOnly = workOrderData?.materialStatus === "ISSUED";
 
     useEffect(() => {
         if (requestId && requestId !== "undefined" && requestId !== "null" && !isNaN(requestId)) {
@@ -43,15 +43,15 @@ export default function Export() {
         loadAllMaterialsFromDatabase();
     }, [requestId]);
 
-    // Tự động load lại danh sách vật tư cũ lên bảng nếu trạng thái là CHO_CAP_PHAT
+    // Tự động load lại danh sách vật tư cũ lên bảng nếu trạng thái là PENDING_ISSUANCE
     const loadWorkOrderDetails = async (id) => {
         try {
             const response = await axiosInstance.get(`/material-export/work-order/${id}`);
             if (response && response.data) {
                 setWorkOrderData(response.data);
 
-                // Nếu đang ở trạng thái CHO_CAP_PHAT -> Quản đốc chỉnh sửa dữ liệu cũ
-                if (response.data.materialStatus === "CHO_CAP_PHAT") {
+                // Nếu đang ở trạng thái PENDING_ISSUANCE -> Quản đốc chỉnh sửa dữ liệu cũ
+                if (response.data.materialStatus === "PENDING_ISSUANCE") {
                     const [consRes, repRes] = await Promise.all([
                         axiosInstance.get(`/material-export/work-order-consumables/work-order/${id}`),
                         axiosInstance.get(`/material-export/work-order-replacements/work-order/${id}`)
@@ -94,7 +94,7 @@ export default function Export() {
             }
         } catch (error) {
             console.error("Lỗi khi tải trạng thái phiếu từ API:", error);
-            setWorkOrderData({ materialStatus: "CHUA_YEU_CAU_CAP_PHAT" });
+            setWorkOrderData({ materialStatus: "ISSUANCE_NOT_YET_REQUESTED" });
         }
     };
 
@@ -273,7 +273,7 @@ export default function Export() {
                 </Card.Header>
             </Card>
 
-            {workOrderData?.materialStatus === "CHO_CAP_PHAT" && (
+            {workOrderData?.materialStatus === "PENDING_ISSUANCE" && (
                 <div className="alert alert-warning border-0 shadow-sm fw-bold mb-4">
                     📝 Phiếu sửa chữa này đang ở trạng thái <span className="text-danger">CHỜ CẤP PHÁT</span>. Hệ thống đã nạp lại danh sách vật tư cũ, bạn có thể chỉnh sửa và bấm cập nhật lại!
                 </div>
@@ -419,7 +419,7 @@ export default function Export() {
                                         🔒 Danh sách yêu cầu cấp phát này đã được hoàn tất xuất kho thực tế (Chế độ xem lại).
                                         <br />
                                         <span className="text-success fs-6 fw-semibold">
-                                            Trạng thái vật tư hiện tại: ĐÃ CẤP PHÁT (DA_CAP_PHAT)
+                                            Trạng thái vật tư hiện tại: ĐÃ CẤP PHÁT
                                         </span>
                                     </div>
                                 </div>
@@ -427,7 +427,7 @@ export default function Export() {
                                 tempItems.length > 0 && (
                                     <div className="d-flex justify-content-end mt-4">
                                         <Button variant="success" size="lg" className="px-5 fw-bold shadow-sm" onClick={handleFinalExport}>
-                                            <FaSave className="me-2" /> {workOrderData?.materialStatus === "CHO_CAP_PHAT" ? "Cập nhật yêu cầu cấp" : "Xác nhận cấp vật tư"}
+                                            <FaSave className="me-2" /> {workOrderData?.materialStatus === "PENDING_ISSUANCE" ? "Cập nhật yêu cầu cấp" : "Xác nhận cấp vật tư"}
                                         </Button>
                                     </div>
                                 )

@@ -70,9 +70,9 @@ const EditEquipment = () => {
         }
     };
     const EQUIPMENT_STATUS = [
-        { value: "DANG_VAN_HANH", label: "Đang vận hành" },
-        { value: "DANG_SUA_CHUA", label: "Đang sửa chữa" },
-        { value: "DANG_DONG", label: "Đang đóng" }
+        { value: "ACTIVE", label: "Đang vận hành" },
+        { value: "UNDER_REPAIR", label: "Đang sửa chữa" },
+        { value: "CLOSING", label: "Đang đóng" }
     ];
 
     if (equipment==null) {

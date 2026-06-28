@@ -22,11 +22,11 @@ const DetailSystem = () => {
     })
     const renderStatusBadge = (status, statusDisplay) => {
         switch (status) {
-            case "DANG_VAN_HANH":
+            case "ACTIVE":
                 return <Badge bg="info">{statusDisplay}</Badge>;
-            case "DANG_SUA_CHUA":
+            case "UNDER_REPAIR":
                 return <Badge bg="primary">{statusDisplay}</Badge>;
-            case "DANG_DONG":
+            case "CLOSING":
                 return <Badge bg="warning">{statusDisplay}</Badge>;
             default:
                 return <Badge bg="dark">{statusDisplay}</Badge>;
