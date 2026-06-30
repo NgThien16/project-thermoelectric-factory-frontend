@@ -64,9 +64,6 @@ const EditReplacement = () => {
                 "Yêu cầu chữ cái đầu in HOA và không chứa kí tự đặc biệt"
             ),
 
-        location: Yup.string()
-            .required("Không được bỏ trống"),
-
         description: Yup.string()
     });
 
