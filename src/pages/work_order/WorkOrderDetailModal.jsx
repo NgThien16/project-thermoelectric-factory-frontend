@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Modal, Button, Table, Spinner } from "react-bootstrap";
+import { Modal, Button, Table, Spinner, Row, Col } from "react-bootstrap";
 import { FaFilePdf, FaUserEdit } from "react-icons/fa";
 import { getWorkOrderDetail } from "../../service/work_order/WorkOrderService";
 import { getRoleLabel } from "../../utils/workOrderRoles";
@@ -56,92 +56,89 @@ const WorkOrderDetailModal = ({ show, onHide, workOrderId, onAssignmentUpdated, 
         if (onAssignmentUpdated) onAssignmentUpdated();
     };
 
+    const sectionHeaderStyle = {
+        marginTop: "-8px",
+        marginLeft: "-8px",
+        marginRight: "-8px"
+    };
+
     return (
         <>
-            <Modal show={show} onHide={onHide} size="lg" scrollable>
+            <Modal show={show} onHide={onHide} size="xl" scrollable>
                 <Modal.Header closeButton>
-                    <Modal.Title>
+                    <Modal.Title className="fs-6">
                         Chi tiết phiếu công tác {detail?.code ? `- ${detail.code}` : ""}
                     </Modal.Title>
                 </Modal.Header>
 
-                <Modal.Body>
+                <Modal.Body className="p-3" style={{ fontSize: "0.85rem" }}>
                     {loading || !detail ? (
                         <div className="d-flex justify-content-center p-5">
                             <Spinner animation="border" />
                         </div>
                     ) : (
                         <div ref={printRef} style={{ background: "#fff" }}>
-                            <h5 className="text-center fw-bold mb-4">PHIẾU CÔNG TÁC</h5>
 
-                            <Table borderless size="sm" className="mb-4">
-                                <tbody>
-                                <tr>
-                                    <td style={{ width: "160px" }}><b>Mã phiếu</b></td>
-                                    <td>{detail.code}</td>
-                                    <td style={{ width: "160px" }}><b>Trạng thái</b></td>
-                                    <td>{detail.status}</td>
-                                </tr>
-                                <tr>
-                                    <td><b>Trạng thái VT</b></td>
-                                    <td>{detail.materialStatus}</td>
-                                    <td><b>Bắt đầu</b></td>
-                                    <td>{formatDate(detail.startDate)}</td>
-                                </tr>
-                                <tr>
-                                    <td><b>Kết thúc</b></td>
-                                    <td>{formatDate(detail.endDate)}</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                </tbody>
-                            </Table>
+                            {/* HÀNG TRẠNG THÁI TỔNG QUAN */}
+                            <div className="d-flex flex-wrap gap-2 mb-2 p-2 bg-light rounded">
+                                <div><b>Mã phiếu:</b> {detail.code}</div>
+                                <div className="text-muted">|</div>
+                                <div><b>Trạng thái:</b> {detail.status}</div>
+                                <div className="text-muted">|</div>
+                                <div><b>VT:</b> {detail.materialStatus}</div>
+                                <div className="text-muted">|</div>
+                                <div><b>Bắt đầu:</b> {formatDate(detail.startDate)}</div>
+                                <div className="text-muted">|</div>
+                                <div><b>Kết thúc:</b> {formatDate(detail.endDate)}</div>
+                            </div>
 
-                            <h6 className="fw-bold border-bottom pb-2">I. THÔNG TIN NGƯỜI LẬP</h6>
-                            <Table borderless size="sm" className="mb-4">
-                                <tbody>
-                                <tr>
-                                    <td style={{ width: "160px" }}><b>Người lập</b></td>
-                                    <td>{detail.createdBy}</td>
-                                </tr>
-                                <tr>
-                                    <td><b>Phòng ban</b></td>
-                                    <td>{detail.createdDepartment}</td>
-                                </tr>
-                                <tr>
-                                    <td><b>Chức vụ</b></td>
-                                    <td>{detail.createdPosition}</td>
-                                </tr>
-                                </tbody>
-                            </Table>
+                            <Row className="g-2 mb-2">
+                                {/* CỘT TRÁI: NGƯỜI LẬP + THIẾT BỊ */}
+                                <Col md={6}>
+                                    <div className="border rounded p-2 mb-2">
+                                        <div className="fw-bold bg-dark text-white px-2 py-1 mb-1 rounded-top" style={sectionHeaderStyle}>
+                                            I. THÔNG TIN NGƯỜI LẬP
+                                        </div>
+                                        <div><b>Người lập:</b> {detail.createdBy}</div>
+                                        <div><b>Phòng ban:</b> {detail.createdDepartment}</div>
+                                        <div><b>Chức vụ:</b> {detail.createdPosition}</div>
+                                    </div>
 
-                            <h6 className="fw-bold border-bottom pb-2">II. YÊU CẦU SỬA CHỮA</h6>
-                            <p><b>Tiêu đề:</b> {detail.repairTitle}</p>
-                            <p><b>Mô tả:</b> {detail.repairDescription}</p>
+                                    <div className="border rounded p-2">
+                                        <div className="fw-bold bg-dark text-white px-2 py-1 mb-1 rounded-top" style={sectionHeaderStyle}>
+                                            III. THÔNG TIN THIẾT BỊ
+                                        </div>
+                                        <div><b>Tên thiết bị:</b> {detail.equipmentName}</div>
+                                        <div><b>Mã thiết bị:</b> {detail.equipmentCode}</div>
+                                        <div><b>Hệ thống:</b> {detail.systemName}</div>
+                                    </div>
+                                </Col>
 
-                            <h6 className="fw-bold border-bottom pb-2 mt-4">III. THÔNG TIN THIẾT BỊ</h6>
-                            <Table borderless size="sm" className="mb-4">
-                                <tbody>
-                                <tr>
-                                    <td style={{ width: "160px" }}><b>Tên thiết bị</b></td>
-                                    <td>{detail.equipmentName}</td>
-                                </tr>
-                                <tr>
-                                    <td><b>Mã thiết bị</b></td>
-                                    <td>{detail.equipmentCode}</td>
-                                </tr>
-                                <tr>
-                                    <td><b>Hệ thống</b></td>
-                                    <td>{detail.systemName}</td>
-                                </tr>
-                                </tbody>
-                            </Table>
+                                {/* CỘT PHẢI: YÊU CẦU SỬA CHỮA */}
+                                <Col md={6}>
+                                    <div className="border rounded p-2 h-100">
+                                        <div className="fw-bold bg-dark text-white px-2 py-1 mb-1 rounded-top" style={sectionHeaderStyle}>
+                                            II. YÊU CẦU SỬA CHỮA
+                                        </div>
+                                        <div><b>Tiêu đề:</b> {detail.repairTitle}</div>
+                                        <div className="mt-1">
+                                            <b>Mô tả:</b>
+                                            <div className="text-muted" style={{ maxHeight: "90px", overflowY: "auto" }}>
+                                                {detail.repairDescription}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Col>
+                            </Row>
 
-                            <h6 className="fw-bold border-bottom pb-2">IV. PHÂN CÔNG NHÂN SỰ</h6>
-                            <Table bordered size="sm" className="mb-4">
+                            {/* IV. PHÂN CÔNG NHÂN SỰ */}
+                            <div className="fw-bold bg-dark text-white px-2 py-1 mb-1">
+                                IV. PHÂN CÔNG NHÂN SỰ
+                            </div>
+                            <Table bordered size="sm" className="mb-2" style={{ fontSize: "0.8rem" }}>
                                 <thead className="table-light">
                                 <tr>
-                                    <th style={{ width: "50px" }}>STT</th>
+                                    <th style={{ width: "40px" }}>STT</th>
                                     <th>Họ tên</th>
                                     <th>Vai trò</th>
                                 </tr>
@@ -164,85 +161,95 @@ const WorkOrderDetailModal = ({ show, onHide, workOrderId, onAssignmentUpdated, 
                                 </tbody>
                             </Table>
 
-                            <h6 className="fw-bold border-bottom pb-2">V. VẬT TƯ TIÊU HAO</h6>
-                            <Table bordered size="sm" className="mb-4">
-                                <thead className="table-light">
-                                <tr>
-                                    <th style={{ width: "50px" }}>STT</th>
-                                    <th>Mã VT</th>
-                                    <th>Tên vật tư</th>
-                                    <th>ĐVT</th>
-                                    <th>SL</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {(detail.consumables || []).map((c, i) => (
-                                    <tr key={i}>
-                                        <td>{i + 1}</td>
-                                        <td>{c.code}</td>
-                                        <td>{c.name}</td>
-                                        <td>{c.unit}</td>
-                                        <td>{c.quantity}</td>
-                                    </tr>
-                                ))}
-                                {(!detail.consumables || detail.consumables.length === 0) && (
-                                    <tr>
-                                        <td colSpan={5} className="text-center text-muted">
-                                            Không có vật tư tiêu hao
-                                        </td>
-                                    </tr>
-                                )}
-                                </tbody>
-                            </Table>
+                            {/* V + VI: VẬT TƯ - 2 CỘT SONG SONG */}
+                            <Row className="g-2">
+                                <Col md={6}>
+                                    <div className="fw-bold bg-dark text-white px-2 py-1 mb-1">
+                                        V. VẬT TƯ TIÊU HAO
+                                    </div>
+                                    <Table bordered size="sm" className="mb-0" style={{ fontSize: "0.78rem" }}>
+                                        <thead className="table-light">
+                                        <tr>
+                                            <th style={{ width: "30px" }}>STT</th>
+                                            <th style={{ width: "55px" }}>Mã VT</th>
+                                            <th>Tên vật tư</th>
+                                            <th style={{ width: "40px" }}>ĐVT</th>
+                                            <th style={{ width: "30px" }}>SL</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {(detail.consumables || []).map((c, i) => (
+                                            <tr key={i}>
+                                                <td>{i + 1}</td>
+                                                <td>{c.code}</td>
+                                                <td>{c.name}</td>
+                                                <td>{c.unit}</td>
+                                                <td>{c.quantity}</td>
+                                            </tr>
+                                        ))}
+                                        {(!detail.consumables || detail.consumables.length === 0) && (
+                                            <tr>
+                                                <td colSpan={5} className="text-center text-muted">
+                                                    Không có
+                                                </td>
+                                            </tr>
+                                        )}
+                                        </tbody>
+                                    </Table>
+                                </Col>
 
-                            <h6 className="fw-bold border-bottom pb-2">VI. PHỤ TÙNG THAY THẾ</h6>
-                            <Table bordered size="sm" className="mb-4">
-                                <thead className="table-light">
-                                <tr>
-                                    <th style={{ width: "50px" }}>STT</th>
-                                    <th>Mã PT</th>
-                                    <th>Tên phụ tùng</th>
-                                    <th>ĐVT</th>
-                                    <th>SL</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {(detail.replacements || []).map((r, i) => (
-                                    <tr key={i}>
-                                        <td>{i + 1}</td>
-                                        <td>{r.code}</td>
-                                        <td>{r.name}</td>
-                                        <td>{r.unit}</td>
-                                        <td>{r.quantity}</td>
-                                    </tr>
-                                ))}
-                                {(!detail.replacements || detail.replacements.length === 0) && (
-                                    <tr>
-                                        <td colSpan={5} className="text-center text-muted">
-                                            Không có phụ tùng thay thế
-                                        </td>
-                                    </tr>
-                                )}
-                                </tbody>
-                            </Table>
+                                <Col md={6}>
+                                    <div className="fw-bold bg-dark text-white px-2 py-1 mb-1">
+                                        VI. PHỤ TÙNG THAY THẾ
+                                    </div>
+                                    <Table bordered size="sm" className="mb-0" style={{ fontSize: "0.78rem" }}>
+                                        <thead className="table-light">
+                                        <tr>
+                                            <th style={{ width: "30px" }}>STT</th>
+                                            <th style={{ width: "55px" }}>Mã PT</th>
+                                            <th>Tên phụ tùng</th>
+                                            <th style={{ width: "40px" }}>ĐVT</th>
+                                            <th style={{ width: "30px" }}>SL</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {(detail.replacements || []).map((r, i) => (
+                                            <tr key={i}>
+                                                <td>{i + 1}</td>
+                                                <td>{r.code}</td>
+                                                <td>{r.name}</td>
+                                                <td>{r.unit}</td>
+                                                <td>{r.quantity}</td>
+                                            </tr>
+                                        ))}
+                                        {(!detail.replacements || detail.replacements.length === 0) && (
+                                            <tr>
+                                                <td colSpan={5} className="text-center text-muted">
+                                                    Không có
+                                                </td>
+                                            </tr>
+                                        )}
+                                        </tbody>
+                                    </Table>
+                                </Col>
+                            </Row>
 
-                            <div className="text-end mt-4">
-                                <p className="mb-0"><i>Người lập phiếu</i></p>
-                                <p className="text-muted small">(Ký và ghi rõ họ tên)</p>
-                                <p className="fw-bold mt-4">{detail.createdBy}</p>
+                            <div className="text-end mt-2 small text-muted">
+                                Người lập phiếu: <b className="text-dark">{detail.createdBy}</b>
                             </div>
                         </div>
                     )}
                 </Modal.Body>
 
-                <Modal.Footer>
-                    <Button variant="outline-secondary" onClick={onHide}>
+                <Modal.Footer className="py-2">
+                    <Button variant="outline-secondary" size="sm" onClick={onHide}>
                         {"Đóng"}
                     </Button>
                     {extraFooter && detail && extraFooter(detail)}
                     {!hideAssignment && (
                         <Button
                             variant="warning"
+                            size="sm"
                             onClick={() => setShowUpdateModal(true)}
                             disabled={!detail}
                         >
@@ -252,6 +259,7 @@ const WorkOrderDetailModal = ({ show, onHide, workOrderId, onAssignmentUpdated, 
                     )}
                     <Button
                         variant="danger"
+                        size="sm"
                         onClick={handleExportPdf}
                         disabled={!detail || exporting}
                     >
